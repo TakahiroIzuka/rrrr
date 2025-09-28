@@ -1,7 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
-import ClinicsListPanel from '@/components/ClinicsListPanel'
-import MapPanel from '@/components/MapPanel'
-import ClinicsGridSection from '@/components/ClinicsGridSection'
+import HomeClient from './HomeClient'
 
 interface Clinic {
   id: number
@@ -37,20 +35,5 @@ export default async function HomePage() {
 
   const clinicsData = clinics || []
 
-  return (
-    <div className="flex flex-col w-full">
-      {/* Map Section */}
-      <div className="flex h-[calc(60vh-80px)] w-full overflow-hidden">
-        <div className="w-1/4 min-w-[300px]">
-          <ClinicsListPanel clinics={clinicsData} />
-        </div>
-        <div className="w-3/4 flex-1">
-          <MapPanel clinics={clinicsData} />
-        </div>
-      </div>
-
-      {/* Clinics Grid Section */}
-      <ClinicsGridSection clinics={clinicsData} />
-    </div>
-  )
+  return <HomeClient clinics={clinicsData} />
 }
