@@ -22,139 +22,62 @@ export default function ClinicsListPanel({ clinics }: ClinicsListPanelProps) {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
   return (
-    <div style={{
-      height: '100%',
-      overflow: 'auto',
-      padding: '20px',
-      backgroundColor: '#f9fafb',
-      borderRight: '1px solid #e5e7eb'
-    }}>
-      <h2 style={{
-        margin: '0 0 20px 0',
-        color: '#111827',
-        fontSize: '24px',
-        fontWeight: 'bold'
-      }}>
+    <div className="h-full overflow-auto p-5 bg-gray-50 border-r border-gray-200">
+      <h2 className="m-0 mb-5 text-gray-900 text-2xl font-bold">
         クリニック一覧
       </h2>
 
-      <div style={{
-        backgroundColor: '#ffffff',
-        padding: '12px 16px',
-        borderRadius: '8px',
-        marginBottom: '20px',
-        border: '1px solid #e5e7eb'
-      }}>
-        <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>
-          登録件数: <strong style={{ color: '#111827' }}>{clinics.length}</strong>件
+      <div className="bg-white py-3 px-4 rounded-lg mb-5 border border-gray-200">
+        <p className="m-0 text-gray-500 text-sm">
+          登録件数: <strong className="text-gray-900">{clinics.length}</strong>件
         </p>
       </div>
 
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px'
-      }}>
+      <div className="flex flex-col gap-4">
         {clinics.map((clinic: Clinic) => (
           <div
             key={clinic.id}
-            style={{
-              backgroundColor: '#ffffff',
-              border: '1px solid #e5e7eb',
-              borderRadius: '8px',
-              padding: '16px',
-              boxShadow: hoveredCard === clinic.id
-                ? '0 4px 12px rgba(0, 0, 0, 0.15)'
-                : '0 1px 3px rgba(0, 0, 0, 0.1)',
-              transform: hoveredCard === clinic.id
-                ? 'translateY(-1px)'
-                : 'translateY(0px)',
-              transition: 'all 0.2s ease',
-              cursor: 'pointer'
-            }}
+            className={`bg-white border border-gray-200 rounded-lg p-4 cursor-pointer transition-all duration-200 ease-in-out ${
+              hoveredCard === clinic.id
+                ? 'shadow-lg -translate-y-0.5'
+                : 'shadow-sm hover:shadow-md'
+            }`}
             onMouseEnter={() => setHoveredCard(clinic.id)}
             onMouseLeave={() => setHoveredCard(null)}
           >
-            <h3 style={{
-              margin: '0 0 12px 0',
-              color: '#111827',
-              fontSize: '16px',
-              fontWeight: '600',
-              lineHeight: '1.4'
-            }}>
+            <h3 className="m-0 mb-3 text-gray-900 text-base font-semibold leading-snug">
               {clinic.name}
             </h3>
 
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '8px',
-              gap: '6px'
-            }}>
-              <span style={{
-                fontSize: '14px',
-                color: '#6b7280'
-              }}>📍</span>
-              <span style={{
-                color: '#4b5563',
-                fontSize: '14px'
-              }}>
+            <div className="flex items-center mb-2 gap-1.5">
+              <span className="text-sm text-gray-500">📍</span>
+              <span className="text-gray-600 text-sm">
                 {clinic.prefecture} {clinic.area}
               </span>
             </div>
 
             {clinic.star !== null && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}>
-                <span style={{
-                  fontSize: '14px',
-                  color: '#6b7280'
-                }}>⭐</span>
-                <span style={{
-                  color: '#f59e0b',
-                  fontWeight: '600',
-                  fontSize: '14px'
-                }}>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm text-gray-500">⭐</span>
+                <span className="text-amber-500 font-semibold text-sm">
                   {clinic.star}
                 </span>
-                <span style={{
-                  color: '#6b7280',
-                  fontSize: '12px'
-                }}>
+                <span className="text-gray-500 text-xs">
                   ({clinic.user_review_count}件)
                 </span>
               </div>
             )}
 
             {clinic.star === null && clinic.user_review_count === 0 && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}>
-                <span style={{
-                  fontSize: '14px',
-                  color: '#6b7280'
-                }}>⭐</span>
-                <span style={{
-                  color: '#9ca3af',
-                  fontSize: '12px'
-                }}>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm text-gray-500">⭐</span>
+                <span className="text-gray-400 text-xs">
                   レビューなし
                 </span>
               </div>
             )}
 
-            <div style={{
-              paddingTop: '12px',
-              marginTop: '12px',
-              borderTop: '1px solid #f3f4f6',
-              fontSize: '11px',
-              color: '#9ca3af'
-            }}>
+            <div className="pt-3 mt-3 border-t border-gray-100 text-xs text-gray-400">
               ID: {clinic.id}
             </div>
           </div>

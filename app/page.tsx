@@ -24,25 +24,10 @@ export default async function HomePage() {
 
   if (error) {
     return (
-      <div style={{
-        display: 'flex',
-        height: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f5f5f5',
-        color: '#dc2626',
-        fontSize: '16px',
-        textAlign: 'center'
-      }}>
+      <div className="flex h-screen items-center justify-center bg-gray-100 text-red-600 text-base text-center">
         <div>
-          <h1 style={{ marginBottom: '20px' }}>エラーが発生しました</h1>
-          <div style={{
-            backgroundColor: '#fef2f2',
-            border: '1px solid #fca5a5',
-            borderRadius: '8px',
-            padding: '16px',
-            color: '#991b1b'
-          }}>
+          <h1 className="mb-5">エラーが発生しました</h1>
+          <div className="bg-red-50 border border-red-300 rounded-lg p-4 text-red-800">
             <strong>データベースエラー:</strong> {error.message}
           </div>
         </div>
@@ -53,28 +38,13 @@ export default async function HomePage() {
   const clinicsData = clinics || []
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      width: '100%'
-    }}>
+    <div className="flex flex-col w-full">
       {/* Map Section */}
-      <div style={{
-        display: 'flex',
-        height: 'calc(60vh - 80px)', // Headerを考慮して調整
-        width: '100%',
-        overflow: 'hidden'
-      }}>
-        <div style={{
-          width: '25%',
-          minWidth: '300px'
-        }}>
+      <div className="flex h-[calc(60vh-80px)] w-full overflow-hidden">
+        <div className="w-1/4 min-w-[300px]">
           <ClinicsListPanel clinics={clinicsData} />
         </div>
-        <div style={{
-          width: '75%',
-          flex: '1'
-        }}>
+        <div className="w-3/4 flex-1">
           <MapPanel clinics={clinicsData} />
         </div>
       </div>

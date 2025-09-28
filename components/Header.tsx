@@ -2,64 +2,24 @@
 
 export default function Header() {
   return (
-    <header style={{
-      backgroundColor: 'white',
-      color: '#333',
-      padding: '1rem 2rem',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-      position: 'relative',
-      zIndex: 1000,
-      borderBottom: '1px solid #e5e7eb'
-    }}>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        maxWidth: '1200px',
-        margin: '0 auto'
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '1rem'
-        }}>
-          <h1 style={{
-            margin: 0,
-            fontSize: '1.5rem',
-            fontWeight: 'bold',
-            fontFamily: "'Kosugi Maru', sans-serif",
-            color: '#2d3748'
-          }}>
+    <header className="bg-white text-gray-700 px-8 py-4 shadow-md relative z-[1000] border-b border-gray-200">
+      <div className="flex justify-between items-center max-w-6xl mx-auto">
+        <div className="flex items-center gap-4">
+          <h1 className="m-0 text-2xl font-bold text-gray-700" style={{ fontFamily: "'Kosugi Maru', sans-serif" }}>
             🏥 メディカルクチコミランキング
           </h1>
         </div>
 
-        <nav style={{
-          display: 'flex',
-          gap: '2rem',
-          alignItems: 'center'
-        }}>
-          <a href="/" style={{
-            color: '#4a5568',
-            textDecoration: 'none',
-            fontSize: '0.9rem',
-            transition: 'color 0.2s',
-            fontWeight: '500'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.color = '#2d3748'}
-          onMouseLeave={(e) => e.currentTarget.style.color = '#4a5568'}
+        <nav className="flex gap-8 items-center">
+          <a
+            href="/"
+            className="text-gray-600 no-underline text-sm font-medium transition-colors duration-200 hover:text-gray-700"
           >
             ホーム
           </a>
-          <a href="/clinics" style={{
-            color: '#4a5568',
-            textDecoration: 'none',
-            fontSize: '0.9rem',
-            transition: 'color 0.2s',
-            fontWeight: '500'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.color = '#2d3748'}
-          onMouseLeave={(e) => e.currentTarget.style.color = '#4a5568'}
+          <a
+            href="/clinics"
+            className="text-gray-600 no-underline text-sm font-medium transition-colors duration-200 hover:text-gray-700"
           >
             クリニック一覧
           </a>

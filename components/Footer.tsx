@@ -2,64 +2,25 @@
 
 export default function Footer() {
   return (
-    <footer style={{
-      backgroundColor: '#eae3db',
-      color: '#4a5568',
-      padding: '2rem 2rem 1rem',
-      marginTop: 'auto'
-    }}>
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        textAlign: 'center'
-      }}>
+    <footer className="bg-[#eae3db] text-gray-600 px-8 py-8 pb-4 mt-auto">
+      <div className="max-w-6xl mx-auto text-center">
         {/* Request Button */}
-        <div style={{
-          marginBottom: '2rem'
-        }}>
-          <button style={{
-            backgroundColor: '#667eea',
-            color: 'white',
-            padding: '12px 24px',
-            borderRadius: '8px',
-            border: 'none',
-            fontSize: '1rem',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            fontFamily: "'Kosugi Maru', sans-serif"
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#5a67d8'
-            e.currentTarget.style.transform = 'translateY(-1px)'
-            e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#667eea'
-            e.currentTarget.style.transform = 'translateY(0)'
-            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)'
-          }}
-          onClick={() => {
-            // TODO: 掲載リクエストページへのリンクまたはフォーム表示
-            alert('掲載リクエストフォームを実装予定です')
-          }}
+        <div className="mb-8">
+          <button
+            className="bg-indigo-500 text-white px-6 py-3 rounded-lg border-0 text-base font-semibold cursor-pointer transition-all duration-200 shadow-sm hover:bg-indigo-600 hover:-translate-y-0.5 hover:shadow-md"
+            style={{ fontFamily: "'Kosugi Maru', sans-serif" }}
+            onClick={() => {
+              // TODO: 掲載リクエストページへのリンクまたはフォーム表示
+              alert('掲載リクエストフォームを実装予定です')
+            }}
           >
             クリニック・施設の掲載リクエストはこちら
           </button>
         </div>
 
         {/* Copyright */}
-        <div style={{
-          borderTop: '1px solid #d1d5db',
-          paddingTop: '1rem'
-        }}>
-          <p style={{
-            margin: 0,
-            fontSize: '0.9rem',
-            color: '#6b7280',
-            fontWeight: '500'
-          }}>
+        <div className="border-t border-gray-300 pt-4">
+          <p className="m-0 text-sm text-gray-500 font-medium">
             Copyright © Medical Review Ranking All Rights Reserved.
           </p>
         </div>

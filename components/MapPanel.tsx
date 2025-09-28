@@ -126,7 +126,7 @@ export default function MapPanel({ clinics = [] }: MapPanelProps) {
               ">
               <p style="
                 position: absolute;
-                top: 38%;
+                top: 42%;
                 left: 0;
                 font-size: 0.6rem;
                 width: 42px;
@@ -138,7 +138,7 @@ export default function MapPanel({ clinics = [] }: MapPanelProps) {
               ">${clinic.star !== null ? clinic.star : ''}</p>
               <p style="
                 position: absolute;
-                top: 50%;
+                top: 58%;
                 left: 0;
                 font-size: 1.0rem;
                 width: 42px;
@@ -203,21 +203,9 @@ export default function MapPanel({ clinics = [] }: MapPanelProps) {
 
   if (error) {
     return (
-      <div style={{
-        width: '100%',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f5f5f5',
-        color: '#dc2626',
-        fontSize: '14px',
-        textAlign: 'center',
-        padding: '20px',
-        boxSizing: 'border-box'
-      }}>
+      <div className="w-full h-screen flex items-center justify-center bg-gray-100 text-red-600 text-sm text-center p-5 box-border">
         <div>
-          <div style={{ fontSize: '16px', marginBottom: '8px' }}>⚠️</div>
+          <div className="text-base mb-2">⚠️</div>
           {error}
         </div>
       </div>
@@ -225,31 +213,15 @@ export default function MapPanel({ clinics = [] }: MapPanelProps) {
   }
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+    <div className="relative w-full h-full">
       {isLoading && (
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          zIndex: 1000,
-          fontSize: '16px',
-          color: '#666'
-        }}>
+        <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-white bg-opacity-90 z-[1000] text-base text-gray-600">
           Loading Google Maps...
         </div>
       )}
       <div
         ref={mapRef}
-        style={{
-          width: '100%',
-          height: '100%'
-        }}
+        className="w-full h-full"
       />
     </div>
   )
