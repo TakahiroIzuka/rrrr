@@ -59,13 +59,13 @@ export default async function HomePage() {
       overflow: 'hidden'
     }}>
       <div style={{
-        width: '33.333333%',
-        minWidth: '320px'
+        width: '25%',
+        minWidth: '300px'
       }}>
         <ClinicsListPanel clinics={clinicsData} />
       </div>
       <div style={{
-        width: '66.666667%',
+        width: '75%',
         flex: '1'
       }}>
         <MapPanel clinics={clinicsData} />
