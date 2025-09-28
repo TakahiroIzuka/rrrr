@@ -43,6 +43,8 @@ export default function MapPanel({ clinics = [] }: MapPanelProps) {
     zoom: 6,
     streetViewControl: false,
     fullscreenControl: false,
+    mapTypeControl: false,
+    disableDefaultUI: true,
     gestureHandling: 'greedy',
     clickableIcons: false,
     ...(mapId && { mapId })
