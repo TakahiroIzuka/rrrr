@@ -5,9 +5,6 @@ export default async function Instruments() {
   const supabase = await createClient()
   const { data: instruments, error } = await supabase.from('instruments').select()
 
-  console.log('Instruments data:', instruments)
-  console.log('Instruments error:', error)
-
   if (error) {
     return <div>Error: {JSON.stringify(error, null, 2)}</div>
   }

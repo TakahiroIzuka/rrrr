@@ -24,9 +24,16 @@ interface HomeClientProps {
 
 export default function HomeClient({ clinics }: HomeClientProps) {
   const [filteredClinics, setFilteredClinics] = useState<Clinic[]>(clinics)
+  const [selectedClinicId, setSelectedClinicId] = useState<number | null>(null)
 
   const handleFilterChange = useCallback((filtered: Clinic[]) => {
     setFilteredClinics(filtered)
+    // Reset selection when filter changes
+    setSelectedClinicId(null)
+  }, [])
+
+  const handleClinicSelect = useCallback((clinicId: number | null) => {
+    setSelectedClinicId(clinicId)
   }, [])
 
   return (
@@ -34,10 +41,16 @@ export default function HomeClient({ clinics }: HomeClientProps) {
       {/* Map Section */}
       <div className="flex h-screen w-full overflow-hidden">
         <div className="w-1/4 min-w-[300px]">
-          <ClinicsListPanel clinics={filteredClinics} />
+          <ClinicsListPanel
+            clinics={selectedClinicId ? filteredClinics.filter(clinic => clinic.id === selectedClinicId) : filteredClinics}
+          />
         </div>
         <div className="w-3/4 flex-1 relative">
-          <MapPanel allClinics={clinics} filteredClinics={filteredClinics} />
+          <MapPanel
+            allClinics={clinics}
+            filteredClinics={filteredClinics}
+            onClinicSelect={handleClinicSelect}
+          />
           {/* Filter Button Overlay on Map */}
           <FilterButton clinics={clinics} onFilterChange={handleFilterChange} />
         </div>

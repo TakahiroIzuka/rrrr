@@ -19,9 +19,10 @@ interface Clinic {
 interface MapPanelProps {
   allClinics: Clinic[]
   filteredClinics: Clinic[]
+  onClinicSelect?: (clinicId: number | null) => void
 }
 
-const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics }: MapPanelProps) {
+const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onClinicSelect }: MapPanelProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const googleMapRef = useRef<google.maps.Map | null>(null)
   const markersRef = useRef<google.maps.Marker[]>([])
@@ -30,6 +31,7 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics }: M
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isMapInitialized, setIsMapInitialized] = useState(false)
+  const [selectedClinicId, setSelectedClinicId] = useState<number | null>(null)
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
   const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAP_ID
@@ -118,8 +120,11 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics }: M
           // Skip if marker already exists
           if (markersMapRef.current.has(clinic.id)) return
 
-          // Select pin image based on genre_id
-          const getPinImage = (genre_id: number): string => {
+          // Select pin image based on genre_id and focus state
+          const getPinImage = (genre_id: number, isFocused: boolean): string => {
+            if (!isFocused) {
+              return '/images/pin_unfocus.png'
+            }
             switch (genre_id) {
               case 1: // ピラティス
                 return '/images/pin_pilates.png'
@@ -139,37 +144,56 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics }: M
             display: inline-block;
           `
 
-          markerDiv.innerHTML = `
-            <img src="${getPinImage(clinic.genre_id)}" style="
-              position: relative;
-              width: 42px;
-              display: block;
-            ">
-            <p style="
-              position: absolute;
-              top: 42%;
-              left: 0;
-              font-size: 0.6rem;
-              width: 42px;
-              text-align: center;
-              font-family: 'Kosugi Maru', sans-serif;
-              color: #a69a7e !important;
-              z-index: 1;
-              margin: 0;
-            ">${clinic.star !== null ? clinic.star : ''}</p>
-            <p style="
-              position: absolute;
-              top: 58%;
-              left: 0;
-              font-size: 1.0rem;
-              width: 42px;
-              text-align: center;
-              font-family: 'Kosugi Maru', sans-serif;
-              color: #a69a7e !important;
-              z-index: 1;
-              margin: 0;
-            ">${clinic.user_review_count}</p>
+          // Create marker elements once
+          const imgElement = document.createElement('img')
+          imgElement.style.cssText = `
+            position: relative;
+            width: 42px;
+            display: block;
           `
+          imgElement.src = getPinImage(clinic.genre_id, true)
+
+          const starElement = document.createElement('p')
+          starElement.style.cssText = `
+            position: absolute;
+            top: 42%;
+            left: 0;
+            font-size: 0.6rem;
+            width: 42px;
+            text-align: center;
+            font-family: 'Kosugi Maru', sans-serif;
+            color: #a69a7e !important;
+            z-index: 1;
+            margin: 0;
+          `
+          starElement.textContent = clinic.star !== null ? clinic.star.toString() : ''
+
+          const reviewElement = document.createElement('p')
+          reviewElement.style.cssText = `
+            position: absolute;
+            top: 58%;
+            left: 0;
+            font-size: 1.0rem;
+            width: 42px;
+            text-align: center;
+            font-family: 'Kosugi Maru', sans-serif;
+            color: #a69a7e !important;
+            z-index: 1;
+            margin: 0;
+          `
+          reviewElement.textContent = clinic.user_review_count.toString()
+
+          markerDiv.appendChild(imgElement)
+          markerDiv.appendChild(starElement)
+          markerDiv.appendChild(reviewElement)
+
+          const updateMarkerContent = (isFocused: boolean = true) => {
+            // Only update the image source, don't recreate elements
+            imgElement.src = getPinImage(clinic.genre_id, isFocused)
+          }
+
+          // Initial marker content
+          updateMarkerContent(true)
 
           const marker = new AdvancedMarkerElement({
             position: { lat: clinic.lat, lng: clinic.lng },
@@ -178,21 +202,18 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics }: M
             content: markerDiv
           })
 
-          const infoWindow = new google.maps.InfoWindow({
-            content: `
-              <div style="padding: 8px;">
-                <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: bold;">${clinic.name}</h3>
-                <p style="margin: 0 0 4px 0; font-size: 12px; color: #666;">📍 ${clinic.prefecture} ${clinic.area}</p>
-                ${clinic.star !== null ?
-                  `<p style="margin: 0; font-size: 12px;">⭐ ${clinic.star} (${clinic.user_review_count}件)</p>` :
-                  `<p style="margin: 0; font-size: 12px; color: #999;">⭐ レビューなし</p>`
-                }
-              </div>
-            `
-          })
+          // Store update function on marker for later use
+          marker.updateContent = updateMarkerContent
 
           marker.addListener('click', () => {
-            infoWindow.open(googleMapRef.current, marker)
+            setSelectedClinicId(currentSelectedId => {
+              const newSelectedId = currentSelectedId === clinic.id ? null : clinic.id
+              // Use setTimeout to avoid setState during render
+              setTimeout(() => {
+                onClinicSelect?.(newSelectedId)
+              }, 0)
+              return newSelectedId
+            })
           })
 
           markersMapRef.current.set(clinic.id, marker)
@@ -203,25 +224,33 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics }: M
       })
   }, [allClinics, isMapInitialized])
 
-  // Show/hide markers based on filteredClinics
+  // Combined effect for marker visibility and appearance updates
   useEffect(() => {
     if (!googleMapRef.current || !isMapInitialized || markersMapRef.current.size === 0) return
 
     const filteredIds = new Set(filteredClinics.map(clinic => clinic.id))
 
-    // Only update markers that need to change state
-    markersMapRef.current.forEach((marker, clinicId) => {
-      const shouldShow = filteredIds.has(clinicId)
-      const isCurrentlyVisible = marker.map !== null
+    // Use requestAnimationFrame to batch all marker updates together
+    requestAnimationFrame(() => {
+      markersMapRef.current.forEach((marker, clinicId) => {
+        const shouldShow = filteredIds.has(clinicId)
+        const isCurrentlyVisible = marker.map !== null
 
-      // Only change marker visibility if needed
-      if (shouldShow && !isCurrentlyVisible) {
-        marker.map = googleMapRef.current
-      } else if (!shouldShow && isCurrentlyVisible) {
-        marker.map = null
-      }
+        // Update visibility first
+        if (shouldShow && !isCurrentlyVisible) {
+          marker.map = googleMapRef.current
+        } else if (!shouldShow && isCurrentlyVisible) {
+          marker.map = null
+        }
+
+        // Update appearance only for visible markers
+        if (marker.updateContent && marker.map !== null) {
+          const isFocused = selectedClinicId === null || selectedClinicId === clinicId
+          marker.updateContent(isFocused)
+        }
+      })
     })
-  }, [filteredClinics, isMapInitialized])
+  }, [filteredClinics, selectedClinicId, isMapInitialized])
 
   if (error) {
     return (
