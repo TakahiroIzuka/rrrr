@@ -23,7 +23,7 @@ export default function ClinicsListPanel({ clinics }: ClinicsListPanelProps) {
 
   return (
     <div style={{
-      height: '100vh',
+      height: '100%',
       overflow: 'auto',
       padding: '20px',
       backgroundColor: '#f9fafb',

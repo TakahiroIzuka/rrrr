@@ -225,7 +225,7 @@ export default function MapPanel({ clinics = [] }: MapPanelProps) {
   }
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       {isLoading && (
         <div style={{
           position: 'absolute',
@@ -248,7 +248,7 @@ export default function MapPanel({ clinics = [] }: MapPanelProps) {
         ref={mapRef}
         style={{
           width: '100%',
-          height: '100vh'
+          height: '100%'
         }}
       />
     </div>

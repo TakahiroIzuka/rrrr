@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import ClinicsListPanel from '@/components/ClinicsListPanel'
 import MapPanel from '@/components/MapPanel'
+import ClinicsGridSection from '@/components/ClinicsGridSection'
 
 interface Clinic {
   id: number
@@ -54,22 +55,32 @@ export default async function HomePage() {
   return (
     <div style={{
       display: 'flex',
-      height: '100vh',
-      width: '100vw',
-      overflow: 'hidden'
+      flexDirection: 'column',
+      width: '100%'
     }}>
+      {/* Map Section */}
       <div style={{
-        width: '25%',
-        minWidth: '300px'
+        display: 'flex',
+        height: 'calc(60vh - 80px)', // Headerを考慮して調整
+        width: '100%',
+        overflow: 'hidden'
       }}>
-        <ClinicsListPanel clinics={clinicsData} />
+        <div style={{
+          width: '25%',
+          minWidth: '300px'
+        }}>
+          <ClinicsListPanel clinics={clinicsData} />
+        </div>
+        <div style={{
+          width: '75%',
+          flex: '1'
+        }}>
+          <MapPanel clinics={clinicsData} />
+        </div>
       </div>
-      <div style={{
-        width: '75%',
-        flex: '1'
-      }}>
-        <MapPanel clinics={clinicsData} />
-      </div>
+
+      {/* Clinics Grid Section */}
+      <ClinicsGridSection clinics={clinicsData} />
     </div>
   )
 }
