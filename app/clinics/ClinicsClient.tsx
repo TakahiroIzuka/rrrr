@@ -43,7 +43,7 @@ export default function ClinicsClient({ clinics }: ClinicsClientProps) {
         border: '1px solid #e5e7eb'
       }}>
         <p style={{ margin: 0, color: '#6b7280' }}>
-          登録件数: <strong style={{ color: '#111827' }}>{clinics.length}</strong>件
+          登録件数1: <strong style={{ color: '#111827' }}>{clinics.length}</strong>件
         </p>
       </div>
 

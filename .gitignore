@@ -85,6 +85,7 @@ coverage/
 
 # Supabase local development
 /supabase/.env
+/supabase/.temp
 /supabase/functions/.env
 
 # Claude Code (optional - uncomment if you want to keep it private)

@@ -40,12 +40,12 @@ export default function HomeClient({ clinics }: HomeClientProps) {
     <div className="flex flex-col w-full">
       {/* Map Section */}
       <div className="flex h-screen w-full overflow-hidden">
-        <div className="w-1/4 min-w-[300px]">
+        <div className="w-[400px] flex-shrink-0">
           <ClinicsListPanel
             clinics={selectedClinicId ? filteredClinics.filter(clinic => clinic.id === selectedClinicId) : filteredClinics}
           />
         </div>
-        <div className="w-3/4 flex-1 relative">
+        <div className="flex-1 relative">
           <MapPanel
             allClinics={clinics}
             filteredClinics={filteredClinics}
