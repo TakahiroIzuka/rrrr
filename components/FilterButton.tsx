@@ -17,13 +17,56 @@ interface Clinic {
 interface FilterButtonProps {
   clinics: Clinic[]
   onFilterChange: (filteredClinics: Clinic[]) => void
+  selectedPrefectures?: string[]
+  selectedGenres?: number[]
+  selectedRanking?: string
+  onPrefecturesChange?: (prefectures: string[]) => void
+  onGenresChange?: (genres: number[]) => void
+  onRankingChange?: (ranking: string) => void
 }
 
-export default function FilterButton({ clinics, onFilterChange }: FilterButtonProps) {
+export default function FilterButton({
+  clinics,
+  onFilterChange,
+  selectedPrefectures: externalPrefectures,
+  selectedGenres: externalGenres,
+  selectedRanking: externalRanking,
+  onPrefecturesChange,
+  onGenresChange,
+  onRankingChange
+}: FilterButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([])
-  const [selectedGenres, setSelectedGenres] = useState<number[]>([])
-  const [selectedRanking, setSelectedRanking] = useState<string>('')
+  const [internalPrefectures, setInternalPrefectures] = useState<string[]>([])
+  const [internalGenres, setInternalGenres] = useState<number[]>([])
+  const [internalRanking, setInternalRanking] = useState<string>('')
+
+  const selectedPrefectures = externalPrefectures !== undefined ? externalPrefectures : internalPrefectures
+  const selectedGenres = externalGenres !== undefined ? externalGenres : internalGenres
+  const selectedRanking = externalRanking !== undefined ? externalRanking : internalRanking
+
+  const setSelectedPrefectures = (value: string[]) => {
+    if (onPrefecturesChange) {
+      onPrefecturesChange(value)
+    } else {
+      setInternalPrefectures(value)
+    }
+  }
+
+  const setSelectedGenres = (value: number[]) => {
+    if (onGenresChange) {
+      onGenresChange(value)
+    } else {
+      setInternalGenres(value)
+    }
+  }
+
+  const setSelectedRanking = (value: string) => {
+    if (onRankingChange) {
+      onRankingChange(value)
+    } else {
+      setInternalRanking(value)
+    }
+  }
 
   // Extract unique prefectures and genres
   const uniquePrefectures = Array.from(new Set(clinics.map(clinic => clinic.prefecture))).sort()

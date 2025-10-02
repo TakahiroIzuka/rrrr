@@ -25,6 +25,9 @@ interface HomeClientProps {
 export default function HomeClient({ clinics }: HomeClientProps) {
   const [filteredClinics, setFilteredClinics] = useState<Clinic[]>(clinics)
   const [selectedClinicId, setSelectedClinicId] = useState<number | null>(null)
+  const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([])
+  const [selectedGenres, setSelectedGenres] = useState<number[]>([])
+  const [selectedRanking, setSelectedRanking] = useState<string>('')
 
   const handleFilterChange = useCallback((filtered: Clinic[]) => {
     setFilteredClinics(filtered)
@@ -52,12 +55,31 @@ export default function HomeClient({ clinics }: HomeClientProps) {
             onClinicSelect={handleClinicSelect}
           />
           {/* Filter Button Overlay on Map */}
-          <FilterButton clinics={clinics} onFilterChange={handleFilterChange} />
+          <FilterButton
+            clinics={clinics}
+            onFilterChange={handleFilterChange}
+            selectedPrefectures={selectedPrefectures}
+            selectedGenres={selectedGenres}
+            selectedRanking={selectedRanking}
+            onPrefecturesChange={setSelectedPrefectures}
+            onGenresChange={setSelectedGenres}
+            onRankingChange={setSelectedRanking}
+          />
         </div>
       </div>
 
       {/* Clinics Grid Section */}
-      <ClinicsGridSection clinics={filteredClinics} />
+      <ClinicsGridSection
+        clinics={filteredClinics}
+        allClinics={clinics}
+        selectedPrefectures={selectedPrefectures}
+        selectedGenres={selectedGenres}
+        selectedRanking={selectedRanking}
+        onPrefecturesChange={setSelectedPrefectures}
+        onGenresChange={setSelectedGenres}
+        onRankingChange={setSelectedRanking}
+        onFilterChange={handleFilterChange}
+      />
     </div>
   )
 }
