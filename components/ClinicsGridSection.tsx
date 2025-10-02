@@ -75,10 +75,14 @@ export default function ClinicsGridSection({ clinics }: ClinicsGridSectionProps)
           {/* Left Box - 3/4 width */}
           <div className="w-3/4 bg-white rounded-lg p-5">
             {/* Section Header */}
-            <div className="text-left mb-12">
+            <div className="text-left mb-6">
               <h2 className="text-xl font-bold text-gray-700 mb-4">
                 人気のクリニック5件はこちら
               </h2>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-1" style={{ backgroundColor: '#a3977d' }}></div>
+                <p className="text-l font-bold" style={{ color: '#a3977d', letterSpacing: '0.4rem' }}>Recommended Clinic</p>
+              </div>
             </div>
 
             {/* Clinics Grid */}
@@ -198,10 +202,14 @@ export default function ClinicsGridSection({ clinics }: ClinicsGridSectionProps)
           {/* Left Box - 3/4 width */}
           <div className="w-3/4 bg-white rounded-lg p-8">
             {/* Section Header */}
-            <div className="text-left mb-12">
+            <div className="text-left mb-6">
               <h2 className="text-xl font-bold text-gray-700 mb-4">
                 リストで絞り込み検索結果一覧はこちら
               </h2>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-1" style={{ backgroundColor: '#a3977d' }}></div>
+                <p className="text-l font-bold" style={{ color: '#a3977d', letterSpacing: '0.4rem' }}>List Search</p>
+              </div>
             </div>
 
             {/* Clinics Grid */}
