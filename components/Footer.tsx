@@ -8,7 +8,6 @@ export default function Footer() {
         <div className="mb-8">
           <button
             className="bg-indigo-500 text-white px-6 py-3 rounded-lg border-0 text-base font-semibold cursor-pointer transition-all duration-200 shadow-sm hover:bg-indigo-600 hover:-translate-y-0.5 hover:shadow-md"
-            style={{ fontFamily: "'Kosugi Maru', sans-serif" }}
             onClick={() => {
               // TODO: 掲載リクエストページへのリンクまたはフォーム表示
               alert('掲載リクエストフォームを実装予定です')

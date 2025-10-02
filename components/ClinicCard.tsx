@@ -23,6 +23,9 @@ interface ClinicCardProps {
 
 export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLeave }: ClinicCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const [startX, setStartX] = useState(0)
+  const [currentX, setCurrentX] = useState(0)
 
   // Function to get appropriate star image based on rating
   const getStarImage = (rating: number): string => {
@@ -60,11 +63,46 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
     setCurrentImageIndex(index)
   }
 
+  // Handle drag/swipe
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    setIsDragging(true)
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+    setStartX(clientX)
+    setCurrentX(clientX)
+  }
+
+  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging) return
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+    setCurrentX(clientX)
+  }
+
+  const handleDragEnd = () => {
+    if (!isDragging) return
+    setIsDragging(false)
+
+    const diff = startX - currentX
+    const threshold = 50 // minimum swipe distance
+
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0) {
+        // Swiped left, go to next image
+        handleNextImage()
+      } else {
+        // Swiped right, go to previous image
+        handlePrevImage()
+      }
+    }
+
+    setStartX(0)
+    setCurrentX(0)
+  }
+
   const clinicImages = getClinicImages()
 
   return (
     <div
-      className={`bg-white border border-gray-200 rounded-lg p-4 cursor-pointer transition-all duration-200 ease-in-out ${
+      className={`bg-white border border-gray-200 rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ease-in-out ${
         isHovered
           ? 'shadow-lg -translate-y-0.5'
           : 'shadow-sm hover:shadow-md'
@@ -73,13 +111,22 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
       onMouseLeave={onMouseLeave}
     >
       {/* Image Slider */}
-      <div className="mb-3">
+      <div>
         <div className="relative group">
-          <div className="w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
+          <div
+            className="w-full h-54 bg-gray-100 overflow-hidden select-none"
+            onMouseDown={handleDragStart}
+            onMouseMove={handleDragMove}
+            onMouseUp={handleDragEnd}
+            onMouseLeave={handleDragEnd}
+            onTouchStart={handleDragStart}
+            onTouchMove={handleDragMove}
+            onTouchEnd={handleDragEnd}
+          >
             <img
               src={clinicImages[currentImageIndex]}
               alt={`${clinic.name}の画像`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover pointer-events-none"
             />
           </div>
 
@@ -99,12 +146,12 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
         </div>
 
         {/* Indicators */}
-        <div className="flex justify-center gap-1 mt-2">
+        <div className="flex justify-center gap-2 py-2 bg-white">
           {clinicImages.map((_, index) => (
             <button
               key={index}
               onClick={() => handleIndicatorClick(index)}
-              className={`w-2 h-2 rounded-full transition-colors ${
+              className={`w-1.5 h-1.5 rounded-full transition-colors ${
                 currentImageIndex === index
                   ? 'bg-[#a59878]'
                   : 'bg-gray-300'
@@ -114,14 +161,17 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
         </div>
       </div>
 
-      <h3 className="m-0 mb-3 text-gray-900 text-base font-semibold leading-snug">
+      <div className="px-4 pb-4">
+        <h3 className="m-0 mb-3 pt-3 text-gray-900 text-base font-semibold leading-snug">
         {clinic.name}
       </h3>
 
-      <div className="flex items-center mb-2 gap-1.5">
-        <span className="text-sm text-gray-500">📍</span>
-        <span className="text-gray-600 text-sm">
-          {clinic.prefecture} {clinic.area}
+      <div className="flex items-center mb-2 gap-1.5 pb-2 border-b border-[#a59878]">
+        <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
+          {clinic.prefecture}
+        </span>
+        <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
+          {clinic.area}
         </span>
       </div>
 
@@ -157,9 +207,10 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
         </div>
       )}
 
-      <button className="w-full py-2 px-4 bg-[#a59878] text-white text-sm font-medium rounded-md hover:bg-opacity-90 transition-colors">
-        基本情報とクチコミ詳細はこちら
-      </button>
+        <button className="w-full py-2 px-4 bg-[#a59878] text-white text-sm font-medium rounded-md hover:bg-opacity-90 transition-colors">
+          基本情報とクチコミ詳細はこちら
+        </button>
+      </div>
     </div>
   )
 }

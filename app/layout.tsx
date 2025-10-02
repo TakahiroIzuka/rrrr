@@ -39,7 +39,8 @@ export default function RootLayout({
         padding: 0,
         minHeight: '100vh',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        fontFamily: 'Kosugi Maru, sans-serif'
       }}>
         <ThemeProvider
           attribute="class"

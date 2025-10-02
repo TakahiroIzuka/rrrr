@@ -5,7 +5,7 @@ export default function Header() {
     <header className="bg-white text-gray-700 px-8 py-8 shadow-md relative z-[1000] border-b border-gray-200">
       <div className="flex justify-between items-center max-w-6xl mx-auto">
         <div className="flex items-center gap-4">
-          <h1 className="m-0 text-2xl font-bold text-gray-700" style={{ fontFamily: "'Kosugi Maru', sans-serif" }}>
+          <h1 className="m-0 text-2xl font-bold text-gray-700">
             🏥 メディカルクチコミランキング
           </h1>
         </div>

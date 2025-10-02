@@ -161,7 +161,7 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
             font-size: 0.6rem;
             width: 42px;
             text-align: center;
-            font-family: 'Kosugi Maru', sans-serif;
+            font-family: Kosugi Maru, sans-serif;
             color: #a69a7e !important;
             z-index: 1;
             margin: 0;
@@ -176,7 +176,7 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
             font-size: 1.0rem;
             width: 42px;
             text-align: center;
-            font-family: 'Kosugi Maru', sans-serif;
+            font-family: Kosugi Maru, sans-serif;
             color: #a69a7e !important;
             z-index: 1;
             margin: 0;

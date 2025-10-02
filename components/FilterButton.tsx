@@ -103,8 +103,7 @@ export default function FilterButton({ clinics, onFilterChange }: FilterButtonPr
         onClick={toggleModal}
         className="w-full px-4 py-3 rounded-lg shadow-lg border-0 font-medium text-base transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2 text-white"
         style={{
-          backgroundColor: '#a3977d',
-          fontFamily: "'Kosugi Maru', sans-serif"
+          backgroundColor: '#a3977d'
         }}
       >
         マップで絞り込み検索
