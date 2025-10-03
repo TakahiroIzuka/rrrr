@@ -23,10 +23,10 @@ export default function ClinicsListPanel({ clinics }: ClinicsListPanelProps) {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
   return (
-    <div className="h-full overflow-auto p-5 bg-gray-50 border-r border-gray-200">
-      <div className="bg-white py-4 px-4 rounded-lg mb-5 border border-gray-200">
-        <p className="m-0 text-gray-500 text-sm">
-          登録件数2: <strong className="text-gray-900">{clinics.length}</strong>件
+    <div className="h-full overflow-auto p-5 border-r border-gray-200">
+      <div className="bg-white py-2 px-2 mb-5" style={{ marginLeft: '20px', marginRight: '20px' }}>
+        <p className="m-0 text-black-500 text-sm text-center">
+          該当するクリニック <strong className="text-lg" style={{ color: '#a3977d' }}>{clinics.length}</strong> 件
         </p>
       </div>
 

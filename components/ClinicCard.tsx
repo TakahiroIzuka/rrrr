@@ -104,8 +104,8 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
     <div
       className={`bg-white border border-gray-200 rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ease-in-out ${
         isHovered
-          ? 'shadow-lg -translate-y-0.5'
-          : 'shadow-sm hover:shadow-md'
+          ? 'shadow-xl -translate-y-0.5'
+          : 'shadow-md hover:shadow-lg'
       }`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

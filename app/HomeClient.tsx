@@ -43,7 +43,7 @@ export default function HomeClient({ clinics }: HomeClientProps) {
     <div className="flex flex-col w-full">
       {/* Map Section */}
       <div className="flex h-screen w-full overflow-hidden">
-        <div className="w-[400px] flex-shrink-0">
+        <div className="w-[400px] flex-shrink-0" style={{ backgroundColor: '#fff9f0'}}>
           <ClinicsListPanel
             clinics={selectedClinicId ? filteredClinics.filter(clinic => clinic.id === selectedClinicId) : filteredClinics}
           />
