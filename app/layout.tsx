@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Header from "@/components/Header";
+import MarqueeText from "@/components/MarqueeText";
 import Footer from "@/components/Footer";
 import "./globals.css";
 
@@ -49,6 +50,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Header />
+          <MarqueeText />
           <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             {children}
           </main>
