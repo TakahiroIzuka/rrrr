@@ -151,12 +151,12 @@ export default function ClinicsGridSection({
   }
 
   return (
-    <section className="py-16 px-8 border-t border-slate-200" style={{ backgroundColor: '#F1F1F1' }}>
-      <div className="mx-auto space-y-8">
+    <section className="pt-5 pb-10 px-5 border-t border-slate-200" style={{ backgroundColor: '#F1F1F1' }}>
+      <div className="mx-auto space-y-12">
         {/* First Section */}
-        <div className="flex gap-8 items-start">
+        <div className="flex gap-6 items-start">
           {/* Left Box - 3/4 width */}
-          <div className="w-3/4 bg-white rounded-lg p-5">
+          <div className="w-3/4 bg-white rounded-lg p-5 shadow-md">
             {/* Section Header */}
             <div className="text-left mb-6">
               <h2 className="text-xl font-bold text-gray-700 mb-4">
@@ -183,7 +183,7 @@ export default function ClinicsGridSection({
           </div>
 
           {/* Right Box - 1/4 width */}
-          <div className="w-1/4 bg-white rounded-lg p-5">
+          <div className="w-1/4 bg-white rounded-lg p-5 shadow-md">
             {/* Image Space */}
             <div className="w-full h-24 bg-white rounded-lg mb-3 flex items-center justify-center">
               <img src="/mrr/pin-profile.png" alt="プロフィール" className="w-[95px] h-[95px] object-contain" />
@@ -210,9 +210,9 @@ export default function ClinicsGridSection({
         </div>
 
         {/* Second Section */}
-        <div className="flex gap-8 items-start">
+        <div className="flex gap-6 items-start">
           {/* Left Box - 3/4 width */}
-          <div className="w-3/4 bg-white rounded-lg p-5">
+          <div className="w-3/4 bg-white rounded-lg p-5 shadow-md">
             {/* Section Header */}
             <div className="text-left mb-6">
               <h2 className="text-xl font-bold text-gray-700 mb-4">
@@ -239,7 +239,7 @@ export default function ClinicsGridSection({
           </div>
 
           {/* Right Box - 1/4 width */}
-          <div className="w-1/4 bg-white rounded-lg p-5">
+          <div className="w-1/4 bg-white rounded-lg p-5 shadow-md">
             {/* Title */}
             <h3 className="text-lg font-bold text-gray-700 mb-2 text-center">
               リストで絞り込み検索
