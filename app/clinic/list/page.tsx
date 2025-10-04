@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
+import ClinicList from '@/components/ClinicList'
 
 interface Clinic {
   id: number
@@ -35,6 +36,14 @@ export default async function ClinicListPage() {
   const clinicsData = clinics || []
 
   return (
-    <div className="container mx-auto px-4 py-8"></div>
+    <div className="container mx-auto px-4 py-8">
+      <ClinicList
+        clinics={clinicsData}
+        title="クリニックはこちら"
+        subtitle="Clinic List"
+        width="full"
+        gridCols="5"
+      />
+    </div>
   )
 }
