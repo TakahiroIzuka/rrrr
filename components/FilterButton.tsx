@@ -144,32 +144,28 @@ export default function FilterButton({
       {/* Filter Button */}
       <button
         onClick={toggleModal}
-        className="w-full px-4 py-3 rounded-lg shadow-lg border-0 font-medium text-base transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2 text-white"
+        className="w-full px-4 py-3 rounded-lg shadow-lg border-0 font-bold text-base transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2 text-white relative"
         style={{
           backgroundColor: '#a3977d'
         }}
       >
         マップで絞り込み検索
-        <span className="text-xs text-gray-200">
-          {(selectedPrefectures.length > 0 || selectedGenres.length > 0 || selectedRanking) &&
-            `(${selectedPrefectures.length + selectedGenres.length + (selectedRanking ? 1 : 0)}件の条件)`
-          }
-        </span>
+        {!isOpen && (
+          <span className="absolute right-3 flex items-center justify-center w-6 h-6 bg-white rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#a3977d]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </span>
+        )}
       </button>
 
       {/* Filter Modal */}
-      {isOpen && (
-        <div className="mt-2 bg-white/70 rounded-lg shadow-xl border border-gray-200 w-full">
+      <div
+        className={`mt-2 bg-white/70 rounded-lg shadow-xl border border-gray-200 w-full origin-top transition-all duration-300 ease-in-out ${
+          isOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0 pointer-events-none'
+        }`}
+      >
           <div className="p-4">
-            {/* Header with Clear Button */}
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={clearFilters}
-                className="text-sm text-indigo-600 hover:text-indigo-800 font-medium px-3 py-1 rounded-md hover:bg-gray-50"
-              >
-                すべてクリア
-              </button>
-            </div>
 
             {/* Prefecture Filter */}
             <div className="mb-4">
@@ -237,31 +233,8 @@ export default function FilterButton({
               </div>
             </div>
 
-            {/* Filter Summary */}
-            {(selectedPrefectures.length > 0 || selectedGenres.length > 0 || selectedRanking) && (
-              <div className="pt-3 mt-3 border-t border-gray-200">
-                <div className="flex flex-wrap gap-2">
-                  {selectedPrefectures.map(pref => (
-                    <span key={pref} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
-                      📍 {pref}
-                    </span>
-                  ))}
-                  {selectedGenres.map(genreId => (
-                    <span key={genreId} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
-                      🏥 {genreMap[genreId as keyof typeof genreMap]}
-                    </span>
-                  ))}
-                  {selectedRanking && (
-                    <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full font-medium">
-                      🏆 {selectedRanking}
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
-        </div>
-      )}
+      </div>
     </div>
   )
 }
