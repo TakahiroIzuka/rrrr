@@ -140,7 +140,7 @@ export default function FilterButton({
   }
 
   return (
-    <div className="absolute top-4 left-4 right-4 z-[1001]">
+    <div className="absolute top-4 left-4 right-4 z-[999]">
       {/* Filter Button */}
       <button
         onClick={toggleModal}
