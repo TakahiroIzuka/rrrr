@@ -151,10 +151,120 @@ export default function ClinicsGridSection({
   }
 
   return (
-    <section className="pt-5 pb-10 px-5 border-t border-slate-200" style={{ backgroundColor: '#F1F1F1' }}>
-      <div className="mx-auto space-y-12">
-        {/* First Section */}
-        <div className="flex gap-6 items-start">
+    <section className="pt-5 pb-10 px-[5px] md:px-5 border-t border-slate-200" style={{ backgroundColor: '#F1F1F1' }}>
+      <div className="mx-auto space-y-6">
+        {/* メディカルクチコミランキング（スマホで表示） */}
+        <div className="md:hidden w-full bg-white rounded-2xl md:rounded-lg px-[5px] py-5 shadow-none md:shadow-md">
+          {/* Image Space */}
+          <div className="w-full h-24 bg-white rounded-lg mb-3 flex items-center justify-center">
+            <img src="/mrr/pin-profile.png" alt="プロフィール" className="w-[95px] h-[95px] object-contain" />
+          </div>
+
+          {/* Title */}
+          <h3 className="text-base font-bold text-gray-700 mb-3 text-center">
+            メディカルクチコミランキング
+          </h3>
+
+          {/* Description */}
+          <p className="text-xs text-gray-600 mb-4 leading-relaxed">
+            メディカルクチコミランキングの評価基準は、Googleマップのクチコミ情報の数値（評価平均×評価人数=Ｘ）を算出して、ランキング順位を表示しております。 ※Googleマップのクチコミ情報は、ページを読み込む度に最新情報が同期されます。
+          </p>
+
+          {/* Button */}
+          <button className="w-full py-3 px-4 bg-[#a59878] text-white text-xs font-bold rounded-full hover:bg-[#666] transition-all duration-300 group flex items-center justify-center gap-2 relative">
+            <span className="transition-transform duration-300 group-hover:scale-x-105 inline-block">クリニックの掲載リクエストはこちら</span>
+            <span className="flex items-center justify-center w-4 h-4 bg-white rounded-full transition-all duration-300 group-hover:translate-x-2 flex-shrink-0">
+              <span className="text-[#a59878] font-bold text-xl leading-none inline-block" style={{ transform: 'translate(0.5px, -2px)' }}>›</span>
+            </span>
+          </button>
+        </div>
+
+        {/* リストで絞り込み検索（スマホで表示） */}
+        <div className="md:hidden w-full bg-white rounded-2xl md:rounded-lg px-[5px] py-5 shadow-none md:shadow-md">
+          {/* Title */}
+          <h3 className="text-lg font-bold text-gray-700 mb-2 text-center">
+            リストで絞り込み検索
+          </h3>
+          <div className="flex justify-center mb-4">
+            <div className="w-1/6 h-1 rounded-sm" style={{ backgroundColor: '#a69a7e' }}></div>
+          </div>
+
+          {/* Clinic Count */}
+          <div className="mb-4 bg-white rounded-lg">
+            <p className="text-sm text-gray-600 text-center">
+              該当する店舗及び施設<strong className="text-lg mx-1" style={{ color: '#a69a7e' }}>{clinics.length}</strong>件
+            </p>
+          </div>
+
+          {/* Prefecture Filter */}
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 px-2 py-1 rounded" style={{ backgroundColor: '#eae3db' }}>
+              都道府県を選択
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {uniquePrefectures.map((prefecture) => (
+                <label key={prefecture} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white">
+                  <input
+                    type="checkbox"
+                    checked={selectedPrefectures.includes(prefecture)}
+                    onChange={() => handlePrefectureChange(prefecture)}
+                    className="w-3 h-3 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                  />
+                  <span className="text-gray-700 text-xs font-medium">{prefecture}</span>
+                  <span className="text-xs text-gray-500">
+                    ({allClinics.filter(c => c.prefecture === prefecture).length})
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Genre Filter */}
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 px-2 py-1 rounded" style={{ backgroundColor: '#eae3db' }}>
+              ジャンルを選択
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {uniqueGenres.map((genreId) => (
+                <label key={genreId} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white">
+                  <input
+                    type="checkbox"
+                    checked={selectedGenres.includes(genreId)}
+                    onChange={() => handleGenreChange(genreId)}
+                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                  />
+                  <span className="text-xs text-gray-700 font-medium">{genreMap[genreId as keyof typeof genreMap]}</span>
+                  <span className="text-xs text-gray-500">
+                    ({allClinics.filter(c => c.genre_id === genreId).length})
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Google Review Ranking Filter */}
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 px-2 py-1 rounded" style={{ backgroundColor: '#eae3db' }}>
+              Googleクチコミランキング
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {rankingOptions.map((ranking) => (
+                <label key={ranking} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white">
+                  <input
+                    type="checkbox"
+                    checked={selectedRanking === ranking}
+                    onChange={() => handleRankingChange(ranking)}
+                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                  />
+                  <span className="text-xs text-gray-700 font-medium">{ranking}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* First Section - PC only */}
+        <div className="hidden md:flex gap-6 items-start">
           {/* Left Box - 3/4 width */}
           <div className="w-3/4 bg-white rounded-lg p-5 shadow-md">
             {/* Section Header */}
@@ -210,12 +320,12 @@ export default function ClinicsGridSection({
         </div>
 
         {/* Second Section */}
-        <div className="flex gap-6 items-start">
+        <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* Left Box - 3/4 width */}
-          <div className="w-3/4 bg-white rounded-lg p-5 shadow-md">
+          <div className="w-full md:w-3/4 bg-white rounded-2xl md:rounded-lg px-[5px] md:p-5 py-5 shadow-none md:shadow-md">
             {/* Section Header */}
             <div className="text-left mb-6">
-              <h2 className="text-xl font-bold text-gray-700 mb-4">
+              <h2 className="text-base md:text-xl font-bold text-gray-700 mb-4">
                 リストで絞り込み検索結果一覧はこちら
               </h2>
               <div className="flex items-center gap-3">
@@ -225,7 +335,7 @@ export default function ClinicsGridSection({
             </div>
 
             {/* Clinics Grid */}
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-x-[5px] gap-y-4 md:gap-4">
               {clinics.map((clinic) => (
                 <ClinicCardLite
                   key={`second-${clinic.id}`}
@@ -238,8 +348,8 @@ export default function ClinicsGridSection({
             </div>
           </div>
 
-          {/* Right Box - 1/4 width */}
-          <div className="w-1/4 bg-white rounded-lg p-5 shadow-md">
+          {/* Right Box - 1/4 width - PC only */}
+          <div className="hidden md:block w-1/4 bg-white rounded-lg p-5 shadow-md">
             {/* Title */}
             <h3 className="text-lg font-bold text-gray-700 mb-2 text-center">
               リストで絞り込み検索

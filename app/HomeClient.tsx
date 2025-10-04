@@ -42,13 +42,15 @@ export default function HomeClient({ clinics }: HomeClientProps) {
   return (
     <div className="flex flex-col w-full">
       {/* Map Section */}
-      <div className="flex h-screen w-full overflow-hidden">
-        <div className="w-[400px] flex-shrink-0" style={{ backgroundColor: '#fff9f0'}}>
+      <div className="flex flex-col md:flex-row w-full overflow-hidden" style={{ height: '125vh' }}>
+        {/* Sidebar Below Map on Mobile, Left on PC */}
+        <div className="w-full md:w-[400px] flex-shrink-0 h-1/2 md:h-full order-2 md:order-1" style={{ backgroundColor: '#fff9f0'}}>
           <ClinicsListPanel
             clinics={selectedClinicId ? filteredClinics.filter(clinic => clinic.id === selectedClinicId) : filteredClinics}
           />
         </div>
-        <div className="flex-1 relative">
+        {/* Map Full Width on Mobile, Right on PC */}
+        <div className="w-full md:flex-1 relative h-1/2 md:h-full order-1 md:order-2">
           <MapPanel
             allClinics={clinics}
             filteredClinics={filteredClinics}

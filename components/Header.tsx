@@ -6,6 +6,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,17 +43,32 @@ export default function Header() {
   return (
     <>
       {/* 通常のヘッダー（スクロール前） */}
-      <header className="bg-white text-gray-700 h-24 relative z-[1000] border-gray-200" style={{ borderTop: '5px solid #a3977d' }}>
-      <div className="flex justify-between items-center h-full px-8">
+      <header className="bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-24 relative z-[1000]" style={{ borderTop: '0px' }}>
+      <div className="flex justify-between items-center h-full px-4 md:px-8">
         <div className="flex items-center gap-4">
+          <img
+            src="/mrr/logo_header_sp.png"
+            alt="メディカルクチコミランキング"
+            className="h-10 md:hidden"
+          />
           <img
             src="/mrr/logo_header.png"
             alt="メディカルクチコミランキング"
-            className="h-16"
+            className="h-16 hidden md:block"
           />
         </div>
 
-        <nav className="flex gap-4 items-end">
+        {/* ハンバーガーメニュー（スマホ） */}
+        <button
+          className="md:hidden flex flex-col items-start justify-center gap-1.5 w-10 h-10 bg-white rounded-md"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          <span className="w-6 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
+          <span className="w-5 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
+          <span className="w-4 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
+        </button>
+
+        <nav className="hidden md:flex gap-4 items-end">
           <button className="bg-white text-[#acd1e6] px-2.5 py-1 rounded-md font-medium text-xs transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm hover:text-[#d4e8f0] flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1">
             <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
             <span className="pb-1 border-b-2 border-[#acd1e6] group-hover:border-[#d4e8f0] transition-colors duration-200 relative z-10">マップで絞り込み検索</span>
@@ -77,21 +93,36 @@ export default function Header() {
       {/* 固定ヘッダー（スクロール後） */}
       {isScrolled && (
         <header
-          className={`bg-white text-gray-700 h-24 fixed top-0 left-0 right-0 z-[1000] border-gray-200 transition-transform duration-700 ease-out ${
+          className={`bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-24 fixed top-0 left-0 right-0 z-[1000] transition-transform duration-700 ease-out ${
             isVisible ? 'translate-y-0' : '-translate-y-full'
           }`}
-          style={{ borderTop: '5px solid #a3977d' }}
+          style={{ borderTop: '0px' }}
         >
-          <div className="flex justify-between items-center h-full px-8">
+          <div className="flex justify-between items-center h-full px-4 md:px-8">
             <div className="flex items-center gap-4">
+              <img
+                src="/mrr/logo_header_sp.png"
+                alt="メディカルクチコミランキング"
+                className="h-10 md:hidden"
+              />
               <img
                 src="/mrr/logo_header.png"
                 alt="メディカルクチコミランキング"
-                className="h-16"
+                className="h-16 hidden md:block"
               />
             </div>
 
-            <nav className="flex gap-4 items-end">
+            {/* ハンバーガーメニュー（スマホ） */}
+            <button
+              className="md:hidden flex flex-col items-start justify-center gap-1.5 w-10 h-10 bg-white rounded-md"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              <span className="w-6 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
+              <span className="w-5 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
+              <span className="w-4 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
+            </button>
+
+            <nav className="hidden md:flex gap-4 items-end">
               <button className="bg-white text-[#acd1e6] px-2.5 py-1 rounded-md font-medium text-xs transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm hover:text-[#d4e8f0] flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1">
                 <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
                 <span className="pb-1 border-b-2 border-[#acd1e6] group-hover:border-[#d4e8f0] transition-colors duration-200 relative z-10">マップで絞り込み検索</span>
