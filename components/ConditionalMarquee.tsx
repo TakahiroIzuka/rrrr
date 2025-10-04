@@ -6,14 +6,14 @@ import MarqueeText from './MarqueeText'
 export default function ConditionalMarquee() {
   const pathname = usePathname()
 
-  // /clinic/list では MarqueeText を表示しない
-  if (pathname === '/clinic/list') {
-    return null
+  // /clinic の場合のみ MarqueeText を表示
+  if (pathname === '/clinic') {
+    return (
+      <div className="hidden md:block">
+        <MarqueeText />
+      </div>
+    )
   }
 
-  return (
-    <div className="hidden md:block">
-      <MarqueeText />
-    </div>
-  )
+  return null
 }
