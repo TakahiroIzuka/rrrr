@@ -73,13 +73,6 @@ export default function ClinicsGridSection({
     applyFilters(selectedPrefectures, selectedGenres, newRanking)
   }
 
-  const handleCheckboxClick = (e: React.MouseEvent<HTMLInputElement>) => {
-    e.stopPropagation()
-  }
-
-  const handleLabelClick = (e: React.MouseEvent<HTMLLabelElement>) => {
-    e.preventDefault()
-  }
 
   const applyFilters = useCallback((prefectures: string[], genres: number[], ranking: string) => {
     let filtered = allClinics
@@ -217,7 +210,7 @@ export default function ClinicsGridSection({
         </div>
 
         {/* Second Section */}
-        <div className="flex gap-8">
+        <div className="flex gap-8 items-start">
           {/* Left Box - 3/4 width */}
           <div className="w-3/4 bg-white rounded-lg p-5">
             {/* Section Header */}
@@ -248,25 +241,18 @@ export default function ClinicsGridSection({
           {/* Right Box - 1/4 width */}
           <div className="w-1/4 bg-white rounded-lg p-5">
             {/* Title */}
-            <h3 className="text-lg font-bold text-gray-700 mb-4">
+            <h3 className="text-lg font-bold text-gray-700 mb-2 text-center">
               リストで絞り込み検索
             </h3>
-
-            {/* Clinic Count */}
-            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600">
-                登録件数2: <strong className="text-gray-900">{clinics.length}</strong>件
-              </p>
+            <div className="flex justify-center mb-4">
+              <div className="w-1/6 h-1 rounded-sm" style={{ backgroundColor: '#a69a7e' }}></div>
             </div>
 
-            {/* Clear Button */}
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={clearFilters}
-                className="text-sm text-indigo-600 hover:text-indigo-800 font-medium px-3 py-1 rounded-md hover:bg-gray-50"
-              >
-                すべてクリア
-              </button>
+            {/* Clinic Count */}
+            <div className="mb-4 bg-white rounded-lg">
+              <p className="text-sm text-gray-600 text-center">
+                該当する店舗及び施設<strong className="text-lg mx-1" style={{ color: '#a69a7e' }}>{clinics.length}</strong>件
+              </p>
             </div>
 
             {/* Prefecture Filter */}
@@ -276,12 +262,11 @@ export default function ClinicsGridSection({
               </h4>
               <div className="flex flex-wrap gap-2">
                 {uniquePrefectures.map((prefecture) => (
-                  <label key={prefecture} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white" onClick={handleLabelClick}>
+                  <label key={prefecture} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white">
                     <input
                       type="checkbox"
                       checked={selectedPrefectures.includes(prefecture)}
                       onChange={() => handlePrefectureChange(prefecture)}
-                      onClick={handleCheckboxClick}
                       className="w-3 h-3 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                     />
                     <span className="text-gray-700 text-xs font-medium">{prefecture}</span>
@@ -300,12 +285,11 @@ export default function ClinicsGridSection({
               </h4>
               <div className="flex flex-wrap gap-2">
                 {uniqueGenres.map((genreId) => (
-                  <label key={genreId} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white" onClick={handleLabelClick}>
+                  <label key={genreId} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white">
                     <input
                       type="checkbox"
                       checked={selectedGenres.includes(genreId)}
                       onChange={() => handleGenreChange(genreId)}
-                      onClick={handleCheckboxClick}
                       className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                     />
                     <span className="text-xs text-gray-700 font-medium">{genreMap[genreId as keyof typeof genreMap]}</span>
@@ -324,12 +308,11 @@ export default function ClinicsGridSection({
               </h4>
               <div className="flex flex-wrap gap-2">
                 {rankingOptions.map((ranking) => (
-                  <label key={ranking} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white" onClick={handleLabelClick}>
+                  <label key={ranking} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white">
                     <input
                       type="checkbox"
                       checked={selectedRanking === ranking}
                       onChange={() => handleRankingChange(ranking)}
-                      onClick={handleCheckboxClick}
                       className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                     />
                     <span className="text-xs text-gray-700 font-medium">{ranking}</span>
