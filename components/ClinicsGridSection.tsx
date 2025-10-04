@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import ClinicCardLite from './ClinicCardLite'
+import ClinicList from './ClinicList'
 
 interface Clinic {
   id: number
@@ -266,31 +267,13 @@ export default function ClinicsGridSection({
         {/* First Section - PC only */}
         <div className="hidden md:flex gap-6 items-start">
           {/* Left Box - 3/4 width */}
-          <div className="w-3/4 bg-white rounded-lg p-5 shadow-md">
-            {/* Section Header */}
-            <div className="text-left mb-6">
-              <h2 className="text-xl font-bold text-gray-700 mb-4">
-                人気のクリニック5件はこちら
-              </h2>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-1" style={{ backgroundColor: '#a3977d' }}></div>
-                <p className="text-l font-bold" style={{ color: '#a3977d', letterSpacing: '0.4rem' }}>Recommended Clinic</p>
-              </div>
-            </div>
-
-            {/* Clinics Grid */}
-            <div className="grid grid-cols-5 gap-4">
-              {clinics.slice(0, 5).map((clinic) => (
-                <ClinicCardLite
-                  key={clinic.id}
-                  clinic={clinic}
-                  isHovered={hoveredCard === clinic.id}
-                  onMouseEnter={() => setHoveredCard(clinic.id)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                />
-              ))}
-            </div>
-          </div>
+          <ClinicList
+            clinics={clinics.slice(0, 5)}
+            title="人気のクリニック5件はこちら"
+            subtitle="Recommended Clinic"
+            width="3/4"
+            gridCols="5"
+          />
 
           {/* Right Box - 1/4 width */}
           <div className="w-1/4 bg-white rounded-lg p-5 shadow-md">
@@ -322,31 +305,13 @@ export default function ClinicsGridSection({
         {/* Second Section */}
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* Left Box - 3/4 width */}
-          <div className="w-full md:w-3/4 bg-white rounded-2xl md:rounded-lg px-[5px] md:p-5 py-5 shadow-none md:shadow-md">
-            {/* Section Header */}
-            <div className="text-left mb-6">
-              <h2 className="text-base md:text-xl font-bold text-gray-700 mb-4">
-                リストで絞り込み検索結果一覧はこちら
-              </h2>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-1" style={{ backgroundColor: '#a3977d' }}></div>
-                <p className="text-l font-bold" style={{ color: '#a3977d', letterSpacing: '0.4rem' }}>List Search</p>
-              </div>
-            </div>
-
-            {/* Clinics Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-x-[5px] gap-y-4 md:gap-4">
-              {clinics.map((clinic) => (
-                <ClinicCardLite
-                  key={`second-${clinic.id}`}
-                  clinic={clinic}
-                  isHovered={hoveredCard === clinic.id}
-                  onMouseEnter={() => setHoveredCard(clinic.id)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                />
-              ))}
-            </div>
-          </div>
+          <ClinicList
+            clinics={clinics}
+            title="リストで絞り込み検索結果一覧はこちら"
+            subtitle="List Search"
+            width="3/4"
+            gridCols="2"
+          />
 
           {/* Right Box - 1/4 width - PC only */}
           <div className="hidden md:block w-1/4 bg-white rounded-lg p-5 shadow-md">
