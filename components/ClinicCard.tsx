@@ -130,6 +130,13 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
             />
           </div>
 
+          {/* HP Button */}
+          <button
+            className="absolute top-1 right-1 bg-[#a59878] hover:bg-opacity-90 text-white text-[10px] px-2 py-1 rounded-md transition-colors"
+          >
+            HPはこちら
+          </button>
+
           {/* Navigation buttons */}
           <button
             onClick={handlePrevImage}
@@ -162,7 +169,7 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
       </div>
 
       <div className="px-4 pb-4">
-        <h3 className="m-0 mb-3 pt-3 text-gray-900 text-base font-semibold leading-snug">
+        <h3 className="m-0 mb-3 pt-3 text-gray-900 text-xl font-semibold leading-snug" style={{ fontFamily: 'Kosugi Maru, sans-serif' }}>
         {clinic.name}
       </h3>
 
@@ -207,8 +214,11 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
         </div>
       )}
 
-        <button className="w-full py-2 px-4 bg-[#a59878] text-white text-sm font-medium rounded-md hover:bg-opacity-90 transition-colors">
+        <button className="w-full py-2 px-4 bg-[#a59878] text-white text-sm font-bold rounded-md hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2">
           基本情報とクチコミ詳細はこちら
+          <span className="flex items-center justify-center w-4 h-4 bg-white rounded-full" style={{ transform: 'translateY(0px)' }}>
+            <span className="text-[#a59878] font-bold text-xl leading-none" style={{ transform: 'translate(0.5px, -2px)' }}>›</span>
+          </span>
         </button>
       </div>
     </div>
