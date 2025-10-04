@@ -102,7 +102,7 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
 
   return (
     <div
-      className={`bg-white border border-gray-200 rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ease-in-out ${
+      className={`bg-white border border-white rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ease-in-out ${
         isHovered
           ? 'shadow-xl -translate-y-0.5'
           : 'shadow-md hover:shadow-lg'
@@ -132,9 +132,12 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
 
           {/* HP Button */}
           <button
-            className="absolute top-1 right-1 bg-[#a59878] hover:bg-opacity-90 text-white text-[10px] px-2 py-1 rounded-md transition-colors"
+            className="absolute top-1 right-1 bg-[#a59878] hover:bg-opacity-90 text-white text-[10px] px-2 py-1 rounded-md transition-colors flex items-center gap-1"
           >
             HPはこちら
+            <span className="flex items-center justify-center w-3 h-3 bg-white rounded-full">
+              <span className="text-[#a59878] font-bold text-sm leading-none" style={{ transform: 'translate(0.5px, -1px)' }}>›</span>
+            </span>
           </button>
 
           {/* Navigation buttons */}
@@ -185,15 +188,20 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
       {clinic.star !== null && (
         <div className="mb-3">
           <div className="flex items-center gap-1.5 mb-1">
-            <span className="text-gray-500 text-xs">クチコミ評価</span>
+            <img
+              src="/common/ranking-icon.png"
+              alt="ランキング"
+              className="w-4 h-4"
+            />
+            <span className="text-[#a69a7e] text-xs">クチコミ評価</span>
             <img
               src={getStarImage(clinic.star)}
               alt={`${clinic.star}星評価`}
               className="w-16 h-3"
             />
           </div>
-          <div className="text-gray-500 text-xs">
-            評価平均<span className="text-amber-500 font-semibold">{clinic.star}</span>/評価人数<span className="text-gray-900 font-semibold">{clinic.user_review_count}</span>人
+          <div className="text-black text-xs">
+            評価平均 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.star}</span>/評価人数 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.user_review_count}</span><span className="text-[#a69a7e] font-normal text-2xl">人</span>
           </div>
         </div>
       )}
@@ -201,7 +209,12 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
       {clinic.star === null && clinic.user_review_count === 0 && (
         <div className="mb-3">
           <div className="flex items-center gap-1.5 mb-1">
-            <span className="text-gray-500 text-xs">クチコミ評価</span>
+            <img
+              src="/common/ranking-icon.png"
+              alt="ランキング"
+              className="w-4 h-4"
+            />
+            <span className="text-[#a69a7e] text-xs">クチコミ評価</span>
             <img
               src="/common/star_0.5.png"
               alt="評価なし"
@@ -214,10 +227,13 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
         </div>
       )}
 
-        <button className="w-full py-2 px-4 bg-[#a59878] text-white text-sm font-bold rounded-md hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2">
-          基本情報とクチコミ詳細はこちら
-          <span className="flex items-center justify-center w-4 h-4 bg-white rounded-full" style={{ transform: 'translateY(0px)' }}>
-            <span className="text-[#a59878] font-bold text-xl leading-none" style={{ transform: 'translate(0.5px, -2px)' }}>›</span>
+        <button className="w-full py-2.5 px-4 bg-[#a59878] text-white text-sm font-bold rounded-md hover:bg-black transition-all duration-300 group relative overflow-visible">
+          <span className="invisible">基本情報とクチコミ詳細はこちら</span>
+          <span className="absolute inset-0 flex items-center justify-center gap-2 -translate-x-3">
+            <span className="transition-transform duration-300 group-hover:scale-x-110 inline-block">基本情報とクチコミ詳細はこちら</span>
+          </span>
+          <span className="absolute right-10 top-1/2 -translate-y-1/2 flex items-center justify-center w-4 h-4 bg-white rounded-full transition-all duration-300 group-hover:translate-x-2">
+            <span className="text-[#a59878] font-bold text-xl leading-none inline-block" style={{ transform: 'translate(0.5px, -2px)' }}>›</span>
           </span>
         </button>
       </div>
