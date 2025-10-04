@@ -113,24 +113,24 @@ export default function ClinicsGridSection({
 
   // Function to get appropriate star image based on rating
   const getStarImage = (rating: number): string => {
-    if (rating === 0) return '/images/star_0.5.png'
-    if (rating <= 1.25) return '/images/star_1.0.png'
-    if (rating <= 1.75) return '/images/star_1.5.png'
-    if (rating <= 2.25) return '/images/star_2.0.png'
-    if (rating <= 2.75) return '/images/star_2.5.png'
-    if (rating <= 3.25) return '/images/star_3.0.png'
-    if (rating <= 3.75) return '/images/star_3.5.png'
-    if (rating <= 4.25) return '/images/star_4.0.png'
-    if (rating <= 4.75) return '/images/star_4.5.png'
-    return '/images/star_5.0.png'
+    if (rating === 0) return '/common/star_0.5.png'
+    if (rating <= 1.25) return '/common/star_1.0.png'
+    if (rating <= 1.75) return '/common/star_1.5.png'
+    if (rating <= 2.25) return '/common/star_2.0.png'
+    if (rating <= 2.75) return '/common/star_2.5.png'
+    if (rating <= 3.25) return '/common/star_3.0.png'
+    if (rating <= 3.75) return '/common/star_3.5.png'
+    if (rating <= 4.25) return '/common/star_4.0.png'
+    if (rating <= 4.75) return '/common/star_4.5.png'
+    return '/common/star_5.0.png'
   }
 
   // Default images for clinics (3 images per clinic)
   const getClinicImages = (clinicId: number) => {
     return [
-      '/images/beauty-noimage.jpg',
-      '/images/beauty-noimage.jpg',
-      '/images/beauty-noimage.jpg'
+      '/mrr/beauty-noimage.jpg',
+      '/mrr/beauty-noimage.jpg',
+      '/mrr/beauty-noimage.jpg'
     ]
   }
 
@@ -260,7 +260,7 @@ export default function ClinicsGridSection({
                       <div className="mb-2">
                         <div className="flex items-center gap-1 mb-0.5">
                           <img
-                            src="/images/star_0.5.png"
+                            src="/common/star_0.5.png"
                             alt="評価なし"
                             className="w-12 h-2.5"
                           />
@@ -403,7 +403,7 @@ export default function ClinicsGridSection({
                       <div className="mb-2">
                         <div className="flex items-center gap-1 mb-0.5">
                           <img
-                            src="/images/star_0.5.png"
+                            src="/common/star_0.5.png"
                             alt="評価なし"
                             className="w-12 h-2.5"
                           />

@@ -123,17 +123,17 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
           // Select pin image based on genre_id and focus state
           const getPinImage = (genre_id: number, isFocused: boolean): string => {
             if (!isFocused) {
-              return '/images/pin_unfocus.png'
+              return '/mrr/pin_unfocus.png'
             }
             switch (genre_id) {
               case 1: // ピラティス
-                return '/images/pin_pilates.png'
+                return '/mrr/pin_pilates.png'
               case 2: // 内科系
-                return '/images/pin_medical.png'
+                return '/mrr/pin_medical.png'
               case 5: // 皮膚科系
-                return '/images/pin_purple.png'
+                return '/mrr/pin_purple.png'
               default:
-                return '/images/pin_medical.png' // デフォルト
+                return '/mrr/pin_medical.png' // デフォルト
             }
           }
 
