@@ -43,7 +43,7 @@ export default function Header() {
   return (
     <>
       {/* 通常のヘッダー（スクロール前） */}
-      <header className="bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-24 relative z-[1000]" style={{ borderTop: '0px' }}>
+      <header className="bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-24 relative z-[1000]" style={{ borderTop: '5px solid #a69a7e' }}>
       <div className="flex justify-between items-center h-full px-4 md:px-8">
         <div className="flex items-center gap-4">
           <img
@@ -96,7 +96,7 @@ export default function Header() {
           className={`bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-24 fixed top-0 left-0 right-0 z-[1000] transition-transform duration-700 ease-out ${
             isVisible ? 'translate-y-0' : '-translate-y-full'
           }`}
-          style={{ borderTop: '0px' }}
+          style={{ borderTop: '5px solid #a69a7e' }}
         >
           <div className="flex justify-between items-center h-full px-4 md:px-8">
             <div className="flex items-center gap-4">

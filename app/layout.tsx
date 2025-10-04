@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Header from "@/components/Header";
-import MarqueeText from "@/components/MarqueeText";
+import ConditionalMarquee from "@/components/ConditionalMarquee";
 import Footer from "@/components/Footer";
 import "./globals.css";
 
@@ -50,10 +50,8 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Header />
-          <div className="hidden md:block">
-            <MarqueeText />
-          </div>
-          <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <ConditionalMarquee />
+          <main style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#F1F1F1' }}>
             {children}
           </main>
           <Footer />
