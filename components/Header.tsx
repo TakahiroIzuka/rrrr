@@ -2,7 +2,7 @@
 
 export default function Header() {
   return (
-    <header className="bg-white text-gray-700 h-24 relative z-[1000] border-gray-200" style={{ borderTop: '5px solid #a3977d' }}>
+    <header className="bg-white text-gray-700 h-24 fixed top-0 left-0 right-0 z-[1000] border-gray-200" style={{ borderTop: '5px solid #a3977d' }}>
       <div className="flex justify-between items-center h-full px-8">
         <div className="flex items-center gap-4">
           <img

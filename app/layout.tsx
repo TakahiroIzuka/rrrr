@@ -50,7 +50,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Header />
-          <MarqueeText />
+          <div className="pt-24">
+            <MarqueeText />
+          </div>
           <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             {children}
           </main>
