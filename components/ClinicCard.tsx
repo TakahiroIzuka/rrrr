@@ -191,7 +191,7 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
             <img
               src="/common/ranking-icon.png"
               alt="ランキング"
-              className="w-4 h-4"
+              className="w-[18px] h-[18px]"
             />
             <span className="text-[#a69a7e] text-xs">クチコミ評価</span>
             <img
@@ -212,7 +212,7 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
             <img
               src="/common/ranking-icon.png"
               alt="ランキング"
-              className="w-4 h-4"
+              className="w-[18px] h-[18px]"
             />
             <span className="text-[#a69a7e] text-xs">クチコミ評価</span>
             <img
