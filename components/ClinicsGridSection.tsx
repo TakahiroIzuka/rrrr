@@ -161,7 +161,7 @@ export default function ClinicsGridSection({
     <section className="py-16 px-8 border-t border-slate-200" style={{ backgroundColor: '#F1F1F1' }}>
       <div className="mx-auto space-y-8">
         {/* First Section */}
-        <div className="flex gap-8">
+        <div className="flex gap-8 items-start">
           {/* Left Box - 3/4 width */}
           <div className="w-3/4 bg-white rounded-lg p-5">
             {/* Section Header */}
@@ -192,21 +192,26 @@ export default function ClinicsGridSection({
           {/* Right Box - 1/4 width */}
           <div className="w-1/4 bg-white rounded-lg p-5">
             {/* Image Space */}
-            <div className="w-full h-32 bg-gray-100 rounded-lg mb-4"></div>
+            <div className="w-full h-24 bg-white rounded-lg mb-3 flex items-center justify-center">
+              <img src="/mrr/pin-profile.png" alt="プロフィール" className="w-[95px] h-[95px] object-contain" />
+            </div>
 
             {/* Title */}
-            <h3 className="text-lg font-bold text-gray-700 mb-4">
+            <h3 className="text-base font-bold text-gray-700 mb-3 text-center">
               メディカルクチコミランキング
             </h3>
 
             {/* Description */}
-            <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+            <p className="text-xs text-gray-600 mb-4 leading-relaxed">
               メディカルクチコミランキングの評価基準は、Googleマップのクチコミ情報の数値（評価平均×評価人数=Ｘ）を算出して、ランキング順位を表示しております。 ※Googleマップのクチコミ情報は、ページを読み込む度に最新情報が同期されます。
             </p>
 
             {/* Button */}
-            <button className="w-full py-2 px-4 bg-[#a59878] text-white text-sm font-medium rounded hover:bg-opacity-90 transition-colors">
-              クリニックの掲載リクエストはこちら
+            <button className="w-full py-3 px-4 bg-[#a59878] text-white text-xs font-bold rounded-full hover:bg-black transition-all duration-300 group flex items-center justify-center gap-2 relative">
+              <span className="transition-transform duration-300 group-hover:scale-x-110 inline-block">クリニックの掲載リクエストはこちら</span>
+              <span className="flex items-center justify-center w-4 h-4 bg-white rounded-full transition-all duration-300 group-hover:translate-x-2 flex-shrink-0">
+                <span className="text-[#a59878] font-bold text-xl leading-none inline-block" style={{ transform: 'translate(0.5px, -2px)' }}>›</span>
+              </span>
             </button>
           </div>
         </div>
