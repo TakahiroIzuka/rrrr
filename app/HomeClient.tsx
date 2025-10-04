@@ -44,7 +44,7 @@ export default function HomeClient({ clinics }: HomeClientProps) {
       {/* Map Section */}
       <div className="flex flex-col md:flex-row w-full overflow-hidden" style={{ height: '125vh' }}>
         {/* Sidebar Below Map on Mobile, Left on PC */}
-        <div className="w-full md:w-[400px] flex-shrink-0 h-1/2 md:h-full order-2 md:order-1" style={{ backgroundColor: '#fff9f0'}}>
+        <div className="w-full md:w-[430px] flex-shrink-0 h-1/2 md:h-full order-2 md:order-1" style={{ backgroundColor: '#fff9f0'}}>
           <ClinicsListPanel
             clinics={selectedClinicId ? filteredClinics.filter(clinic => clinic.id === selectedClinicId) : filteredClinics}
           />

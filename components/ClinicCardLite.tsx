@@ -177,47 +177,24 @@ export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMous
           </span>
         </div>
 
-        {clinic.star !== null && (
-          <div className="mb-2">
-            <div className="flex items-center gap-1 mb-0.5">
-              <img
-                src="/common/ranking-icon.png"
-                alt="ランキング"
-                className="w-[14px] h-[14px]"
-              />
-              <span className="text-[#a69a7e] text-[10px]">クチコミ評価</span>
-              <img
-                src={getStarImage(clinic.star)}
-                alt={`${clinic.star}星評価`}
-                className="w-12 h-2.5"
-              />
-            </div>
-            <div className="text-[10px]">
-              評価平均 <span className="text-[#a69a7e] font-normal text-sm">{clinic.star}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-sm">{clinic.user_review_count}</span><span className="text-[#a69a7e] font-normal text-sm">人</span>
-            </div>
+        <div className="mb-2">
+          <div className="flex items-center gap-1 mb-0.5">
+            <img
+              src="/common/ranking-icon.png"
+              alt="ランキング"
+              className="w-[14px] h-[14px]"
+            />
+            <span className="text-[#a69a7e] text-[10px]">クチコミ評価</span>
+            <img
+              src={clinic.star !== null ? getStarImage(clinic.star) : '/common/star_0.5.png'}
+              alt={clinic.star !== null ? `${clinic.star}星評価` : '評価なし'}
+              className="w-12 h-2.5"
+            />
           </div>
-        )}
-
-        {clinic.star === null && clinic.user_review_count === 0 && (
-          <div className="mb-2">
-            <div className="flex items-center gap-1 mb-0.5">
-              <img
-                src="/common/ranking-icon.png"
-                alt="ランキング"
-                className="w-[14px] h-[14px]"
-              />
-              <span className="text-[#a69a7e] text-[10px]">クチコミ評価</span>
-              <img
-                src="/common/star_0.5.png"
-                alt="評価なし"
-                className="w-12 h-2.5"
-              />
-            </div>
-            <div className="text-[10px]">
-              評価平均 <span className="text-[#a69a7e] font-normal text-sm">0</span>/評価人数 <span className="text-[#a69a7e] font-normal text-sm">0</span><span className="text-[#a69a7e] font-normal text-sm">人</span>
-            </div>
+          <div className="text-[10px]">
+            評価平均 <span className="text-[#a69a7e] font-normal text-sm">{clinic.star ?? ''}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-sm">{clinic.user_review_count ?? 0}</span><span className="text-[#a69a7e] font-normal text-sm">人</span>
           </div>
-        )}
+        </div>
 
         <button className="w-full py-2.5 px-2 bg-[#a59878] text-white text-[11px] font-semibold rounded hover:bg-black transition-all duration-300 group">
           <span className="text-center leading-tight inline-block">

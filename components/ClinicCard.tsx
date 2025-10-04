@@ -172,20 +172,19 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
       </div>
 
       <div className="px-4 pb-4">
-        <h3 className="m-0 mb-3 pt-3 text-gray-900 text-xl font-semibold leading-snug" style={{ fontFamily: 'Kosugi Maru, sans-serif' }}>
-        {clinic.name}
-      </h3>
+        <h3 className="m-0 mb-3 pt-3 text-gray-900 text-[1.375rem] font-semibold leading-relaxed" style={{ fontFamily: 'Kosugi Maru, sans-serif' }}>
+          {clinic.name}
+        </h3>
 
-      <div className="flex items-center mb-2 gap-1.5 pb-2 border-b border-[#a59878]">
-        <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
-          {clinic.prefecture}
-        </span>
-        <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
-          {clinic.area}
-        </span>
-      </div>
+        <div className="flex items-center mb-2 gap-1.5 pb-2 border-b border-[#a59878]">
+          <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
+            {clinic.prefecture}
+          </span>
+          <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
+            {clinic.area}
+          </span>
+        </div>
 
-      {clinic.star !== null && (
         <div className="mb-3">
           <div className="flex items-center gap-1.5 mb-1">
             <img
@@ -195,37 +194,15 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
             />
             <span className="text-[#a69a7e] text-xs">クチコミ評価</span>
             <img
-              src={getStarImage(clinic.star)}
-              alt={`${clinic.star}星評価`}
-              className="w-16 h-3"
+              src={clinic.star !== null ? getStarImage(clinic.star) : '/common/star_0.5.png'}
+              alt={clinic.star !== null ? `${clinic.star}星評価` : '評価なし'}
+              className="w-23 h-4"
             />
           </div>
           <div className="text-black text-xs">
-            評価平均 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.star}</span>/評価人数 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.user_review_count}</span><span className="text-[#a69a7e] font-normal text-2xl">人</span>
+            評価平均 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.star ?? ''}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.user_review_count}</span><span className="text-[#a69a7e] font-normal text-2xl">人</span>
           </div>
         </div>
-      )}
-
-      {clinic.star === null && clinic.user_review_count === 0 && (
-        <div className="mb-3">
-          <div className="flex items-center gap-1.5 mb-1">
-            <img
-              src="/common/ranking-icon.png"
-              alt="ランキング"
-              className="w-[18px] h-[18px]"
-            />
-            <span className="text-[#a69a7e] text-xs">クチコミ評価</span>
-            <img
-              src="/common/star_0.5.png"
-              alt="評価なし"
-              className="w-16 h-3"
-            />
-          </div>
-          <div className="text-gray-400 text-xs">
-            レビューなし
-          </div>
-        </div>
-      )}
 
         <button className="w-full py-2.5 px-4 bg-[#a59878] text-white text-sm font-bold rounded-md hover:bg-black transition-all duration-300 group relative overflow-visible">
           <span className="invisible">基本情報とクチコミ詳細はこちら</span>
