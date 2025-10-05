@@ -1,18 +1,10 @@
 'use client'
 
-import { useState, useRef } from 'react'
-
-interface Clinic {
-  id: number
-  name: string
-  star: number | null
-  user_review_count: number
-  lat: number
-  lng: number
-  prefecture: string
-  area: string
-  genre_id: number
-}
+import { useRef } from 'react'
+import type { Clinic } from '@/types/clinic'
+import { getStarImage } from '@/lib/utils/starRating'
+import { DEFAULT_CLINIC_IMAGES, IMAGE_COUNT } from '@/lib/constants'
+import { useImageSlider } from '@/hooks/useImageSlider'
 
 interface ClinicCardLiteProps {
   clinic: Clinic
@@ -22,72 +14,16 @@ interface ClinicCardLiteProps {
 }
 
 export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMouseLeave }: ClinicCardLiteProps) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [isDragging, setIsDragging] = useState(false)
-  const [startX, setStartX] = useState(0)
   const dragRef = useRef<HTMLDivElement>(null)
-
-  // Function to get appropriate star image based on rating
-  const getStarImage = (rating: number): string => {
-    if (rating === 0) return '/common/star_0.5.png'
-    if (rating <= 1.25) return '/common/star_1.0.png'
-    if (rating <= 1.75) return '/common/star_1.5.png'
-    if (rating <= 2.25) return '/common/star_2.0.png'
-    if (rating <= 2.75) return '/common/star_2.5.png'
-    if (rating <= 3.25) return '/common/star_3.0.png'
-    if (rating <= 3.75) return '/common/star_3.5.png'
-    if (rating <= 4.25) return '/common/star_4.0.png'
-    if (rating <= 4.75) return '/common/star_4.5.png'
-    return '/common/star_5.0.png'
-  }
-
-  // Default images for clinics (3 images per clinic)
-  const getClinicImages = () => {
-    return [
-      '/mrr/beauty-noimage.jpg',
-      '/mrr/beauty-noimage.jpg',
-      '/mrr/beauty-noimage.jpg'
-    ]
-  }
-
-  const handlePrevImage = () => {
-    setCurrentImageIndex(prev => prev > 0 ? prev - 1 : 2)
-  }
-
-  const handleNextImage = () => {
-    setCurrentImageIndex(prev => prev < 2 ? prev + 1 : 0)
-  }
-
-  const handleIndicatorClick = (index: number) => {
-    setCurrentImageIndex(index)
-  }
-
-  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
-    setIsDragging(true)
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
-    setStartX(clientX)
-  }
-
-  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDragging) return
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
-    const diff = startX - clientX
-
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) {
-        handleNextImage()
-      } else {
-        handlePrevImage()
-      }
-      setIsDragging(false)
-    }
-  }
-
-  const handleDragEnd = () => {
-    setIsDragging(false)
-  }
-
-  const clinicImages = getClinicImages()
+  const {
+    currentImageIndex,
+    handlePrevImage,
+    handleNextImage,
+    handleIndicatorClick,
+    handleDragStart,
+    handleDragMove,
+    handleDragEnd
+  } = useImageSlider()
 
   return (
     <div
@@ -115,7 +51,7 @@ export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMous
         >
           <div className="w-full h-32 bg-gray-100 overflow-hidden">
             <img
-              src={clinicImages[currentImageIndex]}
+              src={DEFAULT_CLINIC_IMAGES[currentImageIndex]}
               alt={`${clinic.name}の画像`}
               className="w-full h-full object-cover"
               draggable={false}
@@ -149,7 +85,7 @@ export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMous
 
         {/* Indicators */}
         <div className="flex justify-center gap-4 py-1.5 bg-white">
-          {clinicImages.map((_, index) => (
+          {Array.from({ length: IMAGE_COUNT }).map((_, index) => (
             <button
               key={index}
               onClick={() => handleIndicatorClick(index)}

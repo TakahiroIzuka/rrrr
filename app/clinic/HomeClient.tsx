@@ -1,22 +1,11 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import type { Clinic } from '@/types/clinic'
 import ClinicsListPanel from '@/components/ClinicsListPanel'
 import MapPanel from '@/components/MapPanel'
 import ClinicsGridSection from '@/components/ClinicsGridSection'
 import FilterButton from '@/components/FilterButton'
-
-interface Clinic {
-  id: number
-  name: string
-  star: number | null
-  user_review_count: number
-  lat: number
-  lng: number
-  prefecture: string
-  area: string
-  genre_id: number
-}
 
 interface HomeClientProps {
   clinics: Clinic[]

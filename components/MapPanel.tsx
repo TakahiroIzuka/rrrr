@@ -1,20 +1,9 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useRef, useMemo, useState } from 'react'
 import { Loader } from '@googlemaps/js-api-loader'
-import { useEffect, useRef, useMemo, useState } from 'react'
-
-interface Clinic {
-  id: number
-  name: string
-  star: number | null
-  user_review_count: number
-  lat: number
-  lng: number
-  prefecture: string
-  area: string
-  genre_id: number
-}
+import type { Clinic } from '@/types/clinic'
+import { MAP_PIN_IMAGES } from '@/lib/constants'
 
 interface MapPanelProps {
   allClinics: Clinic[]
@@ -122,18 +111,13 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
 
           // Select pin image based on genre_id and focus state
           const getPinImage = (genre_id: number, isFocused: boolean): string => {
-            if (!isFocused) {
-              return '/mrr/pin_unfocus.png'
-            }
+            if (!isFocused) return MAP_PIN_IMAGES.unfocus
+
             switch (genre_id) {
-              case 1: // ピラティス
-                return '/mrr/pin_pilates.png'
-              case 2: // 内科系
-                return '/mrr/pin_medical.png'
-              case 5: // 皮膚科系
-                return '/mrr/pin_purple.png'
-              default:
-                return '/mrr/pin_medical.png' // デフォルト
+              case 1: return MAP_PIN_IMAGES.pilates
+              case 2: return MAP_PIN_IMAGES.medical
+              case 5: return MAP_PIN_IMAGES.purple
+              default: return MAP_PIN_IMAGES.medical
             }
           }
 

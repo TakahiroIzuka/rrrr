@@ -1,19 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import type { Clinic } from '@/types/clinic'
 import ClinicCardLite from './ClinicCardLite'
-
-interface Clinic {
-  id: number
-  name: string
-  star: number | null
-  user_review_count: number
-  lat: number
-  lng: number
-  prefecture: string
-  area: string
-  genre_id: number
-}
 
 interface ClinicListProps {
   clinics: Clinic[]

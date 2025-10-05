@@ -1,20 +1,10 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import ClinicCardLite from './ClinicCardLite'
+import { useState } from 'react'
+import type { Clinic } from '@/types/clinic'
+import { useClinicFilter } from '@/hooks/useClinicFilter'
 import ClinicList from './ClinicList'
-
-interface Clinic {
-  id: number
-  name: string
-  star: number | null
-  user_review_count: number
-  lat: number
-  lng: number
-  prefecture: string
-  area: string
-  genre_id: number
-}
+import FilterControls from './FilterControls'
 
 interface ClinicsGridSectionProps {
   clinics: Clinic[]
@@ -39,25 +29,14 @@ export default function ClinicsGridSection({
   onRankingChange,
   onFilterChange
 }: ClinicsGridSectionProps) {
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null)
-  const [currentImageIndex, setCurrentImageIndex] = useState<{[key: number]: number}>({})
-
-  // Extract unique prefectures and genres from all clinics
-  const uniquePrefectures = Array.from(new Set(allClinics.map(clinic => clinic.prefecture))).sort()
-  const genreMap = {
-    1: 'ピラティス',
-    2: '内科',
-    5: '皮膚科'
-  }
-  const uniqueGenres = Array.from(new Set(allClinics.map(clinic => clinic.genre_id))).sort()
-  const rankingOptions = ['トップ30', 'トップ20', 'トップ10', 'トップ5', 'トップ3']
+  const { applyFilters } = useClinicFilter(allClinics)
 
   const handlePrefectureChange = (prefecture: string) => {
     const updated = selectedPrefectures.includes(prefecture)
       ? selectedPrefectures.filter(p => p !== prefecture)
       : [...selectedPrefectures, prefecture]
     onPrefecturesChange(updated)
-    applyFilters(updated, selectedGenres, selectedRanking)
+    onFilterChange(applyFilters(updated, selectedGenres, selectedRanking))
   }
 
   const handleGenreChange = (genreId: number) => {
@@ -65,90 +44,13 @@ export default function ClinicsGridSection({
       ? selectedGenres.filter(g => g !== genreId)
       : [...selectedGenres, genreId]
     onGenresChange(updated)
-    applyFilters(selectedPrefectures, updated, selectedRanking)
+    onFilterChange(applyFilters(selectedPrefectures, updated, selectedRanking))
   }
 
   const handleRankingChange = (ranking: string) => {
     const newRanking = selectedRanking === ranking ? '' : ranking
     onRankingChange(newRanking)
-    applyFilters(selectedPrefectures, selectedGenres, newRanking)
-  }
-
-
-  const applyFilters = useCallback((prefectures: string[], genres: number[], ranking: string) => {
-    let filtered = allClinics
-
-    if (prefectures.length > 0) {
-      filtered = filtered.filter(clinic => prefectures.includes(clinic.prefecture))
-    }
-
-    if (genres.length > 0) {
-      filtered = filtered.filter(clinic => genres.includes(clinic.genre_id))
-    }
-
-    if (ranking) {
-      const topCount = parseInt(ranking.replace('トップ', ''))
-      const sortedByRating = [...filtered].sort((a, b) => {
-        const scoreA = (a.star !== null && a.star > 0 && a.user_review_count > 0) ? a.star * a.user_review_count : 0
-        const scoreB = (b.star !== null && b.star > 0 && b.user_review_count > 0) ? b.star * b.user_review_count : 0
-        return scoreB - scoreA
-      })
-      filtered = sortedByRating.slice(0, topCount)
-    }
-
-    onFilterChange(filtered)
-  }, [allClinics, onFilterChange])
-
-  const clearFilters = () => {
-    onPrefecturesChange([])
-    onGenresChange([])
-    onRankingChange('')
-    onFilterChange(allClinics)
-  }
-
-  // Function to get appropriate star image based on rating
-  const getStarImage = (rating: number): string => {
-    if (rating === 0) return '/common/star_0.5.png'
-    if (rating <= 1.25) return '/common/star_1.0.png'
-    if (rating <= 1.75) return '/common/star_1.5.png'
-    if (rating <= 2.25) return '/common/star_2.0.png'
-    if (rating <= 2.75) return '/common/star_2.5.png'
-    if (rating <= 3.25) return '/common/star_3.0.png'
-    if (rating <= 3.75) return '/common/star_3.5.png'
-    if (rating <= 4.25) return '/common/star_4.0.png'
-    if (rating <= 4.75) return '/common/star_4.5.png'
-    return '/common/star_5.0.png'
-  }
-
-  // Default images for clinics (3 images per clinic)
-  const getClinicImages = (clinicId: number) => {
-    return [
-      '/mrr/beauty-noimage.jpg',
-      '/mrr/beauty-noimage.jpg',
-      '/mrr/beauty-noimage.jpg'
-    ]
-  }
-
-  // Handle slider navigation
-  const handlePrevImage = (clinicId: number) => {
-    setCurrentImageIndex(prev => ({
-      ...prev,
-      [clinicId]: prev[clinicId] > 0 ? prev[clinicId] - 1 : 2
-    }))
-  }
-
-  const handleNextImage = (clinicId: number) => {
-    setCurrentImageIndex(prev => ({
-      ...prev,
-      [clinicId]: (prev[clinicId] || 0) < 2 ? (prev[clinicId] || 0) + 1 : 0
-    }))
-  }
-
-  const handleIndicatorClick = (clinicId: number, index: number) => {
-    setCurrentImageIndex(prev => ({
-      ...prev,
-      [clinicId]: index
-    }))
+    onFilterChange(applyFilters(selectedPrefectures, selectedGenres, newRanking))
   }
 
   return (
@@ -197,71 +99,15 @@ export default function ClinicsGridSection({
             </p>
           </div>
 
-          {/* Prefecture Filter */}
-          <div className="mb-4">
-            <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 px-2 py-1 rounded" style={{ backgroundColor: '#eae3db' }}>
-              都道府県を選択
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {uniquePrefectures.map((prefecture) => (
-                <label key={prefecture} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white">
-                  <input
-                    type="checkbox"
-                    checked={selectedPrefectures.includes(prefecture)}
-                    onChange={() => handlePrefectureChange(prefecture)}
-                    className="w-3 h-3 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                  />
-                  <span className="text-gray-700 text-xs font-medium">{prefecture}</span>
-                  <span className="text-xs text-gray-500">
-                    ({allClinics.filter(c => c.prefecture === prefecture).length})
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Genre Filter */}
-          <div className="mb-4">
-            <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 px-2 py-1 rounded" style={{ backgroundColor: '#eae3db' }}>
-              ジャンルを選択
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {uniqueGenres.map((genreId) => (
-                <label key={genreId} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white">
-                  <input
-                    type="checkbox"
-                    checked={selectedGenres.includes(genreId)}
-                    onChange={() => handleGenreChange(genreId)}
-                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                  />
-                  <span className="text-xs text-gray-700 font-medium">{genreMap[genreId as keyof typeof genreMap]}</span>
-                  <span className="text-xs text-gray-500">
-                    ({allClinics.filter(c => c.genre_id === genreId).length})
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Google Review Ranking Filter */}
-          <div className="mb-4">
-            <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 px-2 py-1 rounded" style={{ backgroundColor: '#eae3db' }}>
-              Googleクチコミランキング
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {rankingOptions.map((ranking) => (
-                <label key={ranking} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white">
-                  <input
-                    type="checkbox"
-                    checked={selectedRanking === ranking}
-                    onChange={() => handleRankingChange(ranking)}
-                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                  />
-                  <span className="text-xs text-gray-700 font-medium">{ranking}</span>
-                </label>
-              ))}
-            </div>
-          </div>
+          <FilterControls
+            allClinics={allClinics}
+            selectedPrefectures={selectedPrefectures}
+            selectedGenres={selectedGenres}
+            selectedRanking={selectedRanking}
+            onPrefectureChange={handlePrefectureChange}
+            onGenreChange={handleGenreChange}
+            onRankingChange={handleRankingChange}
+          />
         </div>
 
         {/* First Section - PC only */}
@@ -330,71 +176,15 @@ export default function ClinicsGridSection({
               </p>
             </div>
 
-            {/* Prefecture Filter */}
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 px-2 py-1 rounded" style={{ backgroundColor: '#eae3db' }}>
-                都道府県を選択
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {uniquePrefectures.map((prefecture) => (
-                  <label key={prefecture} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white">
-                    <input
-                      type="checkbox"
-                      checked={selectedPrefectures.includes(prefecture)}
-                      onChange={() => handlePrefectureChange(prefecture)}
-                      className="w-3 h-3 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                    />
-                    <span className="text-gray-700 text-xs font-medium">{prefecture}</span>
-                    <span className="text-xs text-gray-500">
-                      ({allClinics.filter(c => c.prefecture === prefecture).length})
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Genre Filter */}
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 px-2 py-1 rounded" style={{ backgroundColor: '#eae3db' }}>
-                ジャンルを選択
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {uniqueGenres.map((genreId) => (
-                  <label key={genreId} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white">
-                    <input
-                      type="checkbox"
-                      checked={selectedGenres.includes(genreId)}
-                      onChange={() => handleGenreChange(genreId)}
-                      className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                    />
-                    <span className="text-xs text-gray-700 font-medium">{genreMap[genreId as keyof typeof genreMap]}</span>
-                    <span className="text-xs text-gray-500">
-                      ({allClinics.filter(c => c.genre_id === genreId).length})
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Google Review Ranking Filter */}
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 px-2 py-1 rounded" style={{ backgroundColor: '#eae3db' }}>
-                Googleクチコミランキング
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {rankingOptions.map((ranking) => (
-                  <label key={ranking} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white">
-                    <input
-                      type="checkbox"
-                      checked={selectedRanking === ranking}
-                      onChange={() => handleRankingChange(ranking)}
-                      className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                    />
-                    <span className="text-xs text-gray-700 font-medium">{ranking}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
+            <FilterControls
+              allClinics={allClinics}
+              selectedPrefectures={selectedPrefectures}
+              selectedGenres={selectedGenres}
+              selectedRanking={selectedRanking}
+              onPrefectureChange={handlePrefectureChange}
+              onGenreChange={handleGenreChange}
+              onRankingChange={handleRankingChange}
+            />
           </div>
         </div>
       </div>
