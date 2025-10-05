@@ -54,7 +54,7 @@ export default function ClinicsGridSection({
   }
 
   return (
-    <section className="pt-5 pb-10 px-[5px] md:px-5 border-t border-slate-200" style={{ backgroundColor: '#F1F1F1' }}>
+    <section className="pt-5 pb-10 px-[5px] md:px-5" style={{ backgroundColor: '#F1F1F1', borderTop: '2px solid #d1cab7' }}>
       <div className="mx-auto space-y-6">
         {/* メディカルクチコミランキング（スマホで表示） */}
         <div className="md:hidden w-full bg-white rounded-2xl md:rounded-lg px-[5px] py-5 shadow-none md:shadow-md">
