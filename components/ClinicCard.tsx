@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import type { Clinic } from '@/types/clinic'
 import { getStarImage } from '@/lib/utils/starRating'
 import { DEFAULT_CLINIC_IMAGES, IMAGE_COUNT, SWIPE_THRESHOLD } from '@/lib/constants'
@@ -165,15 +166,17 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
           </div>
         </div>
 
-        <button className="w-full py-2.5 px-4 bg-[#a59878] text-white text-sm font-bold rounded-md hover:bg-black transition-all duration-300 group relative overflow-visible">
-          <span className="invisible">基本情報とクチコミ詳細はこちら</span>
-          <span className="absolute inset-0 flex items-center justify-center gap-2 -translate-x-3">
-            <span className="transition-transform duration-300 group-hover:scale-x-110 inline-block">基本情報とクチコミ詳細はこちら</span>
-          </span>
-          <span className="absolute right-10 top-1/2 -translate-y-1/2 flex items-center justify-center w-4 h-4 bg-white rounded-full transition-all duration-300 group-hover:translate-x-2">
-            <span className="text-[#a59878] font-bold text-xl leading-none inline-block" style={{ transform: 'translate(0.5px, -2px)' }}>›</span>
-          </span>
-        </button>
+        <Link href={`/clinic/${clinic.uuid}`}>
+          <button className="w-full py-2.5 px-4 bg-[#a59878] text-white text-sm font-bold rounded-md hover:bg-black transition-all duration-300 group relative overflow-visible">
+            <span className="invisible">基本情報とクチコミ詳細はこちら</span>
+            <span className="absolute inset-0 flex items-center justify-center gap-2 -translate-x-3">
+              <span className="transition-transform duration-300 group-hover:scale-x-110 inline-block">基本情報とクチコミ詳細はこちら</span>
+            </span>
+            <span className="absolute right-10 top-1/2 -translate-y-1/2 flex items-center justify-center w-4 h-4 bg-white rounded-full transition-all duration-300 group-hover:translate-x-2">
+              <span className="text-[#a59878] font-bold text-xl leading-none inline-block" style={{ transform: 'translate(0.5px, -2px)' }}>›</span>
+            </span>
+          </button>
+        </Link>
       </div>
     </div>
   )

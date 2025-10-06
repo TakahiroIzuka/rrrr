@@ -1,5 +1,6 @@
 export interface Clinic {
   id: number
+  uuid: string
   name: string
   star: number | null
   user_review_count: number

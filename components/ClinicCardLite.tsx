@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import Link from 'next/link'
 import type { Clinic } from '@/types/clinic'
 import { getStarImage } from '@/lib/utils/starRating'
 import { DEFAULT_CLINIC_IMAGES, IMAGE_COUNT } from '@/lib/constants'
@@ -132,13 +133,15 @@ export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMous
           </div>
         </div>
 
-        <button className="w-full py-2.5 px-2 bg-[#a59878] text-white text-[11px] font-semibold rounded hover:bg-black transition-all duration-300 group">
-          <span className="text-center leading-tight inline-block">
-            基本情報とクチコミ詳細<span className="inline-flex items-center justify-center w-3 h-3 bg-white rounded-full transition-all duration-300 group-hover:translate-x-1 ml-1 align-middle">
-              <span className="text-[#a59878] font-bold text-sm leading-none inline-block" style={{ transform: 'translate(0.5px, -1px)' }}>›</span>
+        <Link href={`/clinic/${clinic.uuid}`}>
+          <button className="w-full py-2.5 px-2 bg-[#a59878] text-white text-[11px] font-semibold rounded hover:bg-black transition-all duration-300 group">
+            <span className="text-center leading-tight inline-block">
+              基本情報とクチコミ詳細<span className="inline-flex items-center justify-center w-3 h-3 bg-white rounded-full transition-all duration-300 group-hover:translate-x-1 ml-1 align-middle">
+                <span className="text-[#a59878] font-bold text-sm leading-none inline-block" style={{ transform: 'translate(0.5px, -1px)' }}>›</span>
+              </span>
             </span>
-          </span>
-        </button>
+          </button>
+        </Link>
       </div>
     </div>
   )
