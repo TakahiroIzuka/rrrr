@@ -25,6 +25,15 @@ export default async function ClinicListPage() {
     return <ErrorMessage message={error.message} />
   }
 
+  // Extract unique prefectures from clinics data
+  const uniquePrefectures = Array.from(
+    new Set(
+      (clinics || [])
+        .map(clinic => clinic.area?.prefecture?.name)
+        .filter(Boolean)
+    )
+  ).sort()
+
   return (
     <div className="w-full px-[5px] md:px-4 pt-5 md:py-8">
       <div className="flex flex-col md:flex-row gap-6 items-start">
@@ -56,36 +65,18 @@ export default async function ClinicListPage() {
 
             {/* Area Buttons */}
             <div className="flex flex-wrap gap-2">
-              <button className="py-1.5 px-2 text-white text-xs font-medium rounded hover:opacity-90 transition-all duration-200 flex items-center gap-1 group" style={{ backgroundColor: 'rgba(166, 154, 126, 1)' }}>
-                <span>鹿児島県</span>
-                <span className="flex items-center justify-center w-4 h-4 bg-white rounded-full transition-all duration-200 group-hover:translate-x-1 flex-shrink-0">
-                  <span className="font-bold text-base leading-none inline-block" style={{ color: 'rgba(166, 154, 126, 1)', transform: 'translate(0.5px, -1.5px)' }}>›</span>
-                </span>
-              </button>
-              <button className="py-1.5 px-2 text-white text-xs font-medium rounded hover:opacity-90 transition-all duration-200 flex items-center gap-1 group" style={{ backgroundColor: 'rgba(166, 154, 126, 1)' }}>
-                <span>東京都</span>
-                <span className="flex items-center justify-center w-4 h-4 bg-white rounded-full transition-all duration-200 group-hover:translate-x-1 flex-shrink-0">
-                  <span className="font-bold text-base leading-none inline-block" style={{ color: 'rgba(166, 154, 126, 1)', transform: 'translate(0.5px, -1.5px)' }}>›</span>
-                </span>
-              </button>
-              <button className="py-1.5 px-2 text-white text-xs font-medium rounded hover:opacity-90 transition-all duration-200 flex items-center gap-1 group" style={{ backgroundColor: 'rgba(166, 154, 126, 1)' }}>
-                <span>神奈川県</span>
-                <span className="flex items-center justify-center w-4 h-4 bg-white rounded-full transition-all duration-200 group-hover:translate-x-1 flex-shrink-0">
-                  <span className="font-bold text-base leading-none inline-block" style={{ color: 'rgba(166, 154, 126, 1)', transform: 'translate(0.5px, -1.5px)' }}>›</span>
-                </span>
-              </button>
-              <button className="py-1.5 px-2 text-white text-xs font-medium rounded hover:opacity-90 transition-all duration-200 flex items-center gap-1 group" style={{ backgroundColor: 'rgba(166, 154, 126, 1)' }}>
-                <span>千葉県</span>
-                <span className="flex items-center justify-center w-4 h-4 bg-white rounded-full transition-all duration-200 group-hover:translate-x-1 flex-shrink-0">
-                  <span className="font-bold text-base leading-none inline-block" style={{ color: 'rgba(166, 154, 126, 1)', transform: 'translate(0.5px, -1.5px)' }}>›</span>
-                </span>
-              </button>
-              <button className="py-1.5 px-2 text-white text-xs font-medium rounded hover:opacity-90 transition-all duration-200 flex items-center gap-1 group" style={{ backgroundColor: 'rgba(166, 154, 126, 1)' }}>
-                <span>埼玉県</span>
-                <span className="flex items-center justify-center w-4 h-4 bg-white rounded-full transition-all duration-200 group-hover:translate-x-1 flex-shrink-0">
-                  <span className="font-bold text-base leading-none inline-block" style={{ color: 'rgba(166, 154, 126, 1)', transform: 'translate(0.5px, -1.5px)' }}>›</span>
-                </span>
-              </button>
+              {uniquePrefectures.map((prefecture) => (
+                <button
+                  key={prefecture}
+                  className="py-1.5 px-2 text-white text-xs font-medium rounded hover:opacity-90 transition-all duration-200 flex items-center gap-1 group"
+                  style={{ backgroundColor: 'rgba(166, 154, 126, 1)' }}
+                >
+                  <span>{prefecture}</span>
+                  <span className="flex items-center justify-center w-4 h-4 bg-white rounded-full transition-all duration-200 group-hover:translate-x-1 flex-shrink-0">
+                    <span className="font-bold text-base leading-none inline-block" style={{ color: 'rgba(166, 154, 126, 1)', transform: 'translate(0.5px, -1.5px)' }}>›</span>
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
         </div>
