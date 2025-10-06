@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import ErrorMessage from '@/components/ErrorMessage'
 import ClinicList from '@/components/ClinicList'
+import MedicalReviewRanking from '@/components/MedicalReviewRanking'
 
 export default async function ClinicListPage() {
   const supabase = await createClient()
@@ -15,13 +16,16 @@ export default async function ClinicListPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ClinicList
-        clinics={clinics || []}
-        title="クリニックはこちら"
-        subtitle="Clinic List"
-        width="full"
-        gridCols="5"
-      />
+      <div className="flex gap-6 items-start">
+        <ClinicList
+          clinics={clinics || []}
+          title="クリニックはこちら"
+          subtitle="Clinic List"
+          width="3/4"
+          gridCols="5"
+        />
+        <MedicalReviewRanking variant="desktop" />
+      </div>
     </div>
   )
 }
