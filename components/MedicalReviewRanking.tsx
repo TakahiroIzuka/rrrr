@@ -7,7 +7,7 @@ export default function MedicalReviewRanking({ variant = 'desktop' }: MedicalRev
 
   const containerClass = isMobile
     ? 'md:hidden w-full bg-white rounded-2xl md:rounded-lg px-[5px] py-5 shadow-none md:shadow-md'
-    : 'w-1/4 bg-white rounded-lg p-5 shadow-md'
+    : 'bg-white rounded-lg p-5 shadow-md'
 
   const buttonHoverClass = isMobile
     ? 'hover:bg-[#666]'
