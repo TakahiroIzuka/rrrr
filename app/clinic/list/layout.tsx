@@ -8,7 +8,7 @@ export default function ClinicListLayout({
       {/* Breadcrumb in place of MarqueeText */}
       <div className="hidden md:block py-1" style={{ backgroundColor: '#fff9f0' }}>
         <div className="mx-[30px]">
-          <nav className="text-[13px]">
+          <nav className="text-[12px]">
             <ol className="flex items-center gap-2">
               <li>
                 <a href="/clinic" className="text-black hover:underline transition-colors">トップ</a>
