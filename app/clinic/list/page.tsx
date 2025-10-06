@@ -15,19 +15,25 @@ export default async function ClinicListPage() {
   }
 
   return (
-    <div className="w-full px-4 py-8">
-      <div className="flex gap-6 items-start">
+    <div className="w-full px-[5px] md:px-4 pt-5 md:py-8">
+      <div className="flex flex-col md:flex-row gap-6 items-start">
+        {/* クリニックリスト - 2列で表示 */}
         <ClinicList
           clinics={clinics || []}
           title="クリニックはこちら"
-          subtitle="Clinic List"
+          subtitle="List of Local places"
           width="3/4"
-          gridCols="5"
+          gridCols="2"
         />
-        <div className="w-1/4 flex flex-col gap-6">
+
+        {/* サイドバー - モバイルでは下に表示 */}
+        <div className="w-full md:w-1/4 flex flex-col gap-6">
+          {/* メディカルクチコミランキング */}
           <div className="w-full">
             <MedicalReviewRanking variant="desktop" />
           </div>
+
+          {/* 各エリアから探す */}
           <div className="w-full bg-white rounded-lg p-5 shadow-md">
             {/* Title */}
             <div className="mb-3">
