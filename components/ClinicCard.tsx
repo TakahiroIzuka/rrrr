@@ -139,10 +139,10 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
 
         <div className="flex items-center mb-2 gap-1.5 pb-2 border-b border-[#a59878]">
           <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
-            {clinic.prefecture}
+            {clinic.area?.prefecture?.name}
           </span>
           <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
-            {clinic.area}
+            {clinic.area?.name}
           </span>
         </div>
 

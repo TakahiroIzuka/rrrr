@@ -106,10 +106,10 @@ export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMous
 
         <div className="flex items-center mb-2 gap-1 pb-1.5 border-b border-[#a59878]">
           <span className="text-gray-600 text-[10px] border border-gray-300 rounded-full px-1.5 py-0.5">
-            {clinic.prefecture}
+            {clinic.area?.prefecture?.name}
           </span>
           <span className="text-gray-600 text-[10px] border border-gray-300 rounded-full px-1.5 py-0.5">
-            {clinic.area}
+            {clinic.area?.name}
           </span>
         </div>
 

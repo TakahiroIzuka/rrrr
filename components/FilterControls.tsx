@@ -20,7 +20,7 @@ export default function FilterControls({
   onGenreChange,
   onRankingChange
 }: FilterControlsProps) {
-  const uniquePrefectures = Array.from(new Set(allClinics.map(clinic => clinic.prefecture))).sort()
+  const uniquePrefectures = Array.from(new Set(allClinics.map(clinic => clinic.area?.prefecture?.name).filter(Boolean))).sort()
   const uniqueGenres = Array.from(new Set(allClinics.map(clinic => clinic.genre_id))).sort()
 
   return (
@@ -41,7 +41,7 @@ export default function FilterControls({
               />
               <span className="text-gray-700 text-xs font-medium">{prefecture}</span>
               <span className="text-xs text-gray-500">
-                ({allClinics.filter(c => c.prefecture === prefecture).length})
+                ({allClinics.filter(c => c.area?.prefecture?.name === prefecture).length})
               </span>
             </label>
           ))}

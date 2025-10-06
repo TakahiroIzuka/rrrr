@@ -6,7 +6,18 @@ export default async function HomePage() {
   const supabase = await createClient()
   const { data: clinics, error } = await supabase
     .from('clinics')
-    .select('*')
+    .select(`
+      *,
+      area:areas(
+        id,
+        name,
+        prefecture_id,
+        prefecture:prefectures(
+          id,
+          name
+        )
+      )
+    `)
     .order('id', { ascending: true })
 
   if (error) {

@@ -5,7 +5,15 @@ export interface Clinic {
   user_review_count: number
   lat: number
   lng: number
-  prefecture: string
-  area: string
   genre_id: number
+  area_id: number
+  area?: {
+    id: number
+    name: string
+    prefecture_id: number
+    prefecture?: {
+      id: number
+      name: string
+    }
+  }
 }
