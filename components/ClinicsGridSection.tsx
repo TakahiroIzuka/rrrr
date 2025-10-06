@@ -91,16 +91,20 @@ export default function ClinicsGridSection({
         {/* First Section - PC only */}
         <div className="hidden md:flex gap-6 items-start">
           {/* Left Box - 3/4 width */}
-          <ClinicList
-            clinics={clinics.slice(0, 5)}
-            title="人気のクリニック5件はこちら"
-            subtitle="Recommended Clinic"
-            width="3/4"
-            gridCols="5"
-          />
+          <div className="w-3/4">
+            <ClinicList
+              clinics={clinics.slice(0, 5)}
+              title="人気のクリニック5件はこちら"
+              subtitle="Recommended Clinic"
+              width="full"
+              gridCols="5"
+            />
+          </div>
 
           {/* Right Box - 1/4 width */}
-          <MedicalReviewRanking variant="desktop" />
+          <div className="w-1/4">
+            <MedicalReviewRanking variant="desktop" />
+          </div>
         </div>
 
         {/* Second Section */}
