@@ -3,6 +3,7 @@ import ErrorMessage from '@/components/ErrorMessage'
 import { notFound } from 'next/navigation'
 import { getStarImage } from '@/lib/utils/starRating'
 import Div2 from './Div2'
+import ReviewCard from './ReviewCard'
 
 interface ClinicDetailPageProps {
   params: {
@@ -127,8 +128,37 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
 
 
           {/* div3 */}
-          <div className="mb-4 border-2 border-gray-300 p-4">
-            <p>div3</p>
+          <div className="mb-4 border-2 border-gray-300 p-4" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
+            {/* バー */}
+            <div className="relative mb-4">
+              <div className="w-full px-4 py-2 text-sm border-2 rounded text-center bg-white" style={{ borderColor: 'rgb(220, 194, 219)', color: 'rgb(220, 194, 219)' }}>
+                {clinic.name}のクチコミ一覧はこちら！
+              </div>
+              {/* 下向き三角形 */}
+              <div className="absolute left-1/2 -translate-x-1/2 -bottom-3 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: 'rgb(220, 194, 219)' }}></div>
+            </div>
+
+            {/* カードグリッド */}
+            <div className="grid grid-cols-3 gap-4 mt-6">
+              <ReviewCard
+                clinic={clinic}
+                userImage="https://placehold.co/100x100/e3d5ca/000000?text=User"
+                showDate={false}
+              />
+              {[
+                'https://placehold.co/100x100/d4c4b0/000000?text=User',
+                'https://placehold.co/100x100/c5b299/000000?text=User',
+                'https://placehold.co/100x100/b6a082/000000?text=User',
+                'https://placehold.co/100x100/a78e6b/000000?text=User'
+              ].map((image, index) => (
+                <ReviewCard
+                  key={index}
+                  clinic={clinic}
+                  userImage={image}
+                  showDate={true}
+                />
+              ))}
+            </div>
           </div>
 
           {/* div4 */}
