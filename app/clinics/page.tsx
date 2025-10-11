@@ -1,67 +1,86 @@
 import { createClient } from '@/utils/supabase/server'
-import ClinicsClient from './ClinicsClient'
+import ErrorMessage from '@/components/ErrorMessage'
+import ClinicList from '@/components/ClinicList'
+import MedicalReviewRanking from '@/components/MedicalReviewRanking'
 
-interface Clinic {
-  id: number
-  name: string
-  star: number | null
-  user_review_count: number
-  geo: any
-  prefecture: string
-  area: string
-}
-
-export default async function ClinicsPage() {
+export default async function ClinicListPage() {
   const supabase = await createClient()
   const { data: clinics, error } = await supabase
     .from('clinics')
-    .select('*')
+    .select(`
+      *,
+      area:areas(
+        id,
+        name,
+        prefecture_id,
+        prefecture:prefectures(
+          id,
+          name
+        )
+      )
+    `)
     .order('id', { ascending: true })
 
   if (error) {
-    return (
-      <div style={{
-        padding: '20px',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        fontFamily: 'system-ui, -apple-system, sans-serif'
-      }}>
-        <h1 style={{ color: '#dc2626', marginBottom: '20px' }}>エラーが発生しました</h1>
-        <div style={{
-          backgroundColor: '#fef2f2',
-          border: '1px solid #fca5a5',
-          borderRadius: '8px',
-          padding: '16px',
-          color: '#991b1b'
-        }}>
-          <strong>データベースエラー:</strong> {error.message}
-        </div>
-      </div>
-    )
+    return <ErrorMessage message={error.message} />
   }
 
-  if (!clinics || clinics.length === 0) {
-    return (
-      <div style={{
-        padding: '20px',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        textAlign: 'center'
-      }}>
-        <h1 style={{ marginBottom: '20px' }}>クリニック一覧</h1>
-        <div style={{
-          backgroundColor: '#f3f4f6',
-          border: '1px solid #d1d5db',
-          borderRadius: '8px',
-          padding: '40px',
-          color: '#6b7280'
-        }}>
-          <p style={{ fontSize: '18px', margin: 0 }}>登録されているクリニックはありません。</p>
+  // Extract unique prefectures from clinics data
+  const uniquePrefectures = Array.from(
+    new Set(
+      (clinics || [])
+        .map(clinic => clinic.area?.prefecture?.name)
+        .filter(Boolean)
+    )
+  ).sort()
+
+  return (
+    <div className="w-full px-[5px] md:px-4 pt-5 md:py-8">
+      <div className="flex flex-col md:flex-row gap-6 items-start">
+        {/* クリニックリスト - 2列で表示 */}
+        <ClinicList
+          clinics={clinics || []}
+          title="クリニックはこちら"
+          subtitle="List of Local places"
+          width="3/4"
+          gridCols="2"
+        />
+
+        {/* サイドバー - モバイルでは下に表示 */}
+        <div className="w-full md:w-1/4 flex flex-col gap-6">
+          {/* メディカルクチコミランキング */}
+          <div className="w-full">
+            <MedicalReviewRanking variant="desktop" />
+          </div>
+
+          {/* 各エリアから探す */}
+          <div className="w-full bg-white rounded-lg p-5 shadow-md">
+            {/* Title */}
+            <div className="mb-3">
+              <h3 className="text-base font-bold text-gray-700 text-center">
+                各エリアから探す
+              </h3>
+              <div className="w-12 h-1 mx-auto mt-2 rounded-full" style={{ backgroundColor: 'rgba(166, 154, 126, 1)' }}></div>
+            </div>
+
+            {/* Area Buttons */}
+            <div className="flex flex-wrap gap-2">
+              {uniquePrefectures.map((prefecture) => (
+                <button
+                  key={prefecture}
+                  className="py-1.5 px-2 text-white text-xs font-medium rounded hover:opacity-90 transition-all duration-200 flex items-center gap-1 group"
+                  style={{ backgroundColor: 'rgba(166, 154, 126, 1)' }}
+                >
+                  <span>{prefecture}</span>
+                  <span className="flex items-center justify-center w-4 h-4 bg-white rounded-full transition-all duration-200 group-hover:translate-x-1 flex-shrink-0">
+                    <span className="font-bold text-base leading-none inline-block" style={{ color: 'rgba(166, 154, 126, 1)', transform: 'translate(0.5px, -1.5px)' }}>›</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-    )
-  }
-
-  return <ClinicsClient clinics={clinics} />
+    </div>
+  )
 }
