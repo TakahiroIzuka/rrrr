@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import ErrorMessage from '@/components/ErrorMessage'
 import { notFound } from 'next/navigation'
 import { getStarImage } from '@/lib/utils/starRating'
+import Div2 from './Div2'
 
 interface ClinicDetailPageProps {
   params: {
@@ -122,9 +123,8 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
           </div>
 
           {/* div2 */}
-          <div className="mb-4 border-2 border-gray-300 p-4">
-            <p>div2</p>
-          </div>
+          <Div2 clinic={clinic} />
+
 
           {/* div3 */}
           <div className="mb-4 border-2 border-gray-300 p-4">
