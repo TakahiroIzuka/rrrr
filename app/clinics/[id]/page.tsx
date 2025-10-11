@@ -55,12 +55,12 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="mx-20 pt-10 pb-24">
         {/* コンテンツ */}
-        <div className="bg-white rounded-lg p-6 shadow-md">
+        <div className="bg-white rounded-xl shadow-lg" style={{ padding: '25px' }}>
           {/* div1 */}
-          <div className="mb-4 border-2 border-gray-300">
-            <div className="flex gap-4 p-4 pb-0">
+          <div className="mb-2">
+            <div className="flex gap-4 pt-2 pb-0">
               {/* 左側 */}
               <div className="w-[45%]">
                 <h1 className="text-xl font-bold mb-3" style={{ fontFamily: 'Kosugi Maru, sans-serif' }}>{clinic.name}</h1>
@@ -118,7 +118,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
             </div>
 
             {/* バー */}
-            <div className="mx-4 mb-4 px-4 py-2 text-white text-sm rounded text-center" style={{ backgroundColor: 'rgb(163, 151, 125)' }}>
+            <div className="px-4 py-2 text-white text-sm rounded text-center" style={{ backgroundColor: 'rgb(163, 151, 125)' }}>
               Googleクチコミの情報は、常に最新情報が表示されています。
             </div>
           </div>
@@ -128,7 +128,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
 
 
           {/* div3 */}
-          <div className="mb-4 border-2 border-gray-300 p-4" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
+          <div className="mb-2 p-4 rounded-lg" style={{ backgroundColor: 'rgb(255, 249, 240)', marginLeft: '3px', marginRight: '3px' }}>
             {/* バー */}
             <div className="relative mb-4">
               <div className="w-full px-4 py-2 text-sm border-2 rounded text-center bg-white" style={{ borderColor: 'rgb(220, 194, 219)', color: 'rgb(220, 194, 219)' }}>
@@ -139,7 +139,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
             </div>
 
             {/* カードグリッド */}
-            <div className="grid grid-cols-3 gap-4 mt-6">
+            <div className="grid grid-cols-3 gap-5 mt-6" style={{ paddingLeft: '15px', paddingRight: '15px' }}>
               <ReviewCard
                 clinic={clinic}
                 userImage="https://placehold.co/100x100/e3d5ca/000000?text=User"
@@ -162,7 +162,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
           </div>
 
           {/* div4 */}
-          <div className="border-2 border-gray-300 p-4 flex justify-center">
+          <div className="p-4 flex justify-center">
             <a href="/clinic">
               <button className="text-white text-sm" style={{ width: '390px', height: '60px', backgroundColor: 'rgb(163, 151, 125)' }}>
                 戻る

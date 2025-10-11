@@ -20,7 +20,7 @@ export default function Div2({ clinic }: Div2Props) {
   const [selectedImage, setSelectedImage] = useState(0)
 
   return (
-    <div className="mb-4 border-2 border-gray-300 p-4">
+    <div className="py-4" style={{ paddingLeft: '10px', paddingRight: '10px' }}>
       <div className="flex gap-4">
         {/* 左側 - 画像エリア */}
         <div className="w-[45%]">

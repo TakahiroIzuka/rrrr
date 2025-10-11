@@ -9,7 +9,7 @@ interface ReviewCardProps {
 
 export default function ReviewCard({ clinic, userImage, showDate = false }: ReviewCardProps) {
   return (
-    <div className="bg-white rounded p-3 h-52 flex flex-col">
+    <div className="bg-white rounded p-3 h-52 flex flex-col shadow-md">
       {/* 上段：画像、施設名、Googleロゴ */}
       <div className="flex gap-3 mb-3 relative">
         <img src={userImage} alt="ユーザー画像" className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
