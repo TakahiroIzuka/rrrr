@@ -13,6 +13,19 @@ interface ClinicCardProps {
   onMouseLeave: () => void
 }
 
+const getGenreNoImage = (genreId: number): string => {
+  switch (genreId) {
+    case 1:
+      return '/mrr/pilates/noimage.jpg'
+    case 2:
+      return '/mrr/medical/noimage.jpg'
+    case 5:
+      return '/mrr/dermatology/noimage.jpg'
+    default:
+      return '/mrr/medical/noimage.jpg'
+  }
+}
+
 export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLeave }: ClinicCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
@@ -86,7 +99,7 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
             onTouchEnd={handleDragEnd}
           >
             <img
-              src={DEFAULT_CLINIC_IMAGES[currentImageIndex]}
+              src={getGenreNoImage(clinic.genre_id)}
               alt={`${clinic.name}の画像`}
               className="w-full h-full object-cover pointer-events-none"
             />

@@ -14,6 +14,11 @@ export default function Header() {
   // 詳細ページかどうかを判定
   const isDetailPage = pathname?.startsWith('/clinics/') && pathname !== '/clinics'
 
+  // 詳細ページの場合はHeaderを表示しない
+  if (isDetailPage) {
+    return null
+  }
+
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY

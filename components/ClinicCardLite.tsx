@@ -14,6 +14,19 @@ interface ClinicCardLiteProps {
   onMouseLeave: () => void
 }
 
+const getGenreNoImage = (genreId: number): string => {
+  switch (genreId) {
+    case 1:
+      return '/mrr/pilates/noimage.jpg'
+    case 2:
+      return '/mrr/medical/noimage.jpg'
+    case 5:
+      return '/mrr/dermatology/noimage.jpg'
+    default:
+      return '/mrr/medical/noimage.jpg'
+  }
+}
+
 export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMouseLeave }: ClinicCardLiteProps) {
   const dragRef = useRef<HTMLDivElement>(null)
   const {
@@ -52,7 +65,7 @@ export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMous
         >
           <div className="w-full h-32 bg-gray-100 overflow-hidden">
             <img
-              src={DEFAULT_CLINIC_IMAGES[currentImageIndex]}
+              src={getGenreNoImage(clinic.genre_id)}
               alt={`${clinic.name}の画像`}
               className="w-full h-full object-cover"
               draggable={false}

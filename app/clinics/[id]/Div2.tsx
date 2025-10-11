@@ -7,6 +7,19 @@ interface Div2Props {
   clinic: Clinic
 }
 
+const getGenreNoImage = (genreId: number): string => {
+  switch (genreId) {
+    case 1:
+      return '/mrr/pilates/noimage.jpg'
+    case 2:
+      return '/mrr/medical/noimage.jpg'
+    case 5:
+      return '/mrr/dermatology/noimage.jpg'
+    default:
+      return '/mrr/medical/noimage.jpg'
+  }
+}
+
 // テスト用の画像リンク
 const TEST_IMAGES = [
   'https://placehold.co/600x400/e3d5ca/000000?text=Image+1',
@@ -27,22 +40,22 @@ export default function Div2({ clinic }: Div2Props) {
           {/* メイン画像 */}
           <div className="mb-2 bg-gray-100 rounded-lg overflow-hidden">
             <img
-              src={TEST_IMAGES[selectedImage]}
-              alt={`${clinic.name}の画像 ${selectedImage + 1}`}
+              src={getGenreNoImage(clinic.genre_id)}
+              alt={`${clinic.name}の画像`}
               className="w-full h-72 md:h-80 object-cover"
             />
           </div>
 
           {/* サムネイル画像 */}
           <div className="flex rounded-lg overflow-hidden">
-            {TEST_IMAGES.map((image, index) => (
+            {Array.from({ length: 5 }).map((_, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedImage(index)}
                 className="flex-1 overflow-hidden transition-all relative"
               >
                 <img
-                  src={image}
+                  src={getGenreNoImage(clinic.genre_id)}
                   alt={`${clinic.name}のサムネイル ${index + 1}`}
                   className="w-full h-16 object-cover"
                 />

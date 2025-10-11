@@ -1,23 +1,30 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
+interface DetailFooterProps {
+  genreId: number
+}
 
-export default function Footer() {
-  const pathname = usePathname()
-
-  // 詳細ページかどうかを判定
-  const isDetailPage = pathname?.startsWith('/clinics/') && pathname !== '/clinics' && !pathname?.startsWith('/clinic-')
-
-  // 詳細ページの場合はFooterを表示しない
-  if (isDetailPage) {
-    return null
+const getGenreLogoPath = (genreId: number): string => {
+  switch (genreId) {
+    case 1:
+      return '/mrr/pilates/logo_footer.png'
+    case 2:
+      return '/mrr/medical/logo_footer.png'
+    case 5:
+      return '/mrr/dermatology/logo_footer.png'
+    default:
+      return '/mrr/medical/logo_footer.png'
   }
+}
+
+export default function DetailFooter({ genreId }: DetailFooterProps) {
+  const logoPath = getGenreLogoPath(genreId)
 
   return (
     <footer className="bg-[#eae3db] mx-0 md:mx-[15px] mb-0 md:mb-[15px] mt-0 md:mt-[15px] pt-[25px] pb-4 text-center md:rounded-lg">
       {/* Logo */}
       <div className="flex justify-center mb-6">
-        <img src="/mrr/medical/logo_footer.png" alt="Medical Review Ranking" className="h-20 md:h-32" />
+        <img src={logoPath} alt="Medical Review Ranking" className="h-20 md:h-32" />
       </div>
 
       {/* Request Button */}
