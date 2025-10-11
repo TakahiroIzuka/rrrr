@@ -115,7 +115,7 @@ export default function Header() {
               <Image
                 src="/mrr/medical/logo_header.png"
                 alt="メディカルクチコミランキング"
-                width={1800}
+                width={180}
                 height={40}
                 className="h-10 md:hidden"
               />
