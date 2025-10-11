@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 
 interface ClinicDetailPageProps {
   params: {
-    clinic_uuid: string
+    id: string
   }
 }
 
@@ -25,7 +25,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
         )
       )
     `)
-    .eq('uuid', params.clinic_uuid)
+    .eq('id', params.id)
     .single()
 
   if (error || !clinic) {
