@@ -86,8 +86,13 @@ export default function Div2({ clinic }: Div2Props) {
             <div className="w-full md:w-[30%] p-2 rounded text-center flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
               <p>エリア</p>
             </div>
-            <div className="w-full md:w-[70%] p-2">
-              <p>c</p>
+            <div className="w-full md:w-[70%] p-2 flex items-center gap-1.5">
+              <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
+                {clinic.prefecture?.name}
+              </span>
+              <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
+                {clinic.area?.name}
+              </span>
             </div>
           </div>
           <div className="border-0 md:border-b border-gray-300 p-1.5 flex flex-col md:flex-row">
