@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
+import Image from 'next/image'
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -51,14 +52,18 @@ export default function Header() {
       <header className="bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-24 relative z-[1000]" style={{ borderTop: '5px solid #a69a7e' }}>
       <div className="flex justify-between items-center h-full px-4 md:px-8">
         <div className="flex items-center gap-4">
-          <img
-            src="/mrr/logo_header_sp.png"
+          <Image
+            src="/mrr/medical/logo_header.png"
             alt="メディカルクチコミランキング"
+            width={180}
+            height={40}
             className="h-10 md:hidden"
           />
-          <img
-            src="/mrr/logo_header.png"
+          <Image
+            src="/mrr/medical/logo_header.png"
             alt="メディカルクチコミランキング"
+            width={280}
+            height={64}
             className="h-16 hidden md:block"
           />
         </div>
@@ -107,14 +112,18 @@ export default function Header() {
         >
           <div className="flex justify-between items-center h-full px-4 md:px-8">
             <div className="flex items-center gap-4">
-              <img
-                src="/mrr/logo_header_sp.png"
+              <Image
+                src="/mrr/medical/logo_header.png"
                 alt="メディカルクチコミランキング"
+                width={1800}
+                height={40}
                 className="h-10 md:hidden"
               />
-              <img
-                src="/mrr/logo_header.png"
+              <Image
+                src="/mrr/medical/logo_header.png"
                 alt="メディカルクチコミランキング"
+                width={280}
+                height={64}
                 className="h-16 hidden md:block"
               />
             </div>

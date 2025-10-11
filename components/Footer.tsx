@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="bg-[#eae3db] mx-0 md:mx-[15px] mb-0 md:mb-[15px] mt-0 md:mt-[15px] pt-[25px] pb-4 text-center md:rounded-lg">
       {/* Logo */}
       <div className="flex justify-center mb-6">
-        <img src="/mrr/logo_footer.png" alt="Medical Review Ranking" className="h-20 md:h-32" />
+        <img src="/mrr/medical/logo_footer.png" alt="Medical Review Ranking" className="h-20 md:h-32" />
       </div>
 
       {/* Request Button */}

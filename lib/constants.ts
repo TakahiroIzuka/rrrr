@@ -10,9 +10,9 @@ export const RANKING_OPTIONS = ['トップ30', 'トップ20', 'トップ10', '�
 
 // Clinic images
 export const DEFAULT_CLINIC_IMAGES = [
-  '/mrr/beauty-noimage.jpg',
-  '/mrr/beauty-noimage.jpg',
-  '/mrr/beauty-noimage.jpg'
+  '/mrr/medical/noimage.jpg',
+  '/mrr/medical/noimage.jpg',
+  '/mrr/medical/noimage.jpg'
 ] as const
 
 export const IMAGE_COUNT = 3
