@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { getStarImage } from '@/lib/utils/starRating'
 import Div2 from './Div2'
 import ReviewCard from './ReviewCard'
+import ScrollToReviewButton from './ScrollToReviewButton'
 
 interface ClinicDetailPageProps {
   params: {
@@ -105,15 +106,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
                 </div>
 
                 {/* ボタン */}
-                <button className="w-full px-4 py-3 rounded text-white text-sm flex flex-col items-center justify-center gap-1 mt-2 mb-2" style={{ backgroundColor: 'rgb(220, 194, 219)' }}>
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold">{clinic.name}のクチコミ一覧はこちら！</span>
-                    <span className="flex items-center justify-center w-5 h-5 bg-white rounded-full flex-shrink-0">
-                      <span className="font-bold text-base leading-none" style={{ color: 'rgb(220, 194, 219)', transform: 'translate(0.5px, -1px)' }}>›</span>
-                    </span>
-                  </div>
-                  <span className="text-xs">Review List</span>
-                </button>
+                <ScrollToReviewButton clinicName={clinic.name} />
               </div>
             </div>
 
@@ -128,7 +121,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
 
 
           {/* div3 */}
-          <div className="mb-2 p-4 rounded-lg" style={{ backgroundColor: 'rgb(255, 249, 240)', marginLeft: '3px', marginRight: '3px' }}>
+          <div id="review-section" className="mb-2 p-4 rounded-lg" style={{ backgroundColor: 'rgb(255, 249, 240)', marginLeft: '3px', marginRight: '3px' }}>
             {/* バー */}
             <div className="relative mb-4">
               <div className="w-full px-4 py-2 text-sm border-2 rounded text-center bg-white" style={{ borderColor: 'rgb(220, 194, 219)', color: 'rgb(220, 194, 219)' }}>
