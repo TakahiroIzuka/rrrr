@@ -162,8 +162,12 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
           </div>
 
           {/* div4 */}
-          <div className="border-2 border-gray-300 p-4">
-            <p>div4</p>
+          <div className="border-2 border-gray-300 p-4 flex justify-center">
+            <a href="/clinic">
+              <button className="text-white text-sm" style={{ width: '390px', height: '60px', backgroundColor: 'rgb(163, 151, 125)' }}>
+                戻る
+              </button>
+            </a>
           </div>
         </div>
       </div>
