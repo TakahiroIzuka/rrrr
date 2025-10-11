@@ -47,7 +47,7 @@ export default function ScrollToReviewButton({ clinicName }: ScrollToReviewButto
           <span className="font-bold text-base leading-none" style={{ color: 'rgb(220, 194, 219)', transform: 'translate(0.5px, -1px)' }}>›</span>
         </span>
       </div>
-      <span className="text-xs">Review List</span>
+      <span className="text-xs hidden md:inline">Review List</span>
     </button>
   )
 }

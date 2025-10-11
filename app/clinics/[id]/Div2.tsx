@@ -20,16 +20,16 @@ export default function Div2({ clinic }: Div2Props) {
   const [selectedImage, setSelectedImage] = useState(0)
 
   return (
-    <div className="py-4" style={{ paddingLeft: '10px', paddingRight: '10px' }}>
-      <div className="flex gap-4">
+    <div className="p-0 md:py-4 md:px-[10px]">
+      <div className="flex flex-col md:flex-row gap-4">
         {/* 左側 - 画像エリア */}
-        <div className="w-[45%]">
+        <div className="w-full md:w-[45%]">
           {/* メイン画像 */}
           <div className="mb-2 bg-gray-100 rounded-lg overflow-hidden">
             <img
               src={TEST_IMAGES[selectedImage]}
               alt={`${clinic.name}の画像 ${selectedImage + 1}`}
-              className="w-full h-80 object-cover"
+              className="w-full h-72 md:h-80 object-cover"
             />
           </div>
 
@@ -55,13 +55,13 @@ export default function Div2({ clinic }: Div2Props) {
         </div>
 
         {/* 右側 - 情報エリア */}
-        <div className="w-[55%] flex flex-col text-sm">
-          <div className="border-b border-gray-300 p-1.5 text-center bg-white">
+        <div className="w-full md:w-[55%] flex flex-col text-sm">
+          <div className="border-b border-gray-300 p-1.5 text-center bg-white hidden md:block">
             <div className="p-2 rounded" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
               <p>基本情報</p>
             </div>
           </div>
-          <div className="border-b border-gray-300 p-1.5 flex">
+          <div className="border-b border-gray-300 p-1.5 flex md:flex hidden">
             <div className="w-[30%] p-2 rounded text-center flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
               <p>会社名</p>
             </div>
@@ -69,27 +69,27 @@ export default function Div2({ clinic }: Div2Props) {
               <p>b</p>
             </div>
           </div>
-          <div className="border-b border-gray-300 p-1.5 flex">
-            <div className="w-[30%] p-2 rounded text-center flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
+          <div className="border-0 md:border-b border-gray-300 p-1.5 flex flex-col md:flex-row">
+            <div className="w-full md:w-[30%] p-2 rounded text-center flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
               <p>エリア</p>
             </div>
-            <div className="w-[70%] p-2">
+            <div className="w-full md:w-[70%] p-2">
               <p>c</p>
             </div>
           </div>
-          <div className="border-b border-gray-300 p-1.5 flex">
-            <div className="w-[30%] p-2 rounded text-center flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
+          <div className="border-0 md:border-b border-gray-300 p-1.5 flex flex-col md:flex-row">
+            <div className="w-full md:w-[30%] p-2 rounded text-center flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
               <p>住所</p>
             </div>
-            <div className="w-[70%] p-2">
+            <div className="w-full md:w-[70%] p-2">
               <p>d</p>
             </div>
           </div>
-          <div className="border-b border-gray-300 p-1.5 flex">
-            <div className="w-[30%] p-2 rounded text-center flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
+          <div className="border-0 md:border-b border-gray-300 p-1.5 flex flex-col md:flex-row">
+            <div className="w-full md:w-[30%] p-2 rounded text-center flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
               <p>オフィシャルHP</p>
             </div>
-            <div className="w-[70%] p-2 flex items-center">
+            <div className="w-full md:w-[70%] p-2 flex items-center">
               <button className="relative bg-white border-2 px-3 py-1.5 rounded text-sm font-medium hover:bg-gray-50 transition-colors overflow-visible" style={{ borderColor: 'rgb(163, 151, 125)', color: 'rgb(163, 151, 125)' }}>
                 オフィシャルHPはこちら
                 <div className="absolute -top-2 -right-2 w-4 h-4 border-2 rounded-sm" style={{ borderColor: 'rgb(163, 151, 125)' }}></div>

@@ -38,7 +38,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
   return (
     <>
       {/* Breadcrumb */}
-      <div className="hidden md:block py-1" style={{ backgroundColor: '#fff9f0' }}>
+      <div className="block py-1" style={{ backgroundColor: '#fff9f0' }}>
         <div className="mx-[30px]">
           <nav className="text-[12px]">
             <ol className="flex items-center gap-2">
@@ -56,14 +56,14 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
         </div>
       </div>
 
-      <div className="mx-20 pt-10 pb-24">
+      <div className="mx-[10px] mb-[10px] pt-[10px] md:mx-20 md:pt-10 md:pb-24 md:mb-0">
         {/* コンテンツ */}
-        <div className="bg-white rounded-xl shadow-lg" style={{ padding: '25px' }}>
+        <div className="bg-white rounded-xl shadow-lg p-[10px] md:p-[25px]">
           {/* div1 */}
           <div className="mb-2">
-            <div className="flex gap-4 pt-2 pb-0">
+            <div className="flex flex-col md:flex-row gap-0 md:gap-4 pt-2 pb-0">
               {/* 左側 */}
-              <div className="w-[45%]">
+              <div className="w-full md:w-[45%]">
                 <h1 className="text-xl font-bold mb-3" style={{ fontFamily: 'Kosugi Maru, sans-serif' }}>{clinic.name}</h1>
 
                 <div className="flex items-center mb-2 gap-1.5 pb-2 border-b border-[#a59878]">
@@ -75,7 +75,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
                   </span>
                 </div>
 
-                <div className="mb-3 pb-2 border-b border-[#a59878]">
+                <div className="mb-0 md:mb-3 pb-2 border-b border-[#a59878]">
                   <div className="flex items-center gap-1.5 mb-1">
                     <img
                       src="/common/ranking-icon.png"
@@ -95,9 +95,9 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
                 </div>
               </div>
               {/* 右側 */}
-              <div className="w-[55%] flex flex-col">
+              <div className="w-full md:w-[55%] flex flex-col">
                 {/* バー */}
-                <div className="relative mb-4 mt-2">
+                <div className="relative mb-4 mt-2 hidden md:block">
                   <div className="w-full px-4 py-2 text-sm border-2 rounded text-center" style={{ borderColor: 'rgb(220, 194, 219)', color: 'rgb(220, 194, 219)' }}>
                     クチコミ投稿に是非ご協力ください！
                   </div>
@@ -132,7 +132,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
             </div>
 
             {/* カードグリッド */}
-            <div className="grid grid-cols-3 gap-5 mt-6" style={{ paddingLeft: '15px', paddingRight: '15px' }}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5 mt-6 p-0 md:px-[15px]">
               <ReviewCard
                 clinic={clinic}
                 userImage="https://placehold.co/100x100/e3d5ca/000000?text=User"
@@ -157,7 +157,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
           {/* div4 */}
           <div className="p-4 flex justify-center">
             <a href="/clinic">
-              <button className="text-white text-sm" style={{ width: '390px', height: '60px', backgroundColor: 'rgb(163, 151, 125)' }}>
+              <button className="text-white text-sm w-64 md:w-[390px] h-12 md:h-[60px]" style={{ backgroundColor: 'rgb(163, 151, 125)' }}>
                 戻る
               </button>
             </a>
