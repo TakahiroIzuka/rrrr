@@ -166,7 +166,7 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
           </div>
         </div>
 
-        <Link href={`/clinic/${clinic.uuid}`}>
+        <Link href={`/clinics/${clinic.id}`}>
           <button className="w-full py-2.5 px-4 bg-[#a59878] text-white text-sm font-bold rounded-md hover:bg-black transition-all duration-300 group relative overflow-visible">
             <span className="invisible">基本情報とクチコミ詳細はこちら</span>
             <span className="absolute inset-0 flex items-center justify-center gap-2 -translate-x-3">

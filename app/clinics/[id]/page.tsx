@@ -32,17 +32,47 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">{clinic.name}</h1>
-      <div className="bg-white rounded-lg p-6 shadow-md">
-        <div className="mb-4">
-          <h2 className="text-xl font-semibold mb-2">基本情報</h2>
-          <p className="text-gray-600">都道府県: {clinic.prefecture?.name}</p>
-          <p className="text-gray-600">エリア: {clinic.area?.name}</p>
-          <p className="text-gray-600">評価: {clinic.star ?? '未評価'}</p>
-          <p className="text-gray-600">レビュー数: {clinic.user_review_count}件</p>
+    <>
+      {/* Breadcrumb */}
+      <div className="hidden md:block py-1" style={{ backgroundColor: '#fff9f0' }}>
+        <div className="mx-[30px]">
+          <nav className="text-[12px]">
+            <ol className="flex items-center gap-2">
+              <li>
+                <a href="/clinic" className="text-black hover:underline transition-colors">トップ</a>
+              </li>
+              <li className="text-black">&gt;</li>
+              <li>
+                <a href="/clinics" className="text-black hover:underline transition-colors">クリニック・施設一覧</a>
+              </li>
+              <li className="text-black">&gt;</li>
+              <li className="text-black">{clinic.name}</li>
+            </ol>
+          </nav>
         </div>
       </div>
-    </div>
+
+      <div className="container mx-auto px-4 py-8">
+        {/* コンテンツ */}
+        <div className="bg-white rounded-lg p-6 shadow-md">
+          {/* タイトル */}
+          <h1 className="text-3xl font-bold mb-6">{clinic.name}</h1>
+
+          {/* 4分割コンテンツ */}
+          <div className="mb-4">
+            <p>div1</p>
+          </div>
+          <div className="mb-4">
+            <p>div2</p>
+          </div>
+          <div className="mb-4">
+            <p>div3</p>
+          </div>
+          <div>
+            <p>div4</p>
+          </div>
+        </div>
+      </div>
+    </>
   )
 }

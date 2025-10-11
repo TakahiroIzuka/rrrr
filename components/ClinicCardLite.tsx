@@ -133,7 +133,7 @@ export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMous
           </div>
         </div>
 
-        <Link href={`/clinic/${clinic.uuid}`}>
+        <Link href={`/clinics/${clinic.id}`}>
           <button className="w-full py-2.5 px-2 bg-[#a59878] text-white text-[11px] font-semibold rounded hover:bg-black transition-all duration-300 group">
             <span className="text-center leading-tight inline-block">
               基本情報とクチコミ詳細<span className="inline-flex items-center justify-center w-3 h-3 bg-white rounded-full transition-all duration-300 group-hover:translate-x-1 ml-1 align-middle">
