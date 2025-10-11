@@ -10,7 +10,7 @@ export function useClinicFilter(allClinics: Clinic[]) {
     let filtered = allClinics
 
     if (prefectures.length > 0) {
-      filtered = filtered.filter(clinic => clinic.area?.prefecture?.name && prefectures.includes(clinic.area.prefecture.name))
+      filtered = filtered.filter(clinic => clinic.prefecture?.name && prefectures.includes(clinic.prefecture.name))
     }
 
     if (genres.length > 0) {

@@ -9,14 +9,13 @@ export default async function ClinicListPage() {
     .from('clinics')
     .select(`
       *,
+      prefecture:prefectures(
+        id,
+        name
+      ),
       area:areas(
         id,
-        name,
-        prefecture_id,
-        prefecture:prefectures(
-          id,
-          name
-        )
+        name
       )
     `)
     .order('id', { ascending: true })
@@ -29,7 +28,7 @@ export default async function ClinicListPage() {
   const uniquePrefectures = Array.from(
     new Set(
       (clinics || [])
-        .map(clinic => clinic.area?.prefecture?.name)
+        .map(clinic => clinic.prefecture?.name)
         .filter(Boolean)
     )
   ).sort()

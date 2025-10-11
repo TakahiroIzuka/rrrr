@@ -7,14 +7,14 @@ export interface Clinic {
   lat: number
   lng: number
   genre_id: number
+  prefecture_id: number
   area_id: number
+  prefecture?: {
+    id: number
+    name: string
+  }
   area?: {
     id: number
     name: string
-    prefecture_id: number
-    prefecture?: {
-      id: number
-      name: string
-    }
   }
 }

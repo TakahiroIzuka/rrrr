@@ -8,14 +8,13 @@ export default async function HomePage() {
     .from('clinics')
     .select(`
       *,
+      prefecture:prefectures(
+        id,
+        name
+      ),
       area:areas(
         id,
-        name,
-        prefecture_id,
-        prefecture:prefectures(
-          id,
-          name
-        )
+        name
       )
     `)
     .order('id', { ascending: true })

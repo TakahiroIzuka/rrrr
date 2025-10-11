@@ -15,14 +15,13 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
     .from('clinics')
     .select(`
       *,
+      prefecture:prefectures(
+        id,
+        name
+      ),
       area:areas(
         id,
-        name,
-        prefecture_id,
-        prefecture:prefectures(
-          id,
-          name
-        )
+        name
       )
     `)
     .eq('id', params.id)
@@ -38,7 +37,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
       <div className="bg-white rounded-lg p-6 shadow-md">
         <div className="mb-4">
           <h2 className="text-xl font-semibold mb-2">基本情報</h2>
-          <p className="text-gray-600">都道府県: {clinic.area?.prefecture?.name}</p>
+          <p className="text-gray-600">都道府県: {clinic.prefecture?.name}</p>
           <p className="text-gray-600">エリア: {clinic.area?.name}</p>
           <p className="text-gray-600">評価: {clinic.star ?? '未評価'}</p>
           <p className="text-gray-600">レビュー数: {clinic.user_review_count}件</p>
