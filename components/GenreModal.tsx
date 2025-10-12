@@ -19,11 +19,11 @@ export default function GenreModal({ isOpen, onClose, genres }: GenreModalProps)
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 z-[2000] flex items-start md:items-center justify-center p-4 md:pt-16"
+      className="fixed inset-0 bg-black bg-opacity-50 z-[2000] flex items-start md:items-start justify-center p-4 md:pt-16"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[85vh] md:max-h-[80vh] overflow-y-auto relative mt-16 md:mt-0"
+        className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[85vh] md:max-h-[80vh] overflow-y-auto relative mt-16 md:mt-8"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button (X) */}
@@ -53,11 +53,10 @@ export default function GenreModal({ isOpen, onClose, genres }: GenreModalProps)
               <Link
                 key={genre.id}
                 href={`/clinic/genres/${genre.id}`}
-                className="block px-3 py-2.5 md:px-4 md:py-3 border rounded-lg transition-colors hover:bg-gray-50"
+                className="block px-3 py-2.5 md:px-4 md:py-3 border rounded-lg transition-colors hover:bg-gray-50 w-[calc(50%-4px)] md:w-[calc(33.333%-8px)]"
                 style={{
                   borderColor: 'rgb(165, 153, 126)',
-                  color: 'rgb(165, 153, 126)',
-                  width: 'calc(50% - 4px)'
+                  color: 'rgb(165, 153, 126)'
                 }}
                 onClick={onClose}
               >
