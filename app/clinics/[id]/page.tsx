@@ -26,6 +26,10 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
       area:areas(
         id,
         name
+      ),
+      company:companies(
+        id,
+        name
       )
     `)
     .eq('id', params.id)

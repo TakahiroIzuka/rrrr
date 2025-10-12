@@ -68,36 +68,36 @@ export default function Div2({ clinic }: Div2Props) {
         </div>
 
         {/* 右側 - 情報エリア */}
-        <div className="w-full md:w-[55%] flex flex-col text-sm">
+        <div className="w-full md:w-[55%] flex flex-col text-xs">
           <div className="border-b border-gray-300 p-1.5 text-center bg-white hidden md:block">
             <div className="p-2 rounded" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
-              <p>基本情報</p>
+              <p className="font-semibold">基本情報</p>
             </div>
           </div>
           <div className="border-b border-gray-300 p-1.5 flex md:flex hidden">
             <div className="w-[30%] p-2 rounded text-center flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
-              <p>会社名</p>
+              <p className="font-semibold">会社名</p>
             </div>
             <div className="w-[70%] p-2">
-              <p>b</p>
+              <p>{clinic.company?.name || '-'}</p>
             </div>
           </div>
           <div className="border-0 md:border-b border-gray-300 p-1.5 flex flex-col md:flex-row">
             <div className="w-full md:w-[30%] p-2 rounded text-center flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
-              <p>エリア</p>
+              <p className="font-semibold">エリア</p>
             </div>
             <div className="w-full md:w-[70%] p-2 flex items-center gap-1.5">
-              <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
+              <span className="text-gray-600 border border-gray-300 rounded px-2 py-0.5">
                 {clinic.prefecture?.name}
               </span>
-              <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
+              <span className="text-gray-600 border border-gray-300 rounded px-2 py-0.5">
                 {clinic.area?.name}
               </span>
             </div>
           </div>
           <div className="border-0 md:border-b border-gray-300 p-1.5 flex flex-col md:flex-row">
             <div className="w-full md:w-[30%] p-2 rounded text-center flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
-              <p>住所</p>
+              <p className="font-semibold">住所</p>
             </div>
             <div className="w-full md:w-[70%] p-2">
               <p>d</p>
@@ -105,10 +105,10 @@ export default function Div2({ clinic }: Div2Props) {
           </div>
           <div className="border-0 md:border-b border-gray-300 p-1.5 flex flex-col md:flex-row">
             <div className="w-full md:w-[30%] p-2 rounded text-center flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
-              <p>オフィシャルHP</p>
+              <p className="font-semibold">オフィシャルHP</p>
             </div>
             <div className="w-full md:w-[70%] p-2 flex items-center">
-              <button className="relative bg-white border-2 px-3 py-1.5 rounded text-sm font-medium hover:bg-gray-50 transition-colors overflow-visible" style={{ borderColor: 'rgb(163, 151, 125)', color: 'rgb(163, 151, 125)' }}>
+              <button className="relative bg-white border-2 px-3 py-1.5 rounded font-medium hover:bg-gray-50 transition-colors overflow-visible" style={{ borderColor: 'rgb(163, 151, 125)', color: 'rgb(163, 151, 125)' }}>
                 オフィシャルHPはこちら
                 <div className="absolute -top-2 -right-2 w-4 h-4 border-2 rounded-sm" style={{ borderColor: 'rgb(163, 151, 125)' }}></div>
               </button>
