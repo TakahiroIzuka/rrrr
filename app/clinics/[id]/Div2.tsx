@@ -7,17 +7,11 @@ interface Div2Props {
   clinic: Clinic
 }
 
-const getGenreNoImage = (genreId: number): string => {
-  switch (genreId) {
-    case 1:
-      return '/mrr/pilates/noimage.jpg'
-    case 2:
-      return '/mrr/medical/noimage.jpg'
-    case 5:
-      return '/mrr/dermatology/noimage.jpg'
-    default:
-      return '/mrr/medical/noimage.jpg'
+const getGenreNoImage = (genreCode?: string): string => {
+  if (!genreCode) {
+    return '/mrr/default/noimage.jpg'
   }
+  return `/mrr/${genreCode}/noimage.jpg`
 }
 
 // テスト用の画像リンク
@@ -40,7 +34,7 @@ export default function Div2({ clinic }: Div2Props) {
           {/* メイン画像 */}
           <div className="mb-2 bg-gray-100 rounded-lg overflow-hidden">
             <img
-              src={getGenreNoImage(clinic.genre_id)}
+              src={getGenreNoImage(clinic.genre?.code)}
               alt={`${clinic.name}の画像`}
               className="w-full h-72 md:h-80 object-cover"
             />
@@ -55,7 +49,7 @@ export default function Div2({ clinic }: Div2Props) {
                 className="flex-1 overflow-hidden transition-all relative"
               >
                 <img
-                  src={getGenreNoImage(clinic.genre_id)}
+                  src={getGenreNoImage(clinic.genre?.code)}
                   alt={`${clinic.name}のサムネイル ${index + 1}`}
                   className="w-full h-16 object-cover"
                 />

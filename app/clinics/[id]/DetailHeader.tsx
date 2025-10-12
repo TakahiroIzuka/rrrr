@@ -7,29 +7,24 @@ import Image from 'next/image'
 interface DetailHeaderProps {
   genreId: number
   genreName: string
+  genreCode?: string
 }
 
-const getGenreLogoPath = (genreId: number): string => {
-  switch (genreId) {
-    case 1:
-      return '/mrr/pilates/logo_header.png'
-    case 2:
-      return '/mrr/medical/logo_header.png'
-    case 5:
-      return '/mrr/dermatology/logo_header.png'
-    default:
-      return '/mrr/medical/logo_header.png'
+const getGenreLogoPath = (genreCode?: string): string => {
+  if (!genreCode) {
+    return '/mrr/default/logo_header.png'
   }
+  return `/mrr/${genreCode}/logo_header.png`
 }
 
-export default function DetailHeader({ genreId, genreName }: DetailHeaderProps) {
+export default function DetailHeader({ genreId, genreName, genreCode }: DetailHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const pathname = usePathname()
 
-  const logoPath = getGenreLogoPath(genreId)
+  const logoPath = getGenreLogoPath(genreCode)
 
   useEffect(() => {
     const handleScroll = () => {

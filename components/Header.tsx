@@ -58,14 +58,14 @@ export default function Header() {
       <div className="flex justify-between items-center h-full px-4 md:px-8">
         <div className="flex items-center gap-4">
           <Image
-            src="/mrr/medical/logo_header.png"
+            src="/mrr/default/logo_header.png"
             alt="メディカルクチコミランキング"
             width={180}
             height={40}
             className="h-10 md:hidden"
           />
           <Image
-            src="/mrr/medical/logo_header.png"
+            src="/mrr/default/logo_header.png"
             alt="メディカルクチコミランキング"
             width={280}
             height={64}
@@ -118,14 +118,14 @@ export default function Header() {
           <div className="flex justify-between items-center h-full px-4 md:px-8">
             <div className="flex items-center gap-4">
               <Image
-                src="/mrr/medical/logo_header.png"
+                src="/mrr/default/logo_header.png"
                 alt="メディカルクチコミランキング"
                 width={180}
                 height={40}
                 className="h-10 md:hidden"
               />
               <Image
-                src="/mrr/medical/logo_header.png"
+                src="/mrr/default/logo_header.png"
                 alt="メディカルクチコミランキング"
                 width={280}
                 height={64}

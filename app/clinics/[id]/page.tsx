@@ -31,6 +31,11 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
         id,
         name
       ),
+      genre:genres(
+        id,
+        name,
+        code
+      ),
       clinic_detail:clinic_details!clinic_id(
         name,
         star,

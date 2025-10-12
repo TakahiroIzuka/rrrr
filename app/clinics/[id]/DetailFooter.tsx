@@ -2,23 +2,18 @@
 
 interface DetailFooterProps {
   genreId: number
+  genreCode?: string
 }
 
-const getGenreLogoPath = (genreId: number): string => {
-  switch (genreId) {
-    case 1:
-      return '/mrr/pilates/logo_footer.png'
-    case 2:
-      return '/mrr/medical/logo_footer.png'
-    case 5:
-      return '/mrr/dermatology/logo_footer.png'
-    default:
-      return '/mrr/medical/logo_footer.png'
+const getGenreLogoPath = (genreCode?: string): string => {
+  if (!genreCode) {
+    return '/mrr/default/logo_footer.png'
   }
+  return `/mrr/${genreCode}/logo_footer.png`
 }
 
-export default function DetailFooter({ genreId }: DetailFooterProps) {
-  const logoPath = getGenreLogoPath(genreId)
+export default function DetailFooter({ genreId, genreCode }: DetailFooterProps) {
+  const logoPath = getGenreLogoPath(genreCode)
 
   return (
     <div className="bg-white">

@@ -21,7 +21,8 @@ export default async function ClinicDetailLayout({
       genre_id,
       genre:genres(
         id,
-        name
+        name,
+        code
       )
     `)
     .eq('id', id)
@@ -36,9 +37,9 @@ export default async function ClinicDetailLayout({
       <style dangerouslySetInnerHTML={{
         __html: '.clinic-list-breadcrumb { display: none !important; }'
       }} />
-      <DetailHeader genreId={clinic.genre_id} genreName={clinic.genre?.name || ''} />
+      <DetailHeader genreId={clinic.genre_id} genreName={clinic.genre?.name || ''} genreCode={clinic.genre?.code} />
       {children}
-      <DetailFooter genreId={clinic.genre_id} />
+      <DetailFooter genreId={clinic.genre_id} genreCode={clinic.genre?.code} />
     </>
   )
 }

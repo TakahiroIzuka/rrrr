@@ -12,9 +12,10 @@ interface GenreHomeClientProps {
   clinics: Clinic[]
   genreId: number
   genreName: string
+  genreCode?: string
 }
 
-export default function GenreHomeClient({ clinics, genreId, genreName }: GenreHomeClientProps) {
+export default function GenreHomeClient({ clinics, genreId, genreName, genreCode }: GenreHomeClientProps) {
   const [filteredClinics, setFilteredClinics] = useState<Clinic[]>(clinics)
   const [selectedClinicId, setSelectedClinicId] = useState<number | null>(null)
   const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([])
@@ -34,7 +35,7 @@ export default function GenreHomeClient({ clinics, genreId, genreName }: GenreHo
   return (
     <>
       {/* Header with genre label */}
-      <DetailHeader genreId={genreId} genreName={genreName} />
+      <DetailHeader genreId={genreId} genreName={genreName} genreCode={genreCode} />
 
       <div className="flex flex-col w-full">
         {/* Map Section */}

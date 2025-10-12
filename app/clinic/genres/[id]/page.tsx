@@ -15,7 +15,7 @@ export default async function GenrePage({ params }: GenrePageProps) {
   // Get genre information
   const { data: genre, error: genreError } = await supabase
     .from('genres')
-    .select('id, name')
+    .select('id, name, code')
     .eq('id', params.id)
     .single()
 
@@ -61,5 +61,5 @@ export default async function GenrePage({ params }: GenrePageProps) {
     clinic_detail: Array.isArray(clinic.clinic_detail) ? clinic.clinic_detail[0] : clinic.clinic_detail
   }))
 
-  return <GenreHomeClient clinics={clinics || []} genreId={genre.id} genreName={genre.name} />
+  return <GenreHomeClient clinics={clinics || []} genreId={genre.id} genreName={genre.name} genreCode={genre.code} />
 }
