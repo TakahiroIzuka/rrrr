@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 import Image from 'next/image'
 import GenreModal from '@/components/GenreModal'
+import MobileMenu from '@/components/MobileMenu'
 
 interface DetailHeaderProps {
   genreId: number
@@ -92,33 +94,48 @@ export default function DetailHeader({ genreId, genreName, genreCode, showNavBut
       {/* Genre Modal */}
       <GenreModal isOpen={isGenreModalOpen} onClose={() => setIsGenreModalOpen(false)} genres={genres} />
 
-      {/* 通常のヘッダー（スクロール前） */}
-      <header className="bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-24 relative z-[1000]" style={{ borderTop: '5px solid #a69a7e' }}>
+      {/* Mobile Menu */}
+      <MobileMenu
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        logoPath={logoPath}
+        genreCode={genreCode}
+        onMapClick={showNavButtons ? () => scrollToSection('map-section') : undefined}
+        onListClick={showNavButtons ? () => scrollToSection('list-section') : undefined}
+        onGenreClick={() => setIsGenreModalOpen(true)}
+      />
+
+      {/* ヘッダー（スマホは固定、PCは通常） */}
+      <header className="bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-24 fixed md:relative z-[1000]" style={{ borderTop: '5px solid #a69a7e', width: '100%', top: 0, left: 0, right: 0 }}>
       <div className="flex justify-between items-center h-full px-4 md:px-8">
         <div className="flex items-center gap-10">
-          <Image
-            src={logoPath}
-            alt="メディカルクチコミランキング"
-            width={180}
-            height={40}
-            className="h-10 md:hidden"
-          />
-          <Image
-            src={logoPath}
-            alt="メディカルクチコミランキング"
-            width={280}
-            height={64}
-            className="h-16 hidden md:block"
-          />
+          <Link href="/clinic" className="md:hidden">
+            <Image
+              src={logoPath}
+              alt="メディカルクチコミランキング"
+              width={180}
+              height={40}
+              className="h-10"
+            />
+          </Link>
+          <Link href="/clinic" className="hidden md:block">
+            <Image
+              src={logoPath}
+              alt="メディカルクチコミランキング"
+              width={280}
+              height={64}
+              className="h-16"
+            />
+          </Link>
           {/* ラベル（PC表示） */}
           <div className="hidden md:flex items-center bg-[rgb(163,151,125)] text-white px-3 py-2 rounded-lg font-semibold text-sm mb-2">
             {genreName}
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 pr-14 md:pr-0">
           {/* ラベル（スマホ表示） */}
-          <div className="md:hidden flex items-center bg-[rgb(163,151,125)] text-white px-2 py-1.5 rounded-lg font-semibold text-xs">
+          <div className="md:hidden flex items-center bg-[rgb(163,151,125)] text-white px-2 py-1.5 rounded-lg font-semibold text-xs whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
             {genreName}
           </div>
 
@@ -169,50 +186,69 @@ export default function DetailHeader({ genreId, genreName, genreCode, showNavBut
 
           {/* ハンバーガーメニュー（スマホ） */}
           <button
-            className="md:hidden flex flex-col items-start justify-center gap-1.5 w-10 h-10 bg-white rounded-md"
+            className="md:hidden flex items-center justify-center w-10 h-10 rounded-md shadow-lg"
+            style={{
+              backgroundColor: 'white',
+              position: 'fixed',
+              right: '16px',
+              top: '12px',
+              zIndex: 9999
+            }}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            <span className="w-6 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
-            <span className="w-5 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
-            <span className="w-4 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
+            {isMobileMenuOpen ? (
+              <svg className="w-6 h-6" fill="none" stroke="rgb(163, 151, 125)" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <div className="flex flex-col items-start justify-center gap-1.5">
+                <span className="w-6 h-0.5 bg-[#a69a7e] transition-all"></span>
+                <span className="w-5 h-0.5 bg-[#a69a7e] transition-all"></span>
+                <span className="w-4 h-0.5 bg-[#a69a7e] transition-all"></span>
+              </div>
+            )}
           </button>
         </div>
       </div>
     </header>
 
-      {/* 固定ヘッダー（スクロール後） */}
+      {/* 固定ヘッダー（スクロール後・PCのみ） */}
       {isScrolled && (
         <header
-          className={`bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-24 fixed top-0 left-0 right-0 z-[1000] transition-transform duration-700 ease-out ${
+          className={`hidden md:block bg-white text-gray-700 h-24 fixed top-0 left-0 right-0 z-[1000] transition-transform duration-700 ease-out ${
             isVisible ? 'translate-y-0' : '-translate-y-full'
           }`}
           style={{ borderTop: '5px solid #a69a7e' }}
         >
           <div className="flex justify-between items-center h-full px-4 md:px-8">
             <div className="flex items-center gap-10">
-              <Image
-                src={logoPath}
-                alt="メディカルクチコミランキング"
-                width={180}
-                height={40}
-                className="h-10 md:hidden"
-              />
-              <Image
-                src={logoPath}
-                alt="メディカルクチコミランキング"
-                width={280}
-                height={64}
-                className="h-16 hidden md:block"
-              />
+              <Link href="/clinic" className="md:hidden">
+                <Image
+                  src={logoPath}
+                  alt="メディカルクチコミランキング"
+                  width={180}
+                  height={40}
+                  className="h-10"
+                />
+              </Link>
+              <Link href="/clinic" className="hidden md:block">
+                <Image
+                  src={logoPath}
+                  alt="メディカルクチコミランキング"
+                  width={280}
+                  height={64}
+                  className="h-16"
+                />
+              </Link>
               {/* ラベル（PC表示） */}
               <div className="hidden md:flex items-center bg-[rgb(163,151,125)] text-white px-3 py-2 rounded-lg font-semibold text-sm mb-2">
                 {genreName}
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 pr-14 md:pr-0">
               {/* ラベル（スマホ表示） */}
-              <div className="md:hidden flex items-center bg-[rgb(163,151,125)] text-white px-2 py-1.5 rounded-lg font-semibold text-xs">
+              <div className="md:hidden flex items-center bg-[rgb(163,151,125)] text-white px-2 py-1.5 rounded-lg font-semibold text-xs whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
                 {genreName}
               </div>
 
@@ -260,16 +296,6 @@ export default function DetailHeader({ genreId, genreName, genreCode, showNavBut
                   </button>
                 </nav>
               )}
-
-              {/* ハンバーガーメニュー（スマホ） */}
-              <button
-                className="md:hidden flex flex-col items-start justify-center gap-1.5 w-10 h-10 bg-white rounded-md"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                <span className="w-6 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
-                <span className="w-5 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
-                <span className="w-4 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
-              </button>
             </div>
           </div>
         </header>

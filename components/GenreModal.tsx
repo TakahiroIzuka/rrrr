@@ -19,17 +19,17 @@ export default function GenreModal({ isOpen, onClose, genres }: GenreModalProps)
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 z-[2000] flex items-start justify-center p-4 pt-16"
+      className="fixed inset-0 bg-black bg-opacity-50 z-[2000] flex items-start md:items-center justify-center p-4 md:pt-16"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[80vh] overflow-y-auto relative"
+        className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[85vh] md:max-h-[80vh] overflow-y-auto relative mt-16 md:mt-0"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button (X) */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 rounded w-8 h-8 flex items-center justify-center transition-opacity hover:opacity-80 z-10"
+          className="absolute top-3 right-3 md:top-4 md:right-4 rounded w-8 h-8 flex items-center justify-center transition-opacity hover:opacity-80 z-10"
           style={{ backgroundColor: 'rgb(227, 224, 215)', color: 'rgb(102, 102, 102)' }}
           aria-label="Close modal"
         >
@@ -39,30 +39,32 @@ export default function GenreModal({ isOpen, onClose, genres }: GenreModalProps)
         </button>
 
         {/* Title Section */}
-        <div className="px-6 py-6">
-          <h2 className="font-semibold whitespace-nowrap" style={{ color: 'rgb(165, 153, 126)' }}>
-            <span className="text-4xl">SELECT GENRE.</span> <span className="text-xl">ジャンルから探す</span>
+        <div className="px-4 py-4 md:px-6 md:py-6">
+          <h2 className="font-semibold" style={{ color: 'rgb(165, 153, 126)' }}>
+            <span className="text-2xl md:text-4xl block md:inline">SELECT GENRE.</span>
+            <span className="text-base md:text-xl block md:inline md:ml-2 mt-1 md:mt-0">ジャンルから探す</span>
           </h2>
         </div>
 
         {/* Genre List Section */}
-        <div className="px-6 py-4">
-          <div className="grid grid-cols-3 gap-3">
+        <div className="px-4 py-3 md:px-6 md:py-4">
+          <div className="flex flex-wrap gap-2 md:gap-3">
             {genres.map((genre) => (
               <Link
                 key={genre.id}
                 href={`/clinic/genres/${genre.id}`}
-                className="block w-full px-4 py-3 border rounded-lg transition-colors hover:bg-gray-50"
+                className="block px-3 py-2.5 md:px-4 md:py-3 border rounded-lg transition-colors hover:bg-gray-50"
                 style={{
                   borderColor: 'rgb(165, 153, 126)',
-                  color: 'rgb(165, 153, 126)'
+                  color: 'rgb(165, 153, 126)',
+                  width: 'calc(50% - 4px)'
                 }}
                 onClick={onClose}
               >
                 <div className="flex items-center justify-center gap-2">
-                  <span className="font-semibold text-lg leading-none">{genre.name}</span>
-                  <span className="flex items-center justify-center w-5 h-5 rounded-full flex-shrink-0 relative" style={{ backgroundColor: 'rgb(165, 153, 126)' }}>
-                    <span className="text-white font-bold absolute" style={{ fontSize: '22px', top: '50%', left: '50%', transform: 'translate(-50%, -54%)' }}>›</span>
+                  <span className="font-semibold text-base md:text-lg leading-none">{genre.name}</span>
+                  <span className="flex items-center justify-center w-4 h-4 md:w-5 md:h-5 rounded-full flex-shrink-0 relative" style={{ backgroundColor: 'rgb(165, 153, 126)' }}>
+                    <span className="text-white font-bold absolute" style={{ fontSize: '18px', top: '50%', left: '50%', transform: 'translate(-50%, -54%)' }}>›</span>
                   </span>
                 </div>
               </Link>
@@ -71,10 +73,10 @@ export default function GenreModal({ isOpen, onClose, genres }: GenreModalProps)
         </div>
 
         {/* Close Button Section */}
-        <div className="px-6 py-4">
+        <div className="px-4 py-3 md:px-6 md:py-4">
           <button
             onClick={onClose}
-            className="w-full px-4 py-3 bg-white rounded-lg font-medium transition-colors hover:bg-gray-50"
+            className="w-full px-4 py-2.5 md:py-3 bg-white rounded-lg font-medium transition-colors hover:bg-gray-50 text-sm md:text-base"
             style={{
               border: '2.5px solid rgb(165, 153, 126)',
               color: 'rgb(165, 153, 126)'
