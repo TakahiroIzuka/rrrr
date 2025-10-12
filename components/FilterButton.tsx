@@ -14,6 +14,7 @@ interface FilterButtonProps {
   onPrefecturesChange?: (prefectures: string[]) => void
   onGenresChange?: (genres: number[]) => void
   onRankingChange?: (ranking: string) => void
+  hideGenreFilter?: boolean
 }
 
 export default function FilterButton({
@@ -24,7 +25,8 @@ export default function FilterButton({
   selectedRanking: externalRanking,
   onPrefecturesChange,
   onGenresChange,
-  onRankingChange
+  onRankingChange,
+  hideGenreFilter = false
 }: FilterButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [internalPrefectures, setInternalPrefectures] = useState<string[]>([])
@@ -106,6 +108,7 @@ export default function FilterButton({
             onPrefectureChange={handlePrefectureChange}
             onGenreChange={handleGenreChange}
             onRankingChange={handleRankingChange}
+            hideGenreFilter={hideGenreFilter}
           />
         </div>
       </div>

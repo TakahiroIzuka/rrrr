@@ -17,6 +17,7 @@ interface ClinicsGridSectionProps {
   onGenresChange: (genres: number[]) => void
   onRankingChange: (ranking: string) => void
   onFilterChange: (filteredClinics: Clinic[]) => void
+  hideGenreFilter?: boolean
 }
 
 export default function ClinicsGridSection({
@@ -28,7 +29,8 @@ export default function ClinicsGridSection({
   onPrefecturesChange,
   onGenresChange,
   onRankingChange,
-  onFilterChange
+  onFilterChange,
+  hideGenreFilter = false
 }: ClinicsGridSectionProps) {
   const { applyFilters } = useClinicFilter(allClinics)
 
@@ -85,6 +87,7 @@ export default function ClinicsGridSection({
             onPrefectureChange={handlePrefectureChange}
             onGenreChange={handleGenreChange}
             onRankingChange={handleRankingChange}
+            hideGenreFilter={hideGenreFilter}
           />
         </div>
 
@@ -93,7 +96,7 @@ export default function ClinicsGridSection({
           {/* Left Box - 3/4 width */}
           <div className="w-3/4">
             <ClinicList
-              clinics={clinics.slice(0, 5)}
+              clinics={allClinics.slice(0, 5)}
               title="人気のクリニック5件はこちら"
               subtitle="Recommended Clinic"
               width="full"
@@ -143,6 +146,7 @@ export default function ClinicsGridSection({
               onPrefectureChange={handlePrefectureChange}
               onGenreChange={handleGenreChange}
               onRankingChange={handleRankingChange}
+              hideGenreFilter={hideGenreFilter}
             />
           </div>
         </div>

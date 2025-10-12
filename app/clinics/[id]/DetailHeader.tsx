@@ -95,6 +95,36 @@ export default function DetailHeader({ genreId, genreName }: DetailHeaderProps) 
             {genreName}
           </div>
 
+          {/* Navigation Buttons (PC) */}
+          <nav className="hidden md:flex gap-4 items-end">
+            <button
+              className="bg-white px-2.5 py-1 rounded-md font-medium text-xs transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
+              style={{ color: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
+            >
+              <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
+              <span
+                className="pb-1 border-b-2 transition-colors duration-200 relative z-10"
+                style={{ borderColor: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
+              >
+                マップで絞り込み検索
+              </span>
+              <span className="text-[10px] font-normal relative z-10">Map search</span>
+            </button>
+            <button
+              className="bg-white px-2.5 py-1 rounded-md font-medium text-xs transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
+              style={{ color: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
+            >
+              <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
+              <span
+                className="pb-1 border-b-2 transition-colors duration-200 relative z-10"
+                style={{ borderColor: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
+              >
+                リストで絞り込み検索
+              </span>
+              <span className="text-[10px] font-normal relative z-10">List search</span>
+            </button>
+          </nav>
+
           {/* ハンバーガーメニュー（スマホ） */}
           <button
             className="md:hidden flex flex-col items-start justify-center gap-1.5 w-10 h-10 bg-white rounded-md"
@@ -143,6 +173,36 @@ export default function DetailHeader({ genreId, genreName }: DetailHeaderProps) 
               <div className="md:hidden flex items-center bg-[rgb(163,151,125)] text-white px-2 py-1.5 rounded-lg font-semibold text-xs">
                 {genreName}
               </div>
+
+              {/* Navigation Buttons (PC) */}
+              <nav className="hidden md:flex gap-4 items-end">
+                <button
+                  className="bg-white px-2.5 py-1 rounded-md font-medium text-xs transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
+                  style={{ color: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
+                >
+                  <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
+                  <span
+                    className="pb-1 border-b-2 transition-colors duration-200 relative z-10"
+                    style={{ borderColor: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
+                  >
+                    マップで絞り込み検索
+                  </span>
+                  <span className="text-[10px] font-normal relative z-10">Map search</span>
+                </button>
+                <button
+                  className="bg-white px-2.5 py-1 rounded-md font-medium text-xs transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
+                  style={{ color: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
+                >
+                  <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
+                  <span
+                    className="pb-1 border-b-2 transition-colors duration-200 relative z-10"
+                    style={{ borderColor: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
+                  >
+                    リストで絞り込み検索
+                  </span>
+                  <span className="text-[10px] font-normal relative z-10">List search</span>
+                </button>
+              </nav>
 
               {/* ハンバーガーメニュー（スマホ） */}
               <button

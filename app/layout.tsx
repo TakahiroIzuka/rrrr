@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import Header from "@/components/Header";
+import ConditionalHeader from "@/components/ConditionalHeader";
 import ConditionalMarquee from "@/components/ConditionalMarquee";
-import Footer from "@/components/Footer";
+import ConditionalFooter from "@/components/ConditionalFooter";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -49,12 +49,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
+          <ConditionalHeader />
           <ConditionalMarquee />
           <main style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#F1F1F1' }}>
             {children}
           </main>
-          <Footer />
+          <ConditionalFooter />
         </ThemeProvider>
       </body>
     </html>
