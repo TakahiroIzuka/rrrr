@@ -39,7 +39,7 @@ export default function GenreHomeClient({ clinics, genreId, genreName, genreCode
 
       <div className="flex flex-col w-full">
         {/* Map Section */}
-        <div className="flex flex-col md:flex-row w-full overflow-hidden h-[calc(100vh-100px)] md:h-[calc(100vh-150px)]">
+        <div id="map-section" className="flex flex-col md:flex-row w-full overflow-hidden h-[calc(100vh-100px)] md:h-[calc(100vh-150px)]">
           {/* Sidebar Below Map on Mobile, Left on PC */}
           <div className="w-full md:w-[430px] flex-shrink-0 h-1/2 md:h-full order-2 md:order-1" style={{ backgroundColor: '#fff9f0'}}>
             <ClinicsListPanel

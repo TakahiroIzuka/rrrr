@@ -111,7 +111,7 @@ export default function ClinicsGridSection({
         </div>
 
         {/* Second Section */}
-        <div className="flex flex-col md:flex-row gap-6 items-start">
+        <div id="list-section" className="flex flex-col md:flex-row gap-6 items-start">
           {/* Left Box - 3/4 width */}
           <ClinicList
             clinics={clinics}

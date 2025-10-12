@@ -3,12 +3,19 @@
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
+import GenreModal from '@/components/GenreModal'
 
 interface DetailHeaderProps {
   genreId: number
   genreName: string
   genreCode?: string
   showNavButtons?: boolean
+}
+
+interface Genre {
+  id: number
+  name: string
+  code: string
 }
 
 const getGenreLogoPath = (genreCode?: string): string => {
@@ -23,9 +30,30 @@ export default function DetailHeader({ genreId, genreName, genreCode, showNavBut
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isGenreModalOpen, setIsGenreModalOpen] = useState(false)
+  const [genres, setGenres] = useState<Genre[]>([])
   const pathname = usePathname()
 
   const logoPath = getGenreLogoPath(genreCode)
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  // Fetch genres on mount
+  useEffect(() => {
+    fetch('http://127.0.0.1:54321/rest/v1/genres?order=id.asc', {
+      headers: {
+        'apikey': 'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH'
+      }
+    })
+      .then(res => res.json())
+      .then(data => setGenres(data))
+      .catch(err => console.error('Failed to fetch genres:', err))
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,6 +89,9 @@ export default function DetailHeader({ genreId, genreName, genreCode, showNavBut
 
   return (
     <>
+      {/* Genre Modal */}
+      <GenreModal isOpen={isGenreModalOpen} onClose={() => setIsGenreModalOpen(false)} genres={genres} />
+
       {/* 通常のヘッダー（スクロール前） */}
       <header className="bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-24 relative z-[1000]" style={{ borderTop: '5px solid #a69a7e' }}>
       <div className="flex justify-between items-center h-full px-4 md:px-8">
@@ -95,6 +126,7 @@ export default function DetailHeader({ genreId, genreName, genreCode, showNavBut
           {showNavButtons && (
             <nav className="hidden md:flex gap-4 items-end">
               <button
+                onClick={() => scrollToSection('map-section')}
                 className="bg-white px-2.5 py-1 rounded-md font-semibold transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
                 style={{ color: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6', fontSize: '13px' }}
               >
@@ -108,6 +140,7 @@ export default function DetailHeader({ genreId, genreName, genreCode, showNavBut
                 <span className="text-[10px] font-normal relative z-10">Map search</span>
               </button>
               <button
+                onClick={() => scrollToSection('list-section')}
                 className="bg-white px-2.5 py-1 rounded-md font-semibold transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
                 style={{ color: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6', fontSize: '13px' }}
               >
@@ -121,6 +154,7 @@ export default function DetailHeader({ genreId, genreName, genreCode, showNavBut
                 <span className="text-[10px] font-normal relative z-10">List search</span>
               </button>
               <button
+                onClick={() => setIsGenreModalOpen(true)}
                 className="px-3 py-2 rounded-md font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 relative overflow-hidden group mb-2 text-white"
                 style={{ backgroundColor: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6' }}
               >
@@ -186,6 +220,7 @@ export default function DetailHeader({ genreId, genreName, genreCode, showNavBut
               {showNavButtons && (
                 <nav className="hidden md:flex gap-4 items-end">
                   <button
+                    onClick={() => scrollToSection('map-section')}
                     className="bg-white px-2.5 py-1 rounded-md font-semibold transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
                     style={{ color: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6', fontSize: '13px' }}
                   >
@@ -199,6 +234,7 @@ export default function DetailHeader({ genreId, genreName, genreCode, showNavBut
                     <span className="text-[10px] font-normal relative z-10">Map search</span>
                   </button>
                   <button
+                    onClick={() => scrollToSection('list-section')}
                     className="bg-white px-2.5 py-1 rounded-md font-semibold transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
                     style={{ color: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6', fontSize: '13px' }}
                   >
@@ -212,6 +248,7 @@ export default function DetailHeader({ genreId, genreName, genreCode, showNavBut
                     <span className="text-[10px] font-normal relative z-10">List search</span>
                   </button>
                   <button
+                    onClick={() => setIsGenreModalOpen(true)}
                     className="px-3 py-2 rounded-md font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 relative overflow-hidden group mb-2 text-white"
                     style={{ backgroundColor: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6' }}
                   >
