@@ -15,6 +15,7 @@ interface FilterButtonProps {
   onGenresChange?: (genres: number[]) => void
   onRankingChange?: (ranking: string) => void
   hideGenreFilter?: boolean
+  isGenrePage?: boolean
 }
 
 export default function FilterButton({
@@ -26,7 +27,8 @@ export default function FilterButton({
   onPrefecturesChange,
   onGenresChange,
   onRankingChange,
-  hideGenreFilter = false
+  hideGenreFilter = false,
+  isGenrePage = false
 }: FilterButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [internalPrefectures, setInternalPrefectures] = useState<string[]>([])
@@ -76,7 +78,7 @@ export default function FilterButton({
   }
 
   return (
-    <div className="absolute top-4 left-4 right-4 z-[999]">
+    <div className={`absolute ${isGenrePage ? 'top-12' : 'top-12'} md:top-4 left-4 right-4 z-[999]`} style={{ pointerEvents: 'auto' }}>
       {/* Filter Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}

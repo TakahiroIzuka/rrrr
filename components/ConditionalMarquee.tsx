@@ -8,11 +8,7 @@ export default function ConditionalMarquee() {
 
   // /clinic の場合のみ MarqueeText を表示
   if (pathname === '/clinic') {
-    return (
-      <div className="hidden md:block">
-        <MarqueeText />
-      </div>
-    )
+    return <MarqueeText />
   }
 
   return null

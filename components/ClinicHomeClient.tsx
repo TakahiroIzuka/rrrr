@@ -7,6 +7,7 @@ import MapPanel from '@/components/MapPanel'
 import ClinicsGridSection from '@/components/ClinicsGridSection'
 import FilterButton from '@/components/FilterButton'
 import DetailHeader from '@/app/clinics/[id]/DetailHeader'
+import MarqueeText from '@/components/MarqueeText'
 
 interface ClinicHomeClientProps {
   clinics: Clinic[]
@@ -45,18 +46,21 @@ export default function ClinicHomeClient({
     <>
       {/* Header with genre label (only for genre pages) */}
       {showGenreHeader && (
-        <DetailHeader
-          genreName={genreName || ''}
-          genreCode={genreCode}
-          showNavButtons={true}
-        />
+        <>
+          <DetailHeader
+            genreName={genreName || ''}
+            genreCode={genreCode}
+            showNavButtons={true}
+          />
+          <MarqueeText />
+        </>
       )}
 
       <div className="flex flex-col w-full">
         {/* Map Section */}
-        <div id="map-section" className="flex flex-col md:flex-row w-full overflow-hidden h-[calc(100vh-100px)] md:h-[calc(100vh-150px)]">
+        <div id="map-section" className={`flex flex-col md:flex-row w-full overflow-hidden ${showGenreHeader ? 'h-[calc(100vh-64px)]' : 'h-[calc(100vh-64px)]'} md:h-[calc(100vh-150px)]`}>
           {/* Sidebar Below Map on Mobile, Left on PC */}
-          <div className="w-full md:w-[430px] flex-shrink-0 h-1/2 md:h-full order-2 md:order-1" style={{ backgroundColor: '#fff9f0'}}>
+          <div className="w-full md:w-[430px] flex-shrink-0 h-1/2 md:h-full order-2 md:order-1 overflow-y-auto" style={{ backgroundColor: '#fff9f0'}}>
             <ClinicsListPanel
               clinics={selectedClinicId ? filteredClinics.filter(clinic => clinic.id === selectedClinicId) : filteredClinics}
             />
@@ -79,6 +83,7 @@ export default function ClinicHomeClient({
               onGenresChange={setSelectedGenres}
               onRankingChange={setSelectedRanking}
               hideGenreFilter={hideGenreFilter}
+              isGenrePage={showGenreHeader}
             />
           </div>
         </div>
