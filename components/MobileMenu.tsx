@@ -14,7 +14,6 @@ export default function MobileMenu({
   isOpen,
   onClose,
   logoPath,
-  genreCode,
   onMapClick,
   onListClick,
   onGenreClick

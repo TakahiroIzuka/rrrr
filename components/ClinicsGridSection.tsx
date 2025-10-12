@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import type { Clinic } from '@/types/clinic'
 import { useClinicFilter } from '@/hooks/useClinicFilter'
 import ClinicList from './ClinicList'

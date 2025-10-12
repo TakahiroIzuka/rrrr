@@ -1,14 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import GenreModal from '@/components/GenreModal'
 import MobileMenu from '@/components/MobileMenu'
 
 interface DetailHeaderProps {
-  genreId: number
   genreName: string
   genreCode?: string
   showNavButtons?: boolean
@@ -27,14 +25,13 @@ const getGenreLogoPath = (genreCode?: string): string => {
   return `/mrr/${genreCode}/logo_header.png`
 }
 
-export default function DetailHeader({ genreId, genreName, genreCode, showNavButtons = false }: DetailHeaderProps) {
+export default function DetailHeader({ genreName, genreCode, showNavButtons = false }: DetailHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isGenreModalOpen, setIsGenreModalOpen] = useState(false)
   const [genres, setGenres] = useState<Genre[]>([])
-  const pathname = usePathname()
 
   const logoPath = getGenreLogoPath(genreCode)
 
@@ -47,9 +44,12 @@ export default function DetailHeader({ genreId, genreName, genreCode, showNavBut
 
   // Fetch genres on mount
   useEffect(() => {
-    fetch('http://127.0.0.1:54321/rest/v1/genres?order=id.asc', {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+
+    fetch(`${supabaseUrl}/rest/v1/genres?order=id.asc`, {
       headers: {
-        'apikey': 'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH'
+        'apikey': supabaseKey || ''
       }
     })
       .then(res => res.json())

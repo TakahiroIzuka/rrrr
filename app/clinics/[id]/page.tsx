@@ -1,10 +1,9 @@
-import { createClient } from '@/utils/supabase/server'
-import ErrorMessage from '@/components/ErrorMessage'
 import { notFound } from 'next/navigation'
 import { getStarImage } from '@/lib/utils/starRating'
 import Div2 from './Div2'
 import ReviewCard from './ReviewCard'
 import ScrollToReviewButton from './ScrollToReviewButton'
+import { fetchClinicById } from '@/lib/data/clinics'
 
 interface ClinicDetailPageProps {
   params: {
@@ -13,53 +12,10 @@ interface ClinicDetailPageProps {
 }
 
 export default async function ClinicDetailPage({ params }: ClinicDetailPageProps) {
-  const supabase = await createClient()
+  const { clinic, error } = await fetchClinicById(params.id)
 
-  const { data: clinicData, error } = await supabase
-    .from('clinics')
-    .select(`
-      *,
-      prefecture:prefectures(
-        id,
-        name
-      ),
-      area:areas(
-        id,
-        name
-      ),
-      company:companies(
-        id,
-        name
-      ),
-      genre:genres(
-        id,
-        name,
-        code
-      ),
-      clinic_detail:clinic_details!clinic_id(
-        name,
-        star,
-        user_review_count,
-        lat,
-        lng,
-        site_url,
-        postal_code,
-        address,
-        tel,
-        google_map_url
-      )
-    `)
-    .eq('id', params.id)
-    .single()
-
-  if (error || !clinicData) {
+  if (error || !clinic) {
     notFound()
-  }
-
-  // Transform clinic_detail from array to single object
-  const clinic = {
-    ...clinicData,
-    clinic_detail: Array.isArray(clinicData.clinic_detail) ? clinicData.clinic_detail[0] : clinicData.clinic_detail
   }
 
   return (

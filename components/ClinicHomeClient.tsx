@@ -8,18 +8,23 @@ import ClinicsGridSection from '@/components/ClinicsGridSection'
 import FilterButton from '@/components/FilterButton'
 import DetailHeader from '@/app/clinics/[id]/DetailHeader'
 
-interface GenreHomeClientProps {
+interface ClinicHomeClientProps {
   clinics: Clinic[]
-  genreId: number
-  genreName: string
+  genreId?: number
+  genreName?: string
   genreCode?: string
 }
 
-export default function GenreHomeClient({ clinics, genreId, genreName, genreCode }: GenreHomeClientProps) {
+export default function ClinicHomeClient({
+  clinics,
+  genreId,
+  genreName,
+  genreCode
+}: ClinicHomeClientProps) {
   const [filteredClinics, setFilteredClinics] = useState<Clinic[]>(clinics)
   const [selectedClinicId, setSelectedClinicId] = useState<number | null>(null)
   const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([])
-  const [selectedGenres, setSelectedGenres] = useState<number[]>([genreId])
+  const [selectedGenres, setSelectedGenres] = useState<number[]>(genreId ? [genreId] : [])
   const [selectedRanking, setSelectedRanking] = useState<string>('')
 
   const handleFilterChange = useCallback((filtered: Clinic[]) => {
@@ -32,10 +37,20 @@ export default function GenreHomeClient({ clinics, genreId, genreName, genreCode
     setSelectedClinicId(clinicId)
   }, [])
 
+  // Show genre header only if genre props are provided
+  const showGenreHeader = genreId && genreName
+  const hideGenreFilter = !!genreId
+
   return (
     <>
-      {/* Header with genre label */}
-      <DetailHeader genreId={genreId} genreName={genreName} genreCode={genreCode} showNavButtons={true} />
+      {/* Header with genre label (only for genre pages) */}
+      {showGenreHeader && (
+        <DetailHeader
+          genreName={genreName || ''}
+          genreCode={genreCode}
+          showNavButtons={true}
+        />
+      )}
 
       <div className="flex flex-col w-full">
         {/* Map Section */}
@@ -63,7 +78,7 @@ export default function GenreHomeClient({ clinics, genreId, genreName, genreCode
               onPrefecturesChange={setSelectedPrefectures}
               onGenresChange={setSelectedGenres}
               onRankingChange={setSelectedRanking}
-              hideGenreFilter={true}
+              hideGenreFilter={hideGenreFilter}
             />
           </div>
         </div>
@@ -79,7 +94,7 @@ export default function GenreHomeClient({ clinics, genreId, genreName, genreCode
           onGenresChange={setSelectedGenres}
           onRankingChange={setSelectedRanking}
           onFilterChange={handleFilterChange}
-          hideGenreFilter={true}
+          hideGenreFilter={hideGenreFilter}
         />
       </div>
     </>

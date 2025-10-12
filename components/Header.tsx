@@ -31,9 +31,12 @@ export default function Header() {
 
   // Fetch genres on mount
   useEffect(() => {
-    fetch('http://127.0.0.1:54321/rest/v1/genres?order=id.asc', {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+
+    fetch(`${supabaseUrl}/rest/v1/genres?order=id.asc`, {
       headers: {
-        'apikey': 'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH'
+        'apikey': supabaseKey || ''
       }
     })
       .then(res => res.json())
@@ -46,11 +49,6 @@ export default function Header() {
 
   // 一覧ページかどうかを判定
   const isListPage = pathname === '/clinics'
-
-  // 詳細ページの場合はHeaderを表示しない
-  if (isDetailPage) {
-    return null
-  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -83,6 +81,11 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [lastScrollY, isScrolled])
+
+  // 詳細ページの場合はHeaderを表示しない
+  if (isDetailPage) {
+    return null
+  }
 
   return (
     <>
