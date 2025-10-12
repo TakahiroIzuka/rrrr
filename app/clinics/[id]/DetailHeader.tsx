@@ -8,6 +8,7 @@ interface DetailHeaderProps {
   genreId: number
   genreName: string
   genreCode?: string
+  showNavButtons?: boolean
 }
 
 const getGenreLogoPath = (genreCode?: string): string => {
@@ -17,7 +18,7 @@ const getGenreLogoPath = (genreCode?: string): string => {
   return `/mrr/${genreCode}/logo_header.png`
 }
 
-export default function DetailHeader({ genreId, genreName, genreCode }: DetailHeaderProps) {
+export default function DetailHeader({ genreId, genreName, genreCode, showNavButtons = false }: DetailHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
@@ -91,34 +92,46 @@ export default function DetailHeader({ genreId, genreName, genreCode }: DetailHe
           </div>
 
           {/* Navigation Buttons (PC) */}
-          <nav className="hidden md:flex gap-4 items-end">
-            <button
-              className="bg-white px-2.5 py-1 rounded-md font-medium text-xs transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
-              style={{ color: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
-            >
-              <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
-              <span
-                className="pb-1 border-b-2 transition-colors duration-200 relative z-10"
-                style={{ borderColor: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
+          {showNavButtons && (
+            <nav className="hidden md:flex gap-4 items-end">
+              <button
+                className="bg-white px-2.5 py-1 rounded-md font-semibold transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
+                style={{ color: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6', fontSize: '13px' }}
               >
-                マップで絞り込み検索
-              </span>
-              <span className="text-[10px] font-normal relative z-10">Map search</span>
-            </button>
-            <button
-              className="bg-white px-2.5 py-1 rounded-md font-medium text-xs transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
-              style={{ color: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
-            >
-              <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
-              <span
-                className="pb-1 border-b-2 transition-colors duration-200 relative z-10"
-                style={{ borderColor: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
+                <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
+                <span
+                  className="pb-1 transition-colors duration-200 relative z-10"
+                  style={{ borderBottom: '2.5px solid', borderColor: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6' }}
+                >
+                  マップで絞り込み検索
+                </span>
+                <span className="text-[10px] font-normal relative z-10">Map search</span>
+              </button>
+              <button
+                className="bg-white px-2.5 py-1 rounded-md font-semibold transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
+                style={{ color: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6', fontSize: '13px' }}
               >
-                リストで絞り込み検索
-              </span>
-              <span className="text-[10px] font-normal relative z-10">List search</span>
-            </button>
-          </nav>
+                <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
+                <span
+                  className="pb-1 transition-colors duration-200 relative z-10"
+                  style={{ borderBottom: '2.5px solid', borderColor: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6' }}
+                >
+                  リストで絞り込み検索
+                </span>
+                <span className="text-[10px] font-normal relative z-10">List search</span>
+              </button>
+              <button
+                className="px-3 py-2 rounded-md font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 relative overflow-hidden group mb-2 text-white"
+                style={{ backgroundColor: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6' }}
+              >
+                <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-200"></span>
+                <span className="relative z-10">業種から探す</span>
+                <span className="flex items-center justify-center w-4 h-4 bg-white rounded-full relative z-10" style={{ transform: 'translateY(0px)' }}>
+                  <span className="font-bold text-xl leading-none" style={{ color: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6', transform: 'translate(0.5px, -2px)' }}>›</span>
+                </span>
+              </button>
+            </nav>
+          )}
 
           {/* ハンバーガーメニュー（スマホ） */}
           <button
@@ -170,34 +183,46 @@ export default function DetailHeader({ genreId, genreName, genreCode }: DetailHe
               </div>
 
               {/* Navigation Buttons (PC) */}
-              <nav className="hidden md:flex gap-4 items-end">
-                <button
-                  className="bg-white px-2.5 py-1 rounded-md font-medium text-xs transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
-                  style={{ color: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
-                >
-                  <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
-                  <span
-                    className="pb-1 border-b-2 transition-colors duration-200 relative z-10"
-                    style={{ borderColor: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
+              {showNavButtons && (
+                <nav className="hidden md:flex gap-4 items-end">
+                  <button
+                    className="bg-white px-2.5 py-1 rounded-md font-semibold transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
+                    style={{ color: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6', fontSize: '13px' }}
                   >
-                    マップで絞り込み検索
-                  </span>
-                  <span className="text-[10px] font-normal relative z-10">Map search</span>
-                </button>
-                <button
-                  className="bg-white px-2.5 py-1 rounded-md font-medium text-xs transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
-                  style={{ color: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
-                >
-                  <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
-                  <span
-                    className="pb-1 border-b-2 transition-colors duration-200 relative z-10"
-                    style={{ borderColor: genreId === 1 ? 'rgb(238, 154, 162)' : '#acd1e6' }}
+                    <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
+                    <span
+                      className="pb-1 transition-colors duration-200 relative z-10"
+                      style={{ borderBottom: '2.5px solid', borderColor: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6' }}
+                    >
+                      マップで絞り込み検索
+                    </span>
+                    <span className="text-[10px] font-normal relative z-10">Map search</span>
+                  </button>
+                  <button
+                    className="bg-white px-2.5 py-1 rounded-md font-semibold transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-1"
+                    style={{ color: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6', fontSize: '13px' }}
                   >
-                    リストで絞り込み検索
-                  </span>
-                  <span className="text-[10px] font-normal relative z-10">List search</span>
-                </button>
-              </nav>
+                    <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
+                    <span
+                      className="pb-1 transition-colors duration-200 relative z-10"
+                      style={{ borderBottom: '2.5px solid', borderColor: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6' }}
+                    >
+                      リストで絞り込み検索
+                    </span>
+                    <span className="text-[10px] font-normal relative z-10">List search</span>
+                  </button>
+                  <button
+                    className="px-3 py-2 rounded-md font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 relative overflow-hidden group mb-2 text-white"
+                    style={{ backgroundColor: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6' }}
+                  >
+                    <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-200"></span>
+                    <span className="relative z-10">業種から探す</span>
+                    <span className="flex items-center justify-center w-4 h-4 bg-white rounded-full relative z-10" style={{ transform: 'translateY(0px)' }}>
+                      <span className="font-bold text-xl leading-none" style={{ color: genreCode === 'pilates' ? 'rgb(238, 154, 162)' : genreCode === 'dermatology' ? 'rgb(220, 194, 219)' : '#acd1e6', transform: 'translate(0.5px, -2px)' }}>›</span>
+                    </span>
+                  </button>
+                </nav>
+              )}
 
               {/* ハンバーガーメニュー（スマホ） */}
               <button

@@ -35,7 +35,7 @@ export default function GenreHomeClient({ clinics, genreId, genreName, genreCode
   return (
     <>
       {/* Header with genre label */}
-      <DetailHeader genreId={genreId} genreName={genreName} genreCode={genreCode} />
+      <DetailHeader genreId={genreId} genreName={genreName} genreCode={genreCode} showNavButtons={true} />
 
       <div className="flex flex-col w-full">
         {/* Map Section */}
