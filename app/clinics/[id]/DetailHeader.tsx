@@ -6,6 +6,7 @@ import Image from 'next/image'
 
 interface DetailHeaderProps {
   genreId: number
+  genreName: string
 }
 
 const getGenreLogoPath = (genreId: number): string => {
@@ -21,7 +22,7 @@ const getGenreLogoPath = (genreId: number): string => {
   }
 }
 
-export default function DetailHeader({ genreId }: DetailHeaderProps) {
+export default function DetailHeader({ genreId, genreName }: DetailHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
@@ -67,7 +68,7 @@ export default function DetailHeader({ genreId }: DetailHeaderProps) {
       {/* 通常のヘッダー（スクロール前） */}
       <header className="bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-24 relative z-[1000]" style={{ borderTop: '5px solid #a69a7e' }}>
       <div className="flex justify-between items-center h-full px-4 md:px-8">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-10">
           <Image
             src={logoPath}
             alt="メディカルクチコミランキング"
@@ -82,17 +83,28 @@ export default function DetailHeader({ genreId }: DetailHeaderProps) {
             height={64}
             className="h-16 hidden md:block"
           />
+          {/* ラベル（PC表示） */}
+          <div className="hidden md:flex items-center bg-[rgb(163,151,125)] text-white px-3 py-2 rounded-lg font-semibold text-sm mb-2">
+            {genreName}
+          </div>
         </div>
 
-        {/* ハンバーガーメニュー（スマホ） */}
-        <button
-          className="md:hidden flex flex-col items-start justify-center gap-1.5 w-10 h-10 bg-white rounded-md"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          <span className="w-6 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
-          <span className="w-5 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
-          <span className="w-4 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
-        </button>
+        <div className="flex items-center gap-2">
+          {/* ラベル（スマホ表示） */}
+          <div className="md:hidden flex items-center bg-[rgb(163,151,125)] text-white px-2 py-1.5 rounded-lg font-semibold text-xs">
+            {genreName}
+          </div>
+
+          {/* ハンバーガーメニュー（スマホ） */}
+          <button
+            className="md:hidden flex flex-col items-start justify-center gap-1.5 w-10 h-10 bg-white rounded-md"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <span className="w-6 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
+            <span className="w-5 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
+            <span className="w-4 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -105,7 +117,7 @@ export default function DetailHeader({ genreId }: DetailHeaderProps) {
           style={{ borderTop: '5px solid #a69a7e' }}
         >
           <div className="flex justify-between items-center h-full px-4 md:px-8">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-10">
               <Image
                 src={logoPath}
                 alt="メディカルクチコミランキング"
@@ -120,17 +132,28 @@ export default function DetailHeader({ genreId }: DetailHeaderProps) {
                 height={64}
                 className="h-16 hidden md:block"
               />
+              {/* ラベル（PC表示） */}
+              <div className="hidden md:flex items-center bg-[rgb(163,151,125)] text-white px-3 py-2 rounded-lg font-semibold text-sm mb-2">
+                {genreName}
+              </div>
             </div>
 
-            {/* ハンバーガーメニュー（スマホ） */}
-            <button
-              className="md:hidden flex flex-col items-start justify-center gap-1.5 w-10 h-10 bg-white rounded-md"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              <span className="w-6 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
-              <span className="w-5 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
-              <span className="w-4 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
-            </button>
+            <div className="flex items-center gap-2">
+              {/* ラベル（スマホ表示） */}
+              <div className="md:hidden flex items-center bg-[rgb(163,151,125)] text-white px-2 py-1.5 rounded-lg font-semibold text-xs">
+                {genreName}
+              </div>
+
+              {/* ハンバーガーメニュー（スマホ） */}
+              <button
+                className="md:hidden flex flex-col items-start justify-center gap-1.5 w-10 h-10 bg-white rounded-md"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                <span className="w-6 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
+                <span className="w-5 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
+                <span className="w-4 h-0.5 bg-[#a69a7e] transition-all ml-2"></span>
+              </button>
+            </div>
           </div>
         </header>
       )}

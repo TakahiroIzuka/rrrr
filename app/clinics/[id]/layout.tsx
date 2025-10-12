@@ -17,7 +17,13 @@ export default async function ClinicDetailLayout({
 
   const { data: clinic, error } = await supabase
     .from('clinics')
-    .select('genre_id')
+    .select(`
+      genre_id,
+      genre:genres(
+        id,
+        name
+      )
+    `)
     .eq('id', id)
     .single()
 
@@ -30,7 +36,7 @@ export default async function ClinicDetailLayout({
       <style dangerouslySetInnerHTML={{
         __html: '.clinic-list-breadcrumb { display: none !important; }'
       }} />
-      <DetailHeader genreId={clinic.genre_id} />
+      <DetailHeader genreId={clinic.genre_id} genreName={clinic.genre?.name || ''} />
       {children}
       <DetailFooter genreId={clinic.genre_id} />
     </>
