@@ -5,7 +5,7 @@ import MedicalReviewRanking from '@/components/MedicalReviewRanking'
 
 export default async function ClinicListPage() {
   const supabase = await createClient()
-  const { data: clinics, error } = await supabase
+  const { data: clinicsData, error } = await supabase
     .from('clinics')
     .select(`
       *,
@@ -16,6 +16,17 @@ export default async function ClinicListPage() {
       area:areas(
         id,
         name
+      ),
+      clinic_detail:clinic_details!clinic_id(
+        name,
+        star,
+        user_review_count,
+        lat,
+        lng,
+        site_url,
+        postal_code,
+        address,
+        tel
       )
     `)
     .order('id', { ascending: true })
@@ -23,6 +34,12 @@ export default async function ClinicListPage() {
   if (error) {
     return <ErrorMessage message={error.message} />
   }
+
+  // Transform clinic_detail from array to single object
+  const clinics = clinicsData?.map(clinic => ({
+    ...clinic,
+    clinic_detail: Array.isArray(clinic.clinic_detail) ? clinic.clinic_detail[0] : clinic.clinic_detail
+  }))
 
   // Extract unique prefectures from clinics data
   const uniquePrefectures = Array.from(

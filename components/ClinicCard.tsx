@@ -100,20 +100,26 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
           >
             <img
               src={getGenreNoImage(clinic.genre_id)}
-              alt={`${clinic.name}の画像`}
+              alt={`${clinic.clinic_detail?.name}の画像`}
               className="w-full h-full object-cover pointer-events-none"
             />
           </div>
 
           {/* HP Button */}
-          <button
-            className="absolute top-1 right-1 bg-[#a59878] hover:bg-opacity-90 text-white text-[10px] px-2 py-1 rounded-md transition-colors flex items-center gap-1"
-          >
-            HPはこちら
-            <span className="flex items-center justify-center w-3 h-3 bg-white rounded-full">
-              <span className="text-[#a59878] font-bold text-sm leading-none" style={{ transform: 'translate(0.5px, -1px)' }}>›</span>
-            </span>
-          </button>
+          {clinic.clinic_detail?.site_url && (
+            <a
+              href={clinic.clinic_detail.site_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute top-1 right-1 bg-[#a59878] hover:bg-opacity-90 text-white text-[10px] px-2 py-1 rounded-md transition-colors flex items-center gap-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              HPはこちら
+              <span className="flex items-center justify-center w-3 h-3 bg-white rounded-full">
+                <span className="text-[#a59878] font-bold text-sm leading-none" style={{ transform: 'translate(0.5px, -1px)' }}>›</span>
+              </span>
+            </a>
+          )}
 
           {/* Navigation buttons */}
           <button
@@ -148,7 +154,7 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
 
       <div className="px-4 pb-4">
         <h3 className="m-0 mb-3 pt-3 text-gray-900 text-[1.375rem] font-semibold leading-relaxed" style={{ fontFamily: 'Kosugi Maru, sans-serif' }}>
-          {clinic.name}
+          {clinic.clinic_detail?.name}
         </h3>
 
         <div className="flex items-center mb-2 gap-1.5 pb-2 border-b border-[#a59878]">
@@ -169,13 +175,13 @@ export default function ClinicCard({ clinic, isHovered, onMouseEnter, onMouseLea
             />
             <span className="text-[#a69a7e] text-xs">クチコミ評価</span>
             <img
-              src={clinic.star !== null ? getStarImage(clinic.star) : '/common/star_0.5.png'}
-              alt={clinic.star !== null ? `${clinic.star}星評価` : '評価なし'}
+              src={clinic.clinic_detail?.star !== null ? getStarImage(clinic.clinic_detail?.star) : '/common/star_0.5.png'}
+              alt={clinic.clinic_detail?.star !== null ? `${clinic.clinic_detail?.star}星評価` : '評価なし'}
               className="w-23 h-4"
             />
           </div>
           <div className="text-black text-xs">
-            評価平均 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.star ?? ''}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.user_review_count}</span><span className="text-[#a69a7e] font-normal text-2xl">人</span>
+            評価平均 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.clinic_detail?.star ?? ''}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.clinic_detail?.user_review_count}</span><span className="text-[#a69a7e] font-normal text-2xl">人</span>
           </div>
         </div>
 

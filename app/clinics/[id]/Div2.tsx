@@ -100,7 +100,13 @@ export default function Div2({ clinic }: Div2Props) {
               <p className="font-semibold">住所</p>
             </div>
             <div className="w-full md:w-[70%] p-2">
-              <p>d</p>
+              {clinic.clinic_detail?.postal_code && <p>〒{clinic.clinic_detail.postal_code}</p>}
+              {clinic.clinic_detail?.address && (
+                <p style={{ whiteSpace: 'pre-line' }}>
+                  {clinic.clinic_detail.address.replace(/\\n/g, '\n')}
+                </p>
+              )}
+              {!clinic.clinic_detail?.postal_code && !clinic.clinic_detail?.address && <p>-</p>}
             </div>
           </div>
           <div className="border-0 md:border-b border-gray-300 p-1.5 flex flex-col md:flex-row">
@@ -108,10 +114,20 @@ export default function Div2({ clinic }: Div2Props) {
               <p className="font-semibold">オフィシャルHP</p>
             </div>
             <div className="w-full md:w-[70%] p-2 flex items-center">
-              <button className="relative bg-white border-2 px-3 py-1.5 rounded font-medium hover:bg-gray-50 transition-colors overflow-visible" style={{ borderColor: 'rgb(163, 151, 125)', color: 'rgb(163, 151, 125)' }}>
-                オフィシャルHPはこちら
-                <div className="absolute -top-2 -right-2 w-4 h-4 border-2 rounded-sm" style={{ borderColor: 'rgb(163, 151, 125)' }}></div>
-              </button>
+              {clinic.clinic_detail?.site_url ? (
+                <a
+                  href={clinic.clinic_detail.site_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative bg-white border-2 px-3 py-1.5 rounded font-medium hover:bg-gray-50 transition-colors overflow-visible"
+                  style={{ borderColor: 'rgb(163, 151, 125)', color: 'rgb(163, 151, 125)' }}
+                >
+                  オフィシャルHPはこちら
+                  <div className="absolute -top-2 -right-2 w-4 h-4 border-2 rounded-sm" style={{ borderColor: 'rgb(163, 151, 125)' }}></div>
+                </a>
+              ) : (
+                <p>-</p>
+              )}
             </div>
           </div>
         </div>

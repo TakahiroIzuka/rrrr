@@ -15,7 +15,7 @@ interface ClinicDetailPageProps {
 export default async function ClinicDetailPage({ params }: ClinicDetailPageProps) {
   const supabase = await createClient()
 
-  const { data: clinic, error } = await supabase
+  const { data: clinicData, error } = await supabase
     .from('clinics')
     .select(`
       *,
@@ -30,13 +30,31 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
       company:companies(
         id,
         name
+      ),
+      clinic_detail:clinic_details!clinic_id(
+        name,
+        star,
+        user_review_count,
+        lat,
+        lng,
+        site_url,
+        postal_code,
+        address,
+        tel,
+        google_map_url
       )
     `)
     .eq('id', params.id)
     .single()
 
-  if (error || !clinic) {
+  if (error || !clinicData) {
     notFound()
+  }
+
+  // Transform clinic_detail from array to single object
+  const clinic = {
+    ...clinicData,
+    clinic_detail: Array.isArray(clinicData.clinic_detail) ? clinicData.clinic_detail[0] : clinicData.clinic_detail
   }
 
   return (
@@ -54,7 +72,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
                 <a href="/clinics" className="text-black hover:underline transition-colors">クリニック・施設一覧</a>
               </li>
               <li className="text-black">&gt;</li>
-              <li className="text-black">{clinic.name}</li>
+              <li className="text-black">{clinic.clinic_detail?.name}</li>
             </ol>
           </nav>
         </div>
@@ -68,7 +86,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
             <div className="flex flex-col md:flex-row gap-0 md:gap-4 pt-2 pb-0">
               {/* 左側 */}
               <div className="w-full md:w-[45%]">
-                <h1 className="text-xl font-bold mb-3" style={{ fontFamily: 'Kosugi Maru, sans-serif' }}>{clinic.name}</h1>
+                <h1 className="text-xl font-bold mb-3" style={{ fontFamily: 'Kosugi Maru, sans-serif' }}>{clinic.clinic_detail?.name}</h1>
 
                 <div className="flex items-center mb-2 gap-1.5 pb-2 border-b border-[#a59878]">
                   <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
@@ -88,13 +106,13 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
                     />
                     <span className="text-[#a69a7e] text-xs">クチコミ評価</span>
                     <img
-                      src={clinic.star !== null ? getStarImage(clinic.star) : '/common/star_0.5.png'}
-                      alt={clinic.star !== null ? `${clinic.star}星評価` : '評価なし'}
+                      src={clinic.clinic_detail?.star !== null ? getStarImage(clinic.clinic_detail?.star) : '/common/star_0.5.png'}
+                      alt={clinic.clinic_detail?.star !== null ? `${clinic.clinic_detail?.star}星評価` : '評価なし'}
                       className="w-23 h-4"
                     />
                   </div>
                   <div className="text-black text-xs">
-                    評価平均 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.star ?? ''}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.user_review_count}</span><span className="text-[#a69a7e] font-normal text-2xl">人</span>
+                    評価平均 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.clinic_detail?.star ?? ''}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.clinic_detail?.user_review_count}</span><span className="text-[#a69a7e] font-normal text-2xl">人</span>
                   </div>
                 </div>
               </div>
@@ -110,7 +128,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
                 </div>
 
                 {/* ボタン */}
-                <ScrollToReviewButton clinicName={clinic.name} />
+                <ScrollToReviewButton clinicName={clinic.clinic_detail?.name} />
               </div>
             </div>
 
@@ -129,7 +147,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
             {/* バー */}
             <div className="relative mb-4">
               <div className="w-full px-4 py-2 text-sm border-2 rounded text-center bg-white" style={{ borderColor: 'rgb(220, 194, 219)', color: 'rgb(220, 194, 219)' }}>
-                {clinic.name}のクチコミ一覧はこちら！
+                {clinic.clinic_detail?.name}のクチコミ一覧はこちら！
               </div>
               {/* 下向き三角形 */}
               <div className="absolute left-1/2 -translate-x-1/2 -bottom-3 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: 'rgb(220, 194, 219)' }}></div>

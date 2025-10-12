@@ -27,9 +27,12 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
 
   const center = useMemo(() => {
     if (allClinics.length > 0) {
-      const avgLat = allClinics.reduce((sum, clinic) => sum + clinic.lat, 0) / allClinics.length
-      const avgLng = allClinics.reduce((sum, clinic) => sum + clinic.lng, 0) / allClinics.length
-      return { lat: avgLat, lng: avgLng }
+      const validClinics = allClinics.filter(clinic => clinic.clinic_detail?.lat && clinic.clinic_detail?.lng)
+      if (validClinics.length > 0) {
+        const avgLat = validClinics.reduce((sum, clinic) => sum + (clinic.clinic_detail?.lat || 0), 0) / validClinics.length
+        const avgLng = validClinics.reduce((sum, clinic) => sum + (clinic.clinic_detail?.lng || 0), 0) / validClinics.length
+        return { lat: avgLat, lng: avgLng }
+      }
     }
     return { lat: 35.6762, lng: 139.6503 } // Tokyo default
   }, [allClinics])
@@ -101,8 +104,14 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
     loaderRef.current.importLibrary('marker')
       .then(({ AdvancedMarkerElement }) => {
         allClinics.forEach((clinic) => {
-          if (typeof clinic.lat !== 'number' || typeof clinic.lng !== 'number') {
-            console.error(`Invalid coordinates for clinic ${clinic.name}:`, clinic.lat, clinic.lng)
+          // Skip if clinic_detail is missing
+          if (!clinic.clinic_detail) {
+            console.warn(`Clinic ${clinic.id} has no clinic_detail`)
+            return
+          }
+
+          if (typeof clinic.clinic_detail.lat !== 'number' || typeof clinic.clinic_detail.lng !== 'number') {
+            console.error(`Invalid coordinates for clinic ${clinic.clinic_detail.name}:`, clinic.clinic_detail.lat, clinic.clinic_detail.lng)
             return
           }
 
@@ -150,7 +159,7 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
             z-index: 1;
             margin: 0;
           `
-          starElement.textContent = clinic.star !== null ? clinic.star.toString() : ''
+          starElement.textContent = clinic.clinic_detail?.star !== null ? clinic.clinic_detail?.star?.toString() : ''
 
           const reviewElement = document.createElement('p')
           reviewElement.style.cssText = `
@@ -165,7 +174,7 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
             z-index: 1;
             margin: 0;
           `
-          reviewElement.textContent = clinic.user_review_count.toString()
+          reviewElement.textContent = clinic.clinic_detail?.user_review_count?.toString() || '0'
 
           markerDiv.appendChild(imgElement)
           markerDiv.appendChild(starElement)
@@ -180,9 +189,9 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
           updateMarkerContent(true)
 
           const marker = new AdvancedMarkerElement({
-            position: { lat: clinic.lat, lng: clinic.lng },
+            position: { lat: clinic.clinic_detail.lat, lng: clinic.clinic_detail.lng },
             map: googleMapRef.current,
-            title: clinic.name,
+            title: clinic.clinic_detail?.name,
             content: markerDiv
           })
 

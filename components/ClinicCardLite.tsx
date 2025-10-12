@@ -66,21 +66,27 @@ export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMous
           <div className="w-full h-32 bg-gray-100 overflow-hidden">
             <img
               src={getGenreNoImage(clinic.genre_id)}
-              alt={`${clinic.name}の画像`}
+              alt={`${clinic.clinic_detail?.name}の画像`}
               className="w-full h-full object-cover"
               draggable={false}
             />
           </div>
 
           {/* HP Button */}
-          <button
-            className="absolute top-1 right-1 bg-[#a59878] hover:bg-opacity-90 text-white text-[9px] px-1.5 py-0.5 rounded-md transition-colors flex items-center gap-0.5"
-          >
-            HPはこちら
-            <span className="flex items-center justify-center w-2.5 h-2.5 bg-white rounded-full">
-              <span className="text-[#a59878] font-bold text-[10px] leading-none" style={{ transform: 'translate(0.5px, -1.5px)' }}>›</span>
-            </span>
-          </button>
+          {clinic.clinic_detail?.site_url && (
+            <a
+              href={clinic.clinic_detail.site_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute top-1 right-1 bg-[#a59878] hover:bg-opacity-90 text-white text-[9px] px-1.5 py-0.5 rounded-md transition-colors flex items-center gap-0.5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              HPはこちら
+              <span className="flex items-center justify-center w-2.5 h-2.5 bg-white rounded-full">
+                <span className="text-[#a59878] font-bold text-[10px] leading-none" style={{ transform: 'translate(0.5px, -1.5px)' }}>›</span>
+              </span>
+            </a>
+          )}
 
           {/* Navigation buttons */}
           <button
@@ -115,7 +121,7 @@ export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMous
 
       <div className="px-2.5 pb-2.5">
         <h3 className="m-0 mb-2 text-gray-900 text-sm font-semibold leading-tight">
-          {clinic.name}
+          {clinic.clinic_detail?.name}
         </h3>
 
         <div className="flex items-center mb-2 gap-1 pb-1.5 border-b border-[#a59878]">
@@ -136,13 +142,13 @@ export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMous
             />
             <span className="text-[#a69a7e] text-[10px]">クチコミ評価</span>
             <img
-              src={clinic.star !== null ? getStarImage(clinic.star) : '/common/star_0.5.png'}
-              alt={clinic.star !== null ? `${clinic.star}星評価` : '評価なし'}
+              src={clinic.clinic_detail?.star !== null ? getStarImage(clinic.clinic_detail?.star) : '/common/star_0.5.png'}
+              alt={clinic.clinic_detail?.star !== null ? `${clinic.clinic_detail?.star}星評価` : '評価なし'}
               className="w-12 h-2.5"
             />
           </div>
           <div className="text-[10px]">
-            評価平均 <span className="text-[#a69a7e] font-normal text-sm">{clinic.star ?? ''}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-sm">{clinic.user_review_count ?? 0}</span><span className="text-[#a69a7e] font-normal text-sm">人</span>
+            評価平均 <span className="text-[#a69a7e] font-normal text-sm">{clinic.clinic_detail?.star ?? ''}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-sm">{clinic.clinic_detail?.user_review_count ?? 0}</span><span className="text-[#a69a7e] font-normal text-sm">人</span>
           </div>
         </div>
 
