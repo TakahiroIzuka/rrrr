@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import type { Clinic } from '@/types/clinic'
+import type { Facility } from '@/types/facility'
 
 interface Div2Props {
-  clinic: Clinic
+  facility: Facility
 }
 
 const getGenreNoImage = (genreCode?: string): string => {
@@ -14,16 +14,7 @@ const getGenreNoImage = (genreCode?: string): string => {
   return `/mrr/${genreCode}/noimage.jpg`
 }
 
-// テスト用の画像リンク
-const TEST_IMAGES = [
-  'https://placehold.co/600x400/e3d5ca/000000?text=Image+1',
-  'https://placehold.co/600x400/d4c4b0/000000?text=Image+2',
-  'https://placehold.co/600x400/c5b299/000000?text=Image+3',
-  'https://placehold.co/600x400/b6a082/000000?text=Image+4',
-  'https://placehold.co/600x400/a78e6b/000000?text=Image+5'
-]
-
-export default function Div2({ clinic }: Div2Props) {
+export default function Div2({ facility }: Div2Props) {
   const [selectedImage, setSelectedImage] = useState(0)
 
   return (
@@ -34,8 +25,8 @@ export default function Div2({ clinic }: Div2Props) {
           {/* メイン画像 */}
           <div className="mb-2 bg-gray-100 rounded-lg overflow-hidden">
             <img
-              src={getGenreNoImage(clinic.genre?.code)}
-              alt={`${clinic.name}の画像`}
+              src={getGenreNoImage(facility.genre?.code)}
+              alt={`${facility.name}の画像`}
               className="w-full h-72 md:h-80 object-cover"
             />
           </div>
@@ -49,8 +40,8 @@ export default function Div2({ clinic }: Div2Props) {
                 className="flex-1 overflow-hidden transition-all relative"
               >
                 <img
-                  src={getGenreNoImage(clinic.genre?.code)}
-                  alt={`${clinic.name}のサムネイル ${index + 1}`}
+                  src={getGenreNoImage(facility.genre?.code)}
+                  alt={`${facility.name}のサムネイル ${index + 1}`}
                   className="w-full h-16 object-cover"
                 />
                 {selectedImage !== index && (
@@ -73,7 +64,7 @@ export default function Div2({ clinic }: Div2Props) {
               <p className="font-semibold">会社名</p>
             </div>
             <div className="w-[70%] p-2">
-              <p>{clinic.company?.name || '-'}</p>
+              <p>{facility.company?.name || '-'}</p>
             </div>
           </div>
           <div className="border-0 md:border-b border-gray-300 p-1.5 flex flex-col md:flex-row">
@@ -82,10 +73,10 @@ export default function Div2({ clinic }: Div2Props) {
             </div>
             <div className="w-full md:w-[70%] p-2 flex items-center gap-1.5">
               <span className="text-gray-600 border border-gray-300 rounded px-2 py-0.5">
-                {clinic.prefecture?.name}
+                {facility.prefecture?.name}
               </span>
               <span className="text-gray-600 border border-gray-300 rounded px-2 py-0.5">
-                {clinic.area?.name}
+                {facility.area?.name}
               </span>
             </div>
           </div>
@@ -94,13 +85,13 @@ export default function Div2({ clinic }: Div2Props) {
               <p className="font-semibold">住所</p>
             </div>
             <div className="w-full md:w-[70%] p-2">
-              {clinic.clinic_detail?.postal_code && <p>〒{clinic.clinic_detail.postal_code}</p>}
-              {clinic.clinic_detail?.address && (
+              {facility.detail?.postal_code && <p>〒{facility.detail.postal_code}</p>}
+              {facility.detail?.address && (
                 <p style={{ whiteSpace: 'pre-line' }}>
-                  {clinic.clinic_detail.address.replace(/\\n/g, '\n')}
+                  {facility.detail.address.replace(/\\n/g, '\n')}
                 </p>
               )}
-              {!clinic.clinic_detail?.postal_code && !clinic.clinic_detail?.address && <p>-</p>}
+              {!facility.detail?.postal_code && !facility.detail?.address && <p>-</p>}
             </div>
           </div>
           <div className="border-0 md:border-b border-gray-300 p-1.5 flex flex-col md:flex-row">
@@ -108,9 +99,9 @@ export default function Div2({ clinic }: Div2Props) {
               <p className="font-semibold">オフィシャルHP</p>
             </div>
             <div className="w-full md:w-[70%] p-2 flex items-center">
-              {clinic.clinic_detail?.site_url ? (
+              {facility.detail?.site_url ? (
                 <a
-                  href={clinic.clinic_detail.site_url}
+                  href={facility.detail.site_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="relative bg-white border-2 px-3 py-1.5 rounded font-medium hover:bg-gray-50 transition-colors overflow-visible"

@@ -2,16 +2,16 @@
 
 import React, { useEffect, useRef, useMemo, useState } from 'react'
 import { Loader } from '@googlemaps/js-api-loader'
-import type { Clinic } from '@/types/clinic'
+import type { Facility } from '@/types/facility'
 import { MAP_PIN_IMAGES } from '@/lib/constants'
 
 interface MapPanelProps {
-  allClinics: Clinic[]
-  filteredClinics: Clinic[]
-  onClinicSelect?: (clinicId: number | null) => void
+  allFacilities: Facility[]
+  filteredFacilities: Facility[]
+  onFacilitySelect?: (facilityId: number | null) => void
 }
 
-const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onClinicSelect }: MapPanelProps) {
+const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilities, onFacilitySelect }: MapPanelProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const googleMapRef = useRef<google.maps.Map | null>(null)
   const markersRef = useRef<google.maps.Marker[]>([])
@@ -20,22 +20,22 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isMapInitialized, setIsMapInitialized] = useState(false)
-  const [selectedClinicId, setSelectedClinicId] = useState<number | null>(null)
+  const [selectedFacilityId, setSelectedFacilityId] = useState<number | null>(null)
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
   const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAP_ID
 
   const center = useMemo(() => {
-    if (allClinics.length > 0) {
-      const validClinics = allClinics.filter(clinic => clinic.clinic_detail?.lat && clinic.clinic_detail?.lng)
-      if (validClinics.length > 0) {
-        const avgLat = validClinics.reduce((sum, clinic) => sum + (clinic.clinic_detail?.lat || 0), 0) / validClinics.length
-        const avgLng = validClinics.reduce((sum, clinic) => sum + (clinic.clinic_detail?.lng || 0), 0) / validClinics.length
+    if (allFacilities.length > 0) {
+      const validFacilities = allFacilities.filter(facility => facility.detail?.lat && facility.detail?.lng)
+      if (validFacilities.length > 0) {
+        const avgLat = validFacilities.reduce((sum, facility) => sum + (facility.detail?.lat || 0), 0) / validFacilities.length
+        const avgLng = validFacilities.reduce((sum, facility) => sum + (facility.detail?.lng || 0), 0) / validFacilities.length
         return { lat: avgLat, lng: avgLng }
       }
     }
     return { lat: 35.6762, lng: 139.6503 } // Tokyo default
-  }, [allClinics])
+  }, [allFacilities])
 
   const mapOptions = useMemo((): google.maps.MapOptions => ({
     center,
@@ -94,29 +94,29 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
     }
   }, [apiKey, mapOptions])
 
-  // Create all markers once from allClinics
+  // Create all markers once from allFacilities
   useEffect(() => {
-    if (!googleMapRef.current || !isMapInitialized || !loaderRef.current || allClinics.length === 0) return
+    if (!googleMapRef.current || !isMapInitialized || !loaderRef.current || allFacilities.length === 0) return
 
     // If markers are already created, don't recreate them
-    if (markersMapRef.current.size === allClinics.length) return
+    if (markersMapRef.current.size === allFacilities.length) return
 
     loaderRef.current.importLibrary('marker')
       .then(({ AdvancedMarkerElement }) => {
-        allClinics.forEach((clinic) => {
-          // Skip if clinic_detail is missing
-          if (!clinic.clinic_detail) {
-            console.warn(`Clinic ${clinic.id} has no clinic_detail`)
+        allFacilities.forEach((facility) => {
+          // Skip if facility_detail is missing
+          if (!facility.detail) {
+            console.warn(`Facility ${facility.id} has no facility_detail`)
             return
           }
 
-          if (typeof clinic.clinic_detail.lat !== 'number' || typeof clinic.clinic_detail.lng !== 'number') {
-            console.error(`Invalid coordinates for clinic ${clinic.clinic_detail.name}:`, clinic.clinic_detail.lat, clinic.clinic_detail.lng)
+          if (typeof facility.detail.lat !== 'number' || typeof facility.detail.lng !== 'number') {
+            console.error(`Invalid coordinates for facility ${facility.detail.name}:`, facility.detail.lat, facility.detail.lng)
             return
           }
 
           // Skip if marker already exists
-          if (markersMapRef.current.has(clinic.id)) return
+          if (markersMapRef.current.has(facility.id)) return
 
           // Select pin image based on genre_id and focus state
           const getPinImage = (genre_id: number, isFocused: boolean): string => {
@@ -144,7 +144,7 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
             width: 42px;
             display: block;
           `
-          imgElement.src = getPinImage(clinic.genre_id, true)
+          imgElement.src = getPinImage(facility.genre_id, true)
 
           const starElement = document.createElement('p')
           starElement.style.cssText = `
@@ -159,7 +159,7 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
             z-index: 1;
             margin: 0;
           `
-          starElement.textContent = clinic.clinic_detail?.star !== null ? clinic.clinic_detail?.star?.toString() : ''
+          starElement.textContent = facility.detail?.star !== null ? facility.detail?.star?.toString() : ''
 
           const reviewElement = document.createElement('p')
           reviewElement.style.cssText = `
@@ -174,7 +174,7 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
             z-index: 1;
             margin: 0;
           `
-          reviewElement.textContent = clinic.clinic_detail?.user_review_count?.toString() || '0'
+          reviewElement.textContent = facility.detail?.user_review_count?.toString() || '0'
 
           markerDiv.appendChild(imgElement)
           markerDiv.appendChild(starElement)
@@ -182,16 +182,16 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
 
           const updateMarkerContent = (isFocused: boolean = true) => {
             // Only update the image source, don't recreate elements
-            imgElement.src = getPinImage(clinic.genre_id, isFocused)
+            imgElement.src = getPinImage(facility.genre_id, isFocused)
           }
 
           // Initial marker content
           updateMarkerContent(true)
 
           const marker = new AdvancedMarkerElement({
-            position: { lat: clinic.clinic_detail.lat, lng: clinic.clinic_detail.lng },
+            position: { lat: facility.detail.lat, lng: facility.detail.lng },
             map: googleMapRef.current,
-            title: clinic.clinic_detail?.name,
+            title: facility.detail?.name,
             content: markerDiv
           })
 
@@ -199,34 +199,34 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
           marker.updateContent = updateMarkerContent
 
           marker.addListener('click', () => {
-            setSelectedClinicId(currentSelectedId => {
-              const newSelectedId = currentSelectedId === clinic.id ? null : clinic.id
+            setSelectedFacilityId(currentSelectedId => {
+              const newSelectedId = currentSelectedId === facility.id ? null : facility.id
               // Use setTimeout to avoid setState during render
               setTimeout(() => {
-                onClinicSelect?.(newSelectedId)
+                onFacilitySelect?.(newSelectedId)
               }, 0)
               return newSelectedId
             })
           })
 
-          markersMapRef.current.set(clinic.id, marker)
+          markersMapRef.current.set(facility.id, marker)
         })
       })
       .catch((err) => {
         console.error('Error loading markers:', err)
       })
-  }, [allClinics, isMapInitialized])
+  }, [allFacilities, isMapInitialized])
 
   // Combined effect for marker visibility and appearance updates
   useEffect(() => {
     if (!googleMapRef.current || !isMapInitialized || markersMapRef.current.size === 0) return
 
-    const filteredIds = new Set(filteredClinics.map(clinic => clinic.id))
+    const filteredIds = new Set(filteredFacilities.map(facility => facility.id))
 
     // Use requestAnimationFrame to batch all marker updates together
     requestAnimationFrame(() => {
-      markersMapRef.current.forEach((marker, clinicId) => {
-        const shouldShow = filteredIds.has(clinicId)
+      markersMapRef.current.forEach((marker, facilityId) => {
+        const shouldShow = filteredIds.has(facilityId)
         const isCurrentlyVisible = marker.map !== null
 
         // Update visibility first
@@ -238,12 +238,12 @@ const MapPanel = React.memo(function MapPanel({ allClinics, filteredClinics, onC
 
         // Update appearance only for visible markers
         if (marker.updateContent && marker.map !== null) {
-          const isFocused = selectedClinicId === null || selectedClinicId === clinicId
+          const isFocused = selectedFacilityId === null || selectedFacilityId === facilityId
           marker.updateContent(isFocused)
         }
       })
     })
-  }, [filteredClinics, selectedClinicId, isMapInitialized])
+  }, [filteredFacilities, selectedFacilityId, isMapInitialized])
 
   if (error) {
     return (

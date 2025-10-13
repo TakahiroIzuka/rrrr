@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import type { Clinic } from '@/types/clinic'
+import type { Facility } from '@/types/facility'
 import ClinicCardLite from './ClinicCardLite'
 
 interface ClinicListProps {
-  clinics: Clinic[]
+  facilities: Facility[]
   title?: string
   subtitle?: string
   width?: 'full' | '3/4'
@@ -13,7 +13,7 @@ interface ClinicListProps {
 }
 
 export default function ClinicList({
-  clinics,
+  facilities,
   title = 'リストで絞り込み検索結果一覧はこちら',
   subtitle = 'List Search',
   width = '3/4',
@@ -39,12 +39,12 @@ export default function ClinicList({
 
       {/* Clinics Grid */}
       <div className={`grid ${gridColsClass} gap-x-[5px] gap-y-4 md:gap-4`}>
-        {clinics.map((clinic) => (
+        {facilities.map((facility) => (
           <ClinicCardLite
-            key={`clinic-${clinic.id}`}
-            clinic={clinic}
-            isHovered={hoveredCard === clinic.id}
-            onMouseEnter={() => setHoveredCard(clinic.id)}
+            key={`facility-${facility.id}`}
+            facility={facility}
+            isHovered={hoveredCard === facility.id}
+            onMouseEnter={() => setHoveredCard(facility.id)}
             onMouseLeave={() => setHoveredCard(null)}
           />
         ))}

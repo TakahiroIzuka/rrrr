@@ -1,8 +1,8 @@
-import type { Clinic } from '@/types/clinic'
+import type { Facility } from '@/types/facility'
 import { GENRE_MAP, RANKING_OPTIONS } from '@/lib/constants'
 
 interface FilterControlsProps {
-  allClinics: Clinic[]
+  allFacilities: Facility[]
   selectedPrefectures: string[]
   selectedGenres: number[]
   selectedRanking: string
@@ -13,7 +13,7 @@ interface FilterControlsProps {
 }
 
 export default function FilterControls({
-  allClinics,
+  allFacilities,
   selectedPrefectures,
   selectedGenres,
   selectedRanking,
@@ -22,8 +22,8 @@ export default function FilterControls({
   onRankingChange,
   hideGenreFilter = false
 }: FilterControlsProps) {
-  const uniquePrefectures = Array.from(new Set(allClinics.map(clinic => clinic.prefecture?.name).filter(Boolean))).sort()
-  const uniqueGenres = Array.from(new Set(allClinics.map(clinic => clinic.genre_id))).sort()
+  const uniquePrefectures = Array.from(new Set(allFacilities.map(facility => facility.prefecture?.name).filter(Boolean))).sort()
+  const uniqueGenres = Array.from(new Set(allFacilities.map(facility => facility.genre_id))).sort()
 
   return (
     <>
@@ -43,7 +43,7 @@ export default function FilterControls({
               />
               <span className="text-gray-700 text-xs font-medium">{prefecture}</span>
               <span className="text-xs text-gray-500">
-                ({allClinics.filter(c => c.prefecture?.name === prefecture).length})
+                ({allFacilities.filter(f => f.prefecture?.name === prefecture).length})
               </span>
             </label>
           ))}
@@ -67,7 +67,7 @@ export default function FilterControls({
                 />
                 <span className="text-xs text-gray-700 font-medium">{GENRE_MAP[genreId as keyof typeof GENRE_MAP]}</span>
                 <span className="text-xs text-gray-500">
-                  ({allClinics.filter(c => c.genre_id === genreId).length})
+                  ({allFacilities.filter(f => f.genre_id === genreId).length})
                 </span>
               </label>
             ))}

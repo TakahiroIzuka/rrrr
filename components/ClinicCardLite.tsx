@@ -2,13 +2,13 @@
 
 import { useRef } from 'react'
 import Link from 'next/link'
-import type { Clinic } from '@/types/clinic'
+import type { Facility } from '@/types/facility'
 import { getStarImage } from '@/lib/utils/starRating'
-import { DEFAULT_CLINIC_IMAGES, IMAGE_COUNT } from '@/lib/constants'
+import { IMAGE_COUNT } from '@/lib/constants'
 import { useImageSlider } from '@/hooks/useImageSlider'
 
 interface ClinicCardLiteProps {
-  clinic: Clinic
+  facility: Facility
   isHovered: boolean
   onMouseEnter: () => void
   onMouseLeave: () => void
@@ -27,7 +27,7 @@ const getGenreNoImage = (genreId: number): string => {
   }
 }
 
-export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMouseLeave }: ClinicCardLiteProps) {
+export default function ClinicCardLite({ facility, isHovered, onMouseEnter, onMouseLeave }: ClinicCardLiteProps) {
   const dragRef = useRef<HTMLDivElement>(null)
   const {
     currentImageIndex,
@@ -65,17 +65,17 @@ export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMous
         >
           <div className="w-full h-32 bg-gray-100 overflow-hidden">
             <img
-              src={getGenreNoImage(clinic.genre_id)}
-              alt={`${clinic.clinic_detail?.name}の画像`}
+              src={getGenreNoImage(facility.genre_id)}
+              alt={`${facility.detail?.name}の画像`}
               className="w-full h-full object-cover"
               draggable={false}
             />
           </div>
 
           {/* HP Button */}
-          {clinic.clinic_detail?.site_url && (
+          {facility.detail?.site_url && (
             <a
-              href={clinic.clinic_detail.site_url}
+              href={facility.detail.site_url}
               target="_blank"
               rel="noopener noreferrer"
               className="absolute top-1 right-1 bg-[#a59878] hover:bg-opacity-90 text-white text-[9px] px-1.5 py-0.5 rounded-md transition-colors flex items-center gap-0.5"
@@ -121,15 +121,15 @@ export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMous
 
       <div className="px-2.5 pb-2.5">
         <h3 className="m-0 mb-2 text-gray-900 text-sm font-semibold leading-tight">
-          {clinic.clinic_detail?.name}
+          {facility.detail?.name}
         </h3>
 
         <div className="flex items-center mb-2 gap-1 pb-1.5 border-b border-[#a59878]">
           <span className="text-gray-600 text-[10px] border border-gray-300 rounded-full px-1.5 py-0.5">
-            {clinic.prefecture?.name}
+            {facility.prefecture?.name}
           </span>
           <span className="text-gray-600 text-[10px] border border-gray-300 rounded-full px-1.5 py-0.5">
-            {clinic.area?.name}
+            {facility.area?.name}
           </span>
         </div>
 
@@ -142,17 +142,17 @@ export default function ClinicCardLite({ clinic, isHovered, onMouseEnter, onMous
             />
             <span className="text-[#a69a7e] text-[10px]">クチコミ評価</span>
             <img
-              src={clinic.clinic_detail?.star !== null ? getStarImage(clinic.clinic_detail?.star) : '/common/star_0.5.png'}
-              alt={clinic.clinic_detail?.star !== null ? `${clinic.clinic_detail?.star}星評価` : '評価なし'}
+              src={facility.detail?.star !== null ? getStarImage(facility.detail?.star) : '/common/star_0.5.png'}
+              alt={facility.detail?.star !== null ? `${facility.detail?.star}星評価` : '評価なし'}
               className="w-12 h-2.5"
             />
           </div>
           <div className="text-[10px]">
-            評価平均 <span className="text-[#a69a7e] font-normal text-sm">{clinic.clinic_detail?.star ?? ''}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-sm">{clinic.clinic_detail?.user_review_count ?? 0}</span><span className="text-[#a69a7e] font-normal text-sm">人</span>
+            評価平均 <span className="text-[#a69a7e] font-normal text-sm">{facility.detail?.star ?? ''}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-sm">{facility.detail?.user_review_count ?? 0}</span><span className="text-[#a69a7e] font-normal text-sm">人</span>
           </div>
         </div>
 
-        <Link href={`/clinics/${clinic.id}`}>
+        <Link href={`/clinics/${facility.id}`}>
           <button className="w-full py-2.5 px-2 bg-[#a59878] text-white text-[11px] font-semibold rounded hover:bg-black transition-all duration-300 group">
             <span className="text-center leading-tight inline-block">
               基本情報とクチコミ詳細<span className="inline-flex items-center justify-center w-3 h-3 bg-white rounded-full transition-all duration-300 group-hover:translate-x-1 ml-1 align-middle">

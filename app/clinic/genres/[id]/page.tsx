@@ -1,7 +1,7 @@
 import ErrorMessage from '@/components/ErrorMessage'
 import { notFound } from 'next/navigation'
 import ClinicHomeClient from '@/components/ClinicHomeClient'
-import { fetchClinicsByGenre, fetchGenreById } from '@/lib/data/clinics'
+import { fetchFacilitiesByGenre, fetchGenreById } from '@/lib/data/facilities'
 
 interface GenrePageProps {
   params: {
@@ -17,8 +17,8 @@ export default async function GenrePage({ params }: GenrePageProps) {
     notFound()
   }
 
-  // Get clinics filtered by genre_id
-  const { clinics, error } = await fetchClinicsByGenre(params.id)
+  // Get facilities filtered by genre_id
+  const { facilities, error } = await fetchFacilitiesByGenre(params.id)
 
   if (error) {
     return <ErrorMessage message={error.message} />
@@ -26,7 +26,7 @@ export default async function GenrePage({ params }: GenrePageProps) {
 
   return (
     <ClinicHomeClient
-      clinics={clinics || []}
+      facilities={facilities || []}
       genreId={genre.id}
       genreName={genre.name}
       genreCode={genre.code}

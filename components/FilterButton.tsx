@@ -1,13 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import type { Clinic } from '@/types/clinic'
+import type { Facility } from '@/types/facility'
 import { useClinicFilter } from '@/hooks/useClinicFilter'
 import FilterControls from './FilterControls'
 
 interface FilterButtonProps {
-  clinics: Clinic[]
-  onFilterChange: (filteredClinics: Clinic[]) => void
+  facilities: Facility[]
+  onFilterChange: (filteredFacilities: Facility[]) => void
   selectedPrefectures?: string[]
   selectedGenres?: number[]
   selectedRanking?: string
@@ -19,7 +19,7 @@ interface FilterButtonProps {
 }
 
 export default function FilterButton({
-  clinics,
+  facilities,
   onFilterChange,
   selectedPrefectures: externalPrefectures,
   selectedGenres: externalGenres,
@@ -35,7 +35,7 @@ export default function FilterButton({
   const [internalGenres, setInternalGenres] = useState<number[]>([])
   const [internalRanking, setInternalRanking] = useState<string>('')
 
-  const { applyFilters } = useClinicFilter(clinics)
+  const { applyFilters } = useClinicFilter(facilities)
 
   const selectedPrefectures = externalPrefectures !== undefined ? externalPrefectures : internalPrefectures
   const selectedGenres = externalGenres !== undefined ? externalGenres : internalGenres
@@ -103,7 +103,7 @@ export default function FilterButton({
       >
         <div className="p-4">
           <FilterControls
-            allClinics={clinics}
+            allFacilities={facilities}
             selectedPrefectures={selectedPrefectures}
             selectedGenres={selectedGenres}
             selectedRanking={selectedRanking}

@@ -5,35 +5,36 @@ import Footer from '@/components/Footer'
 
 interface ClinicDetailLayoutProps {
   children: React.ReactNode
-  params: Promise<{ id: string }>
+  params: { id: string }
 }
 
 export default async function ClinicDetailLayout({
   children,
   params,
 }: ClinicDetailLayoutProps) {
-  const { id } = await params
   const supabase = await createClient()
 
-  const { data: clinic, error } = await supabase
-    .from('clinics')
+  const { data: facility, error } = await supabase
+    .from('facilities')
     .select(`
       genre:genres(
         name
       ),
-      clinic_detail:clinic_details(
+      detail:clinic_details!clinic_id(
         name
       )
     `)
-    .eq('id', id)
+    .eq('id', params.id)
     .single()
 
-  if (error || !clinic) {
+  if (error || !facility) {
     notFound()
   }
 
-  const genreName = (clinic.genre as any)?.name || ''
-  const clinicName = (clinic.clinic_detail as any)?.name || ''
+  const genreName = (facility.genre as { name?: string })?.name || ''
+  const facilityName = Array.isArray(facility.detail)
+    ? (facility.detail[0] as { name?: string })?.name || ''
+    : (facility.detail as { name?: string })?.name || ''
 
   return (
     <>
@@ -56,7 +57,7 @@ export default async function ClinicDetailLayout({
                 <a href="/clinics" className="text-black hover:underline transition-colors">クリニック・施設一覧</a>
               </li>
               <li className="text-black">&gt;</li>
-              <li className="text-black">{clinicName}</li>
+              <li className="text-black">{facilityName}</li>
             </ol>
           </nav>
         </div>

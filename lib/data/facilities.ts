@@ -1,7 +1,4 @@
 import { createClient } from '@/utils/supabase/server'
-
-// Note: Using the same Facility type from @/types/facility
-// Since kuchikomiru uses the same facilities table structure
 import type { Facility } from '@/types/facility'
 
 /**
@@ -44,7 +41,7 @@ const FACILITY_BASE_QUERY = `
 `
 
 /**
- * Fetch all facilities for kuchikomiru
+ * Fetch all facilities
  */
 export async function fetchAllFacilities(): Promise<{ facilities: Facility[] | null; error: Error | null }> {
   const supabase = await createClient()
@@ -62,7 +59,7 @@ export async function fetchAllFacilities(): Promise<{ facilities: Facility[] | n
 }
 
 /**
- * Fetch facilities by genre ID for kuchikomiru
+ * Fetch facilities by genre ID
  */
 export async function fetchFacilitiesByGenre(genreId: string): Promise<{ facilities: Facility[] | null; error: Error | null }> {
   const supabase = await createClient()

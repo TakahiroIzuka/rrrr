@@ -1,41 +1,48 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import type { Clinic } from '@/types/clinic'
+import { useState, useCallback, useMemo } from 'react'
+import type { Facility } from '@/types/facility'
 import ClinicsListPanel from '@/components/ClinicsListPanel'
 import MapPanel from '@/components/MapPanel'
 import ClinicsGridSection from '@/components/ClinicsGridSection'
 import FilterButton from '@/components/FilterButton'
-import DetailHeader from '@/app/clinics/[id]/DetailHeader'
-import MarqueeText from '@/components/MarqueeText'
 
 interface ClinicHomeClientProps {
-  clinics: Clinic[]
+  facilities: Facility[]
   genreId?: number
   genreName?: string
   genreCode?: string
 }
 
 export default function ClinicHomeClient({
-  clinics,
+  facilities,
   genreId,
   genreName,
-  genreCode
 }: ClinicHomeClientProps) {
-  const [filteredClinics, setFilteredClinics] = useState<Clinic[]>(clinics)
-  const [selectedClinicId, setSelectedClinicId] = useState<number | null>(null)
+  // Normalize detail to handle both array and object formats
+  const normalizedFacilities = useMemo(() => {
+    return facilities.map(facility => ({
+      ...facility,
+      detail: Array.isArray(facility.detail)
+        ? facility.detail[0]
+        : facility.detail
+    }))
+  }, [facilities])
+
+  const [filteredFacilities, setFilteredFacilities] = useState<Facility[]>(normalizedFacilities)
+  const [selectedFacilityId, setSelectedFacilityId] = useState<number | null>(null)
   const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([])
   const [selectedGenres, setSelectedGenres] = useState<number[]>(genreId ? [genreId] : [])
   const [selectedRanking, setSelectedRanking] = useState<string>('')
 
-  const handleFilterChange = useCallback((filtered: Clinic[]) => {
-    setFilteredClinics(filtered)
+  const handleFilterChange = useCallback((filtered: Facility[]) => {
+    setFilteredFacilities(filtered)
     // Reset selection when filter changes
-    setSelectedClinicId(null)
+    setSelectedFacilityId(null)
   }, [])
 
-  const handleClinicSelect = useCallback((clinicId: number | null) => {
-    setSelectedClinicId(clinicId)
+  const handleFacilitySelect = useCallback((facilityId: number | null) => {
+    setSelectedFacilityId(facilityId)
   }, [])
 
   // Show genre header only if genre props are provided
@@ -51,19 +58,19 @@ export default function ClinicHomeClient({
           {/* Sidebar Below Map on Mobile, Left on PC */}
           <div className="w-full md:w-[430px] flex-shrink-0 h-1/2 md:h-full order-2 md:order-1 overflow-y-auto" style={{ backgroundColor: '#fff9f0'}}>
             <ClinicsListPanel
-              clinics={selectedClinicId ? filteredClinics.filter(clinic => clinic.id === selectedClinicId) : filteredClinics}
+              facilities={selectedFacilityId ? filteredFacilities.filter(facility => facility.id === selectedFacilityId) : filteredFacilities}
             />
           </div>
           {/* Map Full Width on Mobile, Right on PC */}
           <div className="w-full md:flex-1 relative h-1/2 md:h-full order-1 md:order-2">
             <MapPanel
-              allClinics={clinics}
-              filteredClinics={filteredClinics}
-              onClinicSelect={handleClinicSelect}
+              allFacilities={normalizedFacilities}
+              filteredFacilities={filteredFacilities}
+              onFacilitySelect={handleFacilitySelect}
             />
             {/* Filter Button Overlay on Map */}
             <FilterButton
-              clinics={clinics}
+              facilities={normalizedFacilities}
               onFilterChange={handleFilterChange}
               selectedPrefectures={selectedPrefectures}
               selectedGenres={selectedGenres}
@@ -79,8 +86,8 @@ export default function ClinicHomeClient({
 
         {/* Clinics Grid Section */}
         <ClinicsGridSection
-          clinics={filteredClinics}
-          allClinics={clinics}
+          facilities={filteredFacilities}
+          allFacilities={normalizedFacilities}
           selectedPrefectures={selectedPrefectures}
           selectedGenres={selectedGenres}
           selectedRanking={selectedRanking}

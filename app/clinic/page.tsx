@@ -1,13 +1,13 @@
 import ErrorMessage from '@/components/ErrorMessage'
 import ClinicHomeClient from '@/components/ClinicHomeClient'
-import { fetchAllClinics } from '@/lib/data/clinics'
+import { fetchAllFacilities } from '@/lib/data/facilities'
 
 export default async function HomePage() {
-  const { clinics, error } = await fetchAllClinics()
+  const { facilities, error } = await fetchAllFacilities()
 
   if (error) {
     return <ErrorMessage message={error.message} />
   }
 
-  return <ClinicHomeClient clinics={clinics || []} />
+  return <ClinicHomeClient facilities={facilities || []} />
 }

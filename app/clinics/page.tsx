@@ -1,20 +1,20 @@
 import ErrorMessage from '@/components/ErrorMessage'
 import ClinicList from '@/components/ClinicList'
 import MedicalReviewRanking from '@/components/MedicalReviewRanking'
-import { fetchAllClinics } from '@/lib/data/clinics'
+import { fetchAllFacilities } from '@/lib/data/facilities'
 
 export default async function ClinicListPage() {
-  const { clinics, error } = await fetchAllClinics()
+  const { facilities, error } = await fetchAllFacilities()
 
   if (error) {
     return <ErrorMessage message={error.message} />
   }
 
-  // Extract unique prefectures from clinics data
+  // Extract unique prefectures from facilities data
   const uniquePrefectures = Array.from(
     new Set(
-      (clinics || [])
-        .map(clinic => clinic.prefecture?.name)
+      (facilities || [])
+        .map(facility => facility.prefecture?.name)
         .filter(Boolean)
     )
   ).sort()
@@ -24,7 +24,7 @@ export default async function ClinicListPage() {
       <div className="flex flex-col md:flex-row gap-6 items-start">
         {/* クリニックリスト - 2列で表示 */}
         <ClinicList
-          clinics={clinics || []}
+          facilities={facilities || []}
           title="クリニックはこちら"
           subtitle="List of Local places"
           width="3/4"

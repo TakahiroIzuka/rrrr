@@ -3,19 +3,18 @@ import { getStarImage } from '@/lib/utils/starRating'
 import Div2 from './Div2'
 import ReviewCard from './ReviewCard'
 import ScrollToReviewButton from './ScrollToReviewButton'
-import { fetchClinicById } from '@/lib/data/clinics'
+import { fetchFacilityById } from '@/lib/data/facilities'
 
 interface ClinicDetailPageProps {
-  params: Promise<{
+  params: {
     id: string
-  }>
+  }
 }
 
 export default async function ClinicDetailPage({ params }: ClinicDetailPageProps) {
-  const { id } = await params
-  const { clinic, error } = await fetchClinicById(id)
+  const { facility, error } = await fetchFacilityById(params.id)
 
-  if (error || !clinic) {
+  if (error || !facility) {
     notFound()
   }
 
@@ -28,14 +27,14 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
           <div className="flex flex-col md:flex-row gap-0 md:gap-4 pt-2 pb-0">
             {/* 左側 */}
             <div className="w-full md:w-[45%]">
-              <h1 className="text-xl font-bold mb-3" style={{ fontFamily: 'Kosugi Maru, sans-serif' }}>{clinic.clinic_detail?.name}</h1>
+              <h1 className="text-xl font-bold mb-3" style={{ fontFamily: 'Kosugi Maru, sans-serif' }}>{facility.detail?.name}</h1>
 
               <div className="flex items-center mb-2 gap-1.5 pb-2 border-b border-[#a59878]">
                 <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
-                  {clinic.prefecture?.name}
+                  {facility.prefecture?.name}
                 </span>
                 <span className="text-gray-600 text-xs border border-gray-300 rounded px-2 py-0.5">
-                  {clinic.area?.name}
+                  {facility.area?.name}
                 </span>
               </div>
 
@@ -48,13 +47,13 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
                   />
                   <span className="text-[#a69a7e] text-xs">クチコミ評価</span>
                   <img
-                    src={clinic.clinic_detail?.star !== null ? getStarImage(clinic.clinic_detail?.star) : '/common/star_0.5.png'}
-                    alt={clinic.clinic_detail?.star !== null ? `${clinic.clinic_detail?.star}星評価` : '評価なし'}
+                    src={facility.detail?.star !== null ? getStarImage(facility.detail?.star) : '/common/star_0.5.png'}
+                    alt={facility.detail?.star !== null ? `${facility.detail?.star}星評価` : '評価なし'}
                     className="w-23 h-4"
                   />
                 </div>
                 <div className="text-black text-xs">
-                  評価平均 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.clinic_detail?.star ?? ''}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-2xl">{clinic.clinic_detail?.user_review_count}</span><span className="text-[#a69a7e] font-normal text-2xl">人</span>
+                  評価平均 <span className="text-[#a69a7e] font-normal text-2xl">{facility.detail?.star ?? ''}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-2xl">{facility.detail?.user_review_count}</span><span className="text-[#a69a7e] font-normal text-2xl">人</span>
                 </div>
               </div>
             </div>
@@ -70,7 +69,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
               </div>
 
               {/* ボタン */}
-              <ScrollToReviewButton clinicName={clinic.clinic_detail?.name} />
+              <ScrollToReviewButton clinicName={facility.detail?.name} />
             </div>
           </div>
 
@@ -81,7 +80,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
         </div>
 
         {/* div2 */}
-        <Div2 clinic={clinic} />
+        <Div2 facility={facility} />
 
 
         {/* div3 */}
@@ -89,7 +88,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
           {/* バー */}
           <div className="relative mb-4">
             <div className="w-full px-4 py-2 text-sm border-2 rounded text-center bg-white" style={{ borderColor: 'rgb(220, 194, 219)', color: 'rgb(220, 194, 219)' }}>
-              {clinic.clinic_detail?.name}のクチコミ一覧はこちら！
+              {facility.detail?.name}のクチコミ一覧はこちら！
             </div>
             {/* 下向き三角形 */}
             <div className="absolute left-1/2 -translate-x-1/2 -bottom-3 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: 'rgb(220, 194, 219)' }}></div>
@@ -98,7 +97,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
           {/* カードグリッド */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5 mt-6 p-0 md:px-[15px]">
             <ReviewCard
-              clinic={clinic}
+              facility={facility}
               userImage="https://placehold.co/100x100/e3d5ca/000000?text=User"
               showDate={false}
             />
@@ -110,7 +109,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
             ].map((image, index) => (
               <ReviewCard
                 key={index}
-                clinic={clinic}
+                facility={facility}
                 userImage={image}
                 showDate={true}
               />

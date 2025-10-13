@@ -1,27 +1,27 @@
 'use client'
 
-import type { Clinic } from '@/types/clinic'
+import type { Facility } from '@/types/facility'
 import { useClinicFilter } from '@/hooks/useClinicFilter'
 import ClinicList from './ClinicList'
 import FilterControls from './FilterControls'
 import MedicalReviewRanking from './MedicalReviewRanking'
 
 interface ClinicsGridSectionProps {
-  clinics: Clinic[]
-  allClinics: Clinic[]
+  facilities: Facility[]
+  allFacilities: Facility[]
   selectedPrefectures: string[]
   selectedGenres: number[]
   selectedRanking: string
   onPrefecturesChange: (prefectures: string[]) => void
   onGenresChange: (genres: number[]) => void
   onRankingChange: (ranking: string) => void
-  onFilterChange: (filteredClinics: Clinic[]) => void
+  onFilterChange: (filteredFacilities: Facility[]) => void
   hideGenreFilter?: boolean
 }
 
 export default function ClinicsGridSection({
-  clinics,
-  allClinics,
+  facilities,
+  allFacilities,
   selectedPrefectures,
   selectedGenres,
   selectedRanking,
@@ -31,7 +31,7 @@ export default function ClinicsGridSection({
   onFilterChange,
   hideGenreFilter = false
 }: ClinicsGridSectionProps) {
-  const { applyFilters } = useClinicFilter(allClinics)
+  const { applyFilters } = useClinicFilter(allFacilities)
 
   const handlePrefectureChange = (prefecture: string) => {
     const updated = selectedPrefectures.includes(prefecture)
@@ -74,12 +74,12 @@ export default function ClinicsGridSection({
           {/* Clinic Count */}
           <div className="mb-4 bg-white rounded-lg">
             <p className="text-sm text-gray-600 text-center">
-              該当する店舗及び施設<strong className="text-lg mx-1" style={{ color: '#a69a7e' }}>{clinics.length}</strong>件
+              該当する店舗及び施設<strong className="text-lg mx-1" style={{ color: '#a69a7e' }}>{facilities.length}</strong>件
             </p>
           </div>
 
           <FilterControls
-            allClinics={allClinics}
+            allFacilities={allFacilities}
             selectedPrefectures={selectedPrefectures}
             selectedGenres={selectedGenres}
             selectedRanking={selectedRanking}
@@ -95,7 +95,7 @@ export default function ClinicsGridSection({
           {/* Left Box - 3/4 width */}
           <div className="w-3/4">
             <ClinicList
-              clinics={allClinics.slice(0, 5)}
+              facilities={allFacilities.slice(0, 5)}
               title="人気のクリニック5件はこちら"
               subtitle="Recommended Clinic"
               width="full"
@@ -113,7 +113,7 @@ export default function ClinicsGridSection({
         <div id="list-section" className="flex flex-col md:flex-row gap-6 items-start">
           {/* Left Box - 3/4 width */}
           <ClinicList
-            clinics={clinics}
+            facilities={facilities}
             title="リストで絞り込み検索結果一覧はこちら"
             subtitle="List Search"
             width="3/4"
@@ -133,12 +133,12 @@ export default function ClinicsGridSection({
             {/* Clinic Count */}
             <div className="mb-4 bg-white rounded-lg">
               <p className="text-sm text-gray-600 text-center">
-                該当する店舗及び施設<strong className="text-lg mx-1" style={{ color: '#a69a7e' }}>{clinics.length}</strong>件
+                該当する店舗及び施設<strong className="text-lg mx-1" style={{ color: '#a69a7e' }}>{facilities.length}</strong>件
               </p>
             </div>
 
             <FilterControls
-              allClinics={allClinics}
+              allFacilities={allFacilities}
               selectedPrefectures={selectedPrefectures}
               selectedGenres={selectedGenres}
               selectedRanking={selectedRanking}

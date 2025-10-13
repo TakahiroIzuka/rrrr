@@ -1,20 +1,20 @@
-import type { Clinic } from '@/types/clinic'
+import type { Facility } from '@/types/facility'
 import { getStarImage } from '@/lib/utils/starRating'
 
 interface ReviewCardProps {
-  clinic: Clinic
+  facility: Facility
   userImage: string
   showDate?: boolean
 }
 
-export default function ReviewCard({ clinic, userImage, showDate = false }: ReviewCardProps) {
+export default function ReviewCard({ facility, userImage, showDate = false }: ReviewCardProps) {
   return (
     <div className="bg-white rounded p-3 h-52 flex flex-col shadow-md">
       {/* 上段：画像、施設名、Googleロゴ */}
       <div className="flex gap-3 mb-3 relative">
         <img src={userImage} alt="ユーザー画像" className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
         <div className={`flex-1 min-w-0 ${showDate ? 'self-start' : 'self-center'}`}>
-          <p className={`font-medium text-sm ${showDate ? 'mb-1' : ''}`}>{showDate ? 'userA' : clinic.clinic_detail?.name}</p>
+          <p className={`font-medium text-sm ${showDate ? 'mb-1' : ''}`}>{showDate ? 'userA' : facility.detail?.name}</p>
           {showDate && (
             <p className="text-xs text-gray-500">{new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
           )}
@@ -24,13 +24,13 @@ export default function ReviewCard({ clinic, userImage, showDate = false }: Revi
       {/* 下段：星と評価情報 */}
       <div>
         <img
-          src={clinic.clinic_detail?.star !== null ? getStarImage(clinic.clinic_detail?.star) : '/common/star_0.5.png'}
-          alt={clinic.clinic_detail?.star !== null ? `${clinic.clinic_detail?.star}星評価` : '評価なし'}
+          src={facility.detail?.star !== null ? getStarImage(facility.detail?.star) : '/common/star_0.5.png'}
+          alt={facility.detail?.star !== null ? `${facility.detail?.star}星評価` : '評価なし'}
           className="w-23 h-4 mb-2"
         />
         {!showDate && (
           <div className="text-sm text-gray-700 font-bold">
-            評価平均 <span className="text-lg font-bold" style={{ color: 'rgb(166, 154, 126)' }}>{clinic.clinic_detail?.star ?? ''}</span> / 評価人数 <span className="text-lg font-bold" style={{ color: 'rgb(166, 154, 126)' }}>{clinic.clinic_detail?.user_review_count}</span>人
+            評価平均 <span className="text-lg font-bold" style={{ color: 'rgb(166, 154, 126)' }}>{facility.detail?.star ?? ''}</span> / 評価人数 <span className="text-lg font-bold" style={{ color: 'rgb(166, 154, 126)' }}>{facility.detail?.user_review_count}</span>人
           </div>
         )}
         {showDate && (
@@ -40,9 +40,9 @@ export default function ReviewCard({ clinic, userImage, showDate = false }: Revi
         )}
       </div>
       {!showDate && (
-        clinic.clinic_detail?.google_map_url ? (
+        facility.detail?.google_map_url ? (
           <a
-            href={clinic.clinic_detail.google_map_url}
+            href={facility.detail.google_map_url}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full mt-3 px-4 py-2 rounded text-white text-sm font-medium flex items-center justify-center gap-2"
