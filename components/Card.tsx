@@ -6,7 +6,7 @@ import type { Facility } from '@/types/facility'
 import { getStarImage } from '@/lib/utils/starRating'
 import { IMAGE_COUNT, SWIPE_THRESHOLD } from '@/lib/constants'
 
-interface ClinicCardProps {
+interface CardProps {
   facility: Facility
   isHovered: boolean
   onMouseEnter: () => void
@@ -26,7 +26,7 @@ const getGenreNoImage = (genreId: number): string => {
   }
 }
 
-export default function ClinicCard({ facility, isHovered, onMouseEnter, onMouseLeave }: ClinicCardProps) {
+export default function Card({ facility, isHovered, onMouseEnter, onMouseLeave }: CardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)

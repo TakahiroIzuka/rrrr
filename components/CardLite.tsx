@@ -7,7 +7,7 @@ import { getStarImage } from '@/lib/utils/starRating'
 import { IMAGE_COUNT } from '@/lib/constants'
 import { useImageSlider } from '@/hooks/useImageSlider'
 
-interface ClinicCardLiteProps {
+interface CardLiteProps {
   facility: Facility
   isHovered: boolean
   onMouseEnter: () => void
@@ -27,7 +27,7 @@ const getGenreNoImage = (genreId: number): string => {
   }
 }
 
-export default function ClinicCardLite({ facility, isHovered, onMouseEnter, onMouseLeave }: ClinicCardLiteProps) {
+export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLeave }: CardLiteProps) {
   const dragRef = useRef<HTMLDivElement>(null)
   const {
     currentImageIndex,

@@ -2,23 +2,23 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import type { Facility } from '@/types/facility'
-import ClinicsListPanel from '@/components/ClinicsListPanel'
+import ListPanel from '@/components/ListPanel'
 import MapPanel from '@/components/MapPanel'
-import ClinicsGridSection from '@/components/ClinicsGridSection'
+import GridSection from '@/components/GridSection'
 import FilterButton from '@/components/FilterButton'
 
-interface ClinicHomeClientProps {
+interface HomeClientProps {
   facilities: Facility[]
   genreId?: number
   genreName?: string
   genreCode?: string
 }
 
-export default function ClinicHomeClient({
+export default function HomeClient({
   facilities,
   genreId,
   genreName,
-}: ClinicHomeClientProps) {
+}: HomeClientProps) {
   // Normalize detail to handle both array and object formats
   const normalizedFacilities = useMemo(() => {
     return facilities.map(facility => ({
@@ -57,7 +57,7 @@ export default function ClinicHomeClient({
         <div id="map-section" className={`flex flex-col md:flex-row w-full overflow-hidden ${showGenreHeader ? 'h-[calc(100vh-64px)]' : 'h-[calc(100vh-64px)]'} md:h-[calc(100vh-150px)]`}>
           {/* Sidebar Below Map on Mobile, Left on PC */}
           <div className="w-full md:w-[430px] flex-shrink-0 h-1/2 md:h-full order-2 md:order-1 overflow-y-auto" style={{ backgroundColor: '#fff9f0'}}>
-            <ClinicsListPanel
+            <ListPanel
               facilities={selectedFacilityId ? filteredFacilities.filter(facility => facility.id === selectedFacilityId) : filteredFacilities}
             />
           </div>
@@ -85,7 +85,7 @@ export default function ClinicHomeClient({
         </div>
 
         {/* Clinics Grid Section */}
-        <ClinicsGridSection
+        <GridSection
           facilities={filteredFacilities}
           allFacilities={normalizedFacilities}
           selectedPrefectures={selectedPrefectures}

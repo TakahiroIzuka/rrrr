@@ -1,5 +1,5 @@
 import ErrorMessage from '@/components/ErrorMessage'
-import ClinicHomeClient from '@/components/ClinicHomeClient'
+import HomeClient from '@/components/HomeClient'
 import { fetchAllFacilities } from '@/lib/data/kuchikomiru'
 
 export default async function KuchikomiruPage() {
@@ -9,5 +9,5 @@ export default async function KuchikomiruPage() {
     return <ErrorMessage message={error.message} />
   }
 
-  return <ClinicHomeClient facilities={facilities || []} />
+  return <HomeClient facilities={facilities || []} />
 }

@@ -1,5 +1,5 @@
 import ErrorMessage from '@/components/ErrorMessage'
-import ClinicHomeClient from '@/components/ClinicHomeClient'
+import HomeClient from '@/components/HomeClient'
 import { fetchAllFacilities } from '@/lib/data/facilities'
 
 export default async function HomePage() {
@@ -9,5 +9,5 @@ export default async function HomePage() {
     return <ErrorMessage message={error.message} />
   }
 
-  return <ClinicHomeClient facilities={facilities || []} />
+  return <HomeClient facilities={facilities || []} />
 }

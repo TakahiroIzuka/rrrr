@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 import type { Facility } from '@/types/facility'
-import ClinicCard from './ClinicCard'
+import Card from './Card'
 
-interface ClinicsListPanelProps {
+interface ListPanelProps {
   facilities: Facility[]
 }
 
-export default function ClinicsListPanel({ facilities }: ClinicsListPanelProps) {
+export default function ListPanel({ facilities }: ListPanelProps) {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
   return (
@@ -24,7 +24,7 @@ export default function ClinicsListPanel({ facilities }: ClinicsListPanelProps) 
       <div className="flex-1 overflow-auto" style={{ paddingTop: '6px', paddingLeft: '16px', paddingRight: '16px', paddingBottom: '16px' }}>
         <div className="flex flex-col gap-4">
           {facilities.map((facility: Facility) => (
-            <ClinicCard
+            <Card
               key={facility.id}
               facility={facility}
               isHovered={hoveredCard === facility.id}

@@ -1,5 +1,5 @@
 import ErrorMessage from '@/components/ErrorMessage'
-import ClinicList from '@/components/ClinicList'
+import List from '@/components/List'
 import MedicalReviewRanking from '@/components/MedicalReviewRanking'
 import { fetchAllFacilities } from '@/lib/data/facilities'
 
@@ -23,7 +23,7 @@ export default async function ClinicListPage() {
     <div className="w-full px-[5px] md:px-4 pt-5 md:py-8">
       <div className="flex flex-col md:flex-row gap-6 items-start">
         {/* クリニックリスト - 2列で表示 */}
-        <ClinicList
+        <List
           facilities={facilities || []}
           title="クリニックはこちら"
           subtitle="List of Local places"

@@ -1,6 +1,6 @@
 import ErrorMessage from '@/components/ErrorMessage'
 import { notFound } from 'next/navigation'
-import ClinicHomeClient from '@/components/ClinicHomeClient'
+import HomeClient from '@/components/HomeClient'
 import { fetchFacilitiesByGenre, fetchGenreById } from '@/lib/data/kuchikomiru'
 
 interface GenrePageProps {
@@ -25,7 +25,7 @@ export default async function GenrePage({ params }: GenrePageProps) {
   }
 
   return (
-    <ClinicHomeClient
+    <HomeClient
       facilities={facilities || []}
       genreId={genre.id}
       genreName={genre.name}

@@ -2,11 +2,11 @@
 
 import type { Facility } from '@/types/facility'
 import { useClinicFilter } from '@/hooks/useClinicFilter'
-import ClinicList from './ClinicList'
+import List from './List'
 import FilterControls from './FilterControls'
 import MedicalReviewRanking from './MedicalReviewRanking'
 
-interface ClinicsGridSectionProps {
+interface GridSectionProps {
   facilities: Facility[]
   allFacilities: Facility[]
   selectedPrefectures: string[]
@@ -19,7 +19,7 @@ interface ClinicsGridSectionProps {
   hideGenreFilter?: boolean
 }
 
-export default function ClinicsGridSection({
+export default function GridSection({
   facilities,
   allFacilities,
   selectedPrefectures,
@@ -30,7 +30,7 @@ export default function ClinicsGridSection({
   onRankingChange,
   onFilterChange,
   hideGenreFilter = false
-}: ClinicsGridSectionProps) {
+}: GridSectionProps) {
   const { applyFilters } = useClinicFilter(allFacilities)
 
   const handlePrefectureChange = (prefecture: string) => {
@@ -94,7 +94,7 @@ export default function ClinicsGridSection({
         <div className="hidden md:flex gap-6 items-start">
           {/* Left Box - 3/4 width */}
           <div className="w-3/4">
-            <ClinicList
+            <List
               facilities={allFacilities.slice(0, 5)}
               title="人気のクリニック5件はこちら"
               subtitle="Recommended Clinic"
@@ -112,7 +112,7 @@ export default function ClinicsGridSection({
         {/* Second Section */}
         <div id="list-section" className="flex flex-col md:flex-row gap-6 items-start">
           {/* Left Box - 3/4 width */}
-          <ClinicList
+          <List
             facilities={facilities}
             title="リストで絞り込み検索結果一覧はこちら"
             subtitle="List Search"

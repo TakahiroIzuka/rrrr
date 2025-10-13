@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import type { Facility } from '@/types/facility'
-import ClinicCardLite from './ClinicCardLite'
+import CardLite from './CardLite'
 
-interface ClinicListProps {
+interface ListProps {
   facilities: Facility[]
   title?: string
   subtitle?: string
@@ -12,13 +12,13 @@ interface ClinicListProps {
   gridCols?: '2' | '5'
 }
 
-export default function ClinicList({
+export default function List({
   facilities,
   title = 'リストで絞り込み検索結果一覧はこちら',
   subtitle = 'List Search',
   width = '3/4',
   gridCols = '5'
-}: ClinicListProps) {
+}: ListProps) {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
   const widthClass = width === 'full' ? 'w-full' : 'w-full md:w-3/4'
@@ -40,7 +40,7 @@ export default function ClinicList({
       {/* Clinics Grid */}
       <div className={`grid ${gridColsClass} gap-x-[5px] gap-y-4 md:gap-4`}>
         {facilities.map((facility) => (
-          <ClinicCardLite
+          <CardLite
             key={`facility-${facility.id}`}
             facility={facility}
             isHovered={hoveredCard === facility.id}
