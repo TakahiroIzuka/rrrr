@@ -17,12 +17,14 @@ interface HeaderProps {
   imagePath?: string
   lineColor?: string
   color?: string
+  labelText?: string
 }
 
 export default function Header({
   imagePath = '/mrr/default/logo_header.png',
   lineColor = '#a69a7e',
-  color = '#acd1e6'
+  color = '#acd1e6',
+  labelText
 }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
@@ -92,17 +94,12 @@ export default function Header({
     return () => window.removeEventListener('scroll', handleScroll)
   }, [lastScrollY, isScrolled])
 
-  // 詳細ページの場合はHeaderを表示しない
-  if (isDetailPage) {
-    return null
-  }
-
   return (
     <>
       {/* ヘッダー（スマホは固定、PCは通常） */}
       <header className="bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-28 fixed md:relative z-[1000] border-t-0 md:border-t-[5px]" style={{ borderColor: lineColor, width: '100%', top: 0, left: 0, right: 0 }}>
       <div className="flex justify-between items-center h-full px-4 md:px-8">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-10">
           <Link href="/clinic" className="md:hidden">
             <Image
               src={imagePath}
@@ -121,6 +118,21 @@ export default function Header({
               className="h-18"
             />
           </Link>
+          {/* ラベル（PC表示） */}
+          {labelText && (
+            <div className="hidden md:flex items-center bg-[rgb(163,151,125)] text-white px-3 py-2 rounded-lg font-semibold text-sm mb-2">
+              {labelText}
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 pr-14 md:pr-0">
+          {/* ラベル（スマホ表示） */}
+          {labelText && (
+            <div className="md:hidden flex items-center bg-[rgb(163,151,125)] text-white px-2 py-1.5 rounded-lg font-semibold text-xs whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
+              {labelText}
+            </div>
+          )}
         </div>
 
         {/* ハンバーガーメニュー（スマホ） */}
@@ -194,7 +206,7 @@ export default function Header({
           style={{ borderTop: `5px solid ${lineColor}` }}
         >
           <div className="flex justify-between items-center h-full px-4 md:px-8">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-10">
               <Link href="/clinic" className="md:hidden">
                 <Image
                   src={imagePath}
@@ -213,6 +225,12 @@ export default function Header({
                   className="h-18"
                 />
               </Link>
+              {/* ラベル（PC表示） */}
+              {labelText && (
+                <div className="hidden md:flex items-center bg-[rgb(163,151,125)] text-white px-3 py-2 rounded-lg font-semibold text-sm mb-2">
+                  {labelText}
+                </div>
+              )}
             </div>
 
             {/* PC用のナビゲーション */}

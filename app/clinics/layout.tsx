@@ -1,25 +1,41 @@
+'use client'
+
+import { usePathname } from 'next/navigation'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+import Breadcrumb from '@/components/Breadcrumb'
+
 export default function ClinicListLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const pathname = usePathname()
+  const isClinicListPage = pathname === '/clinics'
+
+  if (!isClinicListPage) {
+    return <>{children}</>
+  }
+
   return (
     <>
-      {/* Breadcrumb in place of MarqueeText */}
-      <div className="clinic-list-breadcrumb hidden md:block py-1" style={{ backgroundColor: '#fff9f0' }}>
-        <div className="mx-[30px]">
-          <nav className="text-[12px]">
-            <ol className="flex items-center gap-2">
-              <li>
-                <a href="/clinic" className="text-black hover:underline transition-colors">トップ</a>
-              </li>
-              <li className="text-black">&gt;</li>
-              <li className="text-black">クリニックはこちら</li>
-            </ol>
-          </nav>
-        </div>
-      </div>
+      <Header
+        imagePath="/mrr/default/logo_header.png"
+        lineColor="#a69a7e"
+        color="#acd1e6"
+      />
+      <Breadcrumb
+        items={[
+          { label: 'トップ', href: '/clinic' },
+          { label: 'クリニックはこちら' }
+        ]}
+      />
       {children}
+      <Footer
+        imagePath="/mrr/default/logo_footer.png"
+        buttonText="クリニック・施設の掲載リクエストはこちら"
+        type="clinic"
+      />
     </>
   )
 }

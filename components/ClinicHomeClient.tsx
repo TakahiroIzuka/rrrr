@@ -45,23 +45,6 @@ export default function ClinicHomeClient({
   return (
     <>
       {/* Header with genre label (only for genre pages) */}
-      {showGenreHeader ? (
-        <>
-          <DetailHeader
-            genreName={genreName || ''}
-            genreCode={genreCode}
-            showNavButtons={true}
-          />
-          <div className="mt-16 md:mt-0">
-            <MarqueeText />
-          </div>
-        </>
-      ) : (
-        <div className="mt-16 md:mt-0">
-          <MarqueeText />
-        </div>
-      )}
-
       <div className="flex flex-col w-full">
         {/* Map Section */}
         <div id="map-section" className={`flex flex-col md:flex-row w-full overflow-hidden ${showGenreHeader ? 'h-[calc(100vh-64px)]' : 'h-[calc(100vh-64px)]'} md:h-[calc(100vh-150px)]`}>

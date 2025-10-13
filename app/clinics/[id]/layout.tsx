@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
-import DetailHeader from './DetailHeader'
-import DetailFooter from './DetailFooter'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 interface ClinicDetailLayoutProps {
   children: React.ReactNode
@@ -18,11 +18,11 @@ export default async function ClinicDetailLayout({
   const { data: clinic, error } = await supabase
     .from('clinics')
     .select(`
-      genre_id,
       genre:genres(
-        id,
-        name,
-        code
+        name
+      ),
+      clinic_detail:clinic_details(
+        name
       )
     `)
     .eq('id', id)
@@ -32,14 +32,41 @@ export default async function ClinicDetailLayout({
     notFound()
   }
 
+  const genreName = (clinic.genre as any)?.name || ''
+  const clinicName = (clinic.clinic_detail as any)?.name || ''
+
   return (
     <>
-      <style dangerouslySetInnerHTML={{
-        __html: '.clinic-list-breadcrumb { display: none !important; }'
-      }} />
-      <DetailHeader genreId={clinic.genre_id} genreName={clinic.genre?.name || ''} genreCode={clinic.genre?.code} />
+      <Header
+        imagePath="/mrr/default/logo_header.png"
+        lineColor="#a69a7e"
+        color="#acd1e6"
+        labelText={genreName || ''}
+      />
+      {/* Breadcrumb */}
+      <div className="block py-1" style={{ backgroundColor: '#fff9f0' }}>
+        <div className="mx-[30px]">
+          <nav className="text-[12px]">
+            <ol className="flex items-center gap-2">
+              <li>
+                <a href="/clinic" className="text-black hover:underline transition-colors">トップ</a>
+              </li>
+              <li className="text-black">&gt;</li>
+              <li>
+                <a href="/clinics" className="text-black hover:underline transition-colors">クリニック・施設一覧</a>
+              </li>
+              <li className="text-black">&gt;</li>
+              <li className="text-black">{clinicName}</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
       {children}
-      <DetailFooter genreId={clinic.genre_id} genreCode={clinic.genre?.code} />
+      <Footer
+        imagePath="/mrr/default/logo_footer.png"
+        buttonText="クリニック・施設の掲載リクエストはこちら"
+        type="clinic"
+      />
     </>
   )
 }
