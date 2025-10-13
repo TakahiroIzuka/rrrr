@@ -16,8 +16,8 @@ export default function ConditionalHeader() {
   let lineColor = '#a69a7e'
   let color = '#acd1e6'
 
-  // /kuchikomiru-base の場合
-  if (pathname?.startsWith('/kuchikomiru-base')) {
+  // /kuchikomiru-base or /kuchikomiru の場合
+  if (pathname?.startsWith('/kuchikomiru-base') || pathname?.startsWith('/kuchikomiru')) {
     imagePath = '/kuchikomiru/default/logo_header.png'
     lineColor = 'rgb(236, 106, 82)'
     color = 'rgb(236, 106, 82)'
