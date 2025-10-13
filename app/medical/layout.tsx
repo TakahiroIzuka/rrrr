@@ -11,7 +11,7 @@ export default function ClinicLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const isClinicTopPage = pathname === '/clinic'
+  const isClinicTopPage = pathname === '/medical'
 
   return (
     <>

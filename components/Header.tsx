@@ -57,10 +57,10 @@ export default function Header({
   }, [])
 
   // 詳細ページかどうかを判定
-  const isDetailPage = pathname?.startsWith('/clinics/') && pathname !== '/clinics'
+  const isDetailPage = pathname?.startsWith('/medical/list/') && pathname !== '/medical/list'
 
   // 一覧ページかどうかを判定
-  const isListPage = pathname === '/clinics'
+  const isListPage = pathname === '/medical/list'
 
   useEffect(() => {
     const handleScroll = () => {
@@ -100,7 +100,7 @@ export default function Header({
       <header className="bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-28 fixed md:relative z-[1000] border-t-0 md:border-t-[5px]" style={{ borderColor: lineColor, width: '100%', top: 0, left: 0, right: 0 }}>
       <div className="flex justify-between items-center h-full px-4 md:px-8">
         <div className="flex items-center gap-10">
-          <Link href="/clinic" className="md:hidden">
+          <Link href="/medical" className="md:hidden">
             <Image
               src={imagePath}
               alt="メディカルクチコミランキング"
@@ -109,7 +109,7 @@ export default function Header({
               className="h-12"
             />
           </Link>
-          <Link href="/clinic" className="hidden md:block">
+          <Link href="/medical" className="hidden md:block">
             <Image
               src={imagePath}
               alt="メディカルクチコミランキング"
@@ -207,7 +207,7 @@ export default function Header({
         >
           <div className="flex justify-between items-center h-full px-4 md:px-8">
             <div className="flex items-center gap-10">
-              <Link href="/clinic" className="md:hidden">
+              <Link href="/medical" className="md:hidden">
                 <Image
                   src={imagePath}
                   alt="メディカルクチコミランキング"
@@ -216,7 +216,7 @@ export default function Header({
                   className="h-10"
                 />
               </Link>
-              <Link href="/clinic" className="hidden md:block">
+              <Link href="/medical" className="hidden md:block">
                 <Image
                   src={imagePath}
                   alt="メディカルクチコミランキング"

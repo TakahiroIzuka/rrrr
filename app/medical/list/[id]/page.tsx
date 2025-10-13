@@ -119,7 +119,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
 
         {/* div4 */}
         <div className="p-4 flex justify-center">
-          <a href="/clinic">
+          <a href="/medical">
             <button className="text-white text-sm w-64 md:w-[390px] h-12 md:h-[60px]" style={{ backgroundColor: 'rgb(163, 151, 125)' }}>
               戻る
             </button>

@@ -11,7 +11,7 @@ export default function ClinicListLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const isClinicListPage = pathname === '/clinics'
+  const isClinicListPage = pathname === '/medical/list'
 
   if (!isClinicListPage) {
     return <>{children}</>
@@ -26,7 +26,7 @@ export default function ClinicListLayout({
       />
       <Breadcrumb
         items={[
-          { label: 'トップ', href: '/clinic' },
+          { label: 'トップ', href: '/medical' },
           { label: 'クリニックはこちら' }
         ]}
       />

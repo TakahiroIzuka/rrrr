@@ -50,11 +50,11 @@ export default async function ClinicDetailLayout({
           <nav className="text-[12px]">
             <ol className="flex items-center gap-2">
               <li>
-                <a href="/clinic" className="text-black hover:underline transition-colors">トップ</a>
+                <a href="/medical" className="text-black hover:underline transition-colors">トップ</a>
               </li>
               <li className="text-black">&gt;</li>
               <li>
-                <a href="/clinics" className="text-black hover:underline transition-colors">クリニック・施設一覧</a>
+                <a href="/medical/list" className="text-black hover:underline transition-colors">クリニック・施設一覧</a>
               </li>
               <li className="text-black">&gt;</li>
               <li className="text-black">{facilityName}</li>

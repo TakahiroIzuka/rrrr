@@ -52,7 +52,7 @@ export default function GenreModal({ isOpen, onClose, genres }: GenreModalProps)
             {genres.map((genre) => (
               <Link
                 key={genre.id}
-                href={`/clinic/genres/${genre.id}`}
+                href={`/medical/genres/${genre.id}`}
                 className="block px-3 py-2.5 md:px-4 md:py-3 border rounded-lg transition-colors hover:bg-gray-50 w-[calc(50%-4px)] md:w-[calc(33.333%-8px)]"
                 style={{
                   borderColor: 'rgb(165, 153, 126)',
