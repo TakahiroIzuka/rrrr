@@ -2,10 +2,11 @@ import ErrorMessage from '@/components/ErrorMessage'
 import List from '@/components/List'
 import MedicalReviewRanking from '@/components/MedicalReviewRanking'
 import { fetchAllFacilities } from '@/lib/data/facilities'
+import { SERVICE_CODES } from '@/lib/constants/services'
 
 export default async function ClinicListPage() {
   // Fetch facilities with code='medical'
-  const { facilities, error } = await fetchAllFacilities('medical')
+  const { facilities, error } = await fetchAllFacilities(SERVICE_CODES.MEDICAL)
 
   if (error) {
     return <ErrorMessage message={error.message} />

@@ -4,6 +4,7 @@ import Div2 from './Div2'
 import ReviewCard from './ReviewCard'
 import ScrollToReviewButton from './ScrollToReviewButton'
 import { fetchFacilityById } from '@/lib/data/facilities'
+import { SERVICE_CODES } from '@/lib/constants/services'
 
 interface ClinicDetailPageProps {
   params: {
@@ -13,7 +14,7 @@ interface ClinicDetailPageProps {
 
 export default async function ClinicDetailPage({ params }: ClinicDetailPageProps) {
   // Fetch facility with code='medical'
-  const { facility, error } = await fetchFacilityById(params.id, 'medical')
+  const { facility, error } = await fetchFacilityById(params.id, SERVICE_CODES.MEDICAL)
 
   if (error || !facility) {
     notFound()

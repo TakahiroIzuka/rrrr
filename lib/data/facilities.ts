@@ -1,10 +1,11 @@
 import { createClient } from '@/utils/supabase/server'
 import type { Facility } from '@/types/facility'
+import { SERVICE_CODES } from '@/lib/constants/services'
 
 /**
  * Transform detail from array to single object
  */
-export function transformFacilityDetail(facilityData: unknown): Facility {
+function transformFacilityDetail(facilityData: unknown): Facility {
   const data = facilityData as Record<string, unknown>
   return {
     ...data,
@@ -12,6 +13,20 @@ export function transformFacilityDetail(facilityData: unknown): Facility {
       ? data.detail[0]
       : data.detail
   } as Facility
+}
+
+/**
+ * Get service ID by service code
+ */
+async function getServiceId(serviceCode: string): Promise<number | null> {
+  const supabase = await createClient()
+  const { data: service } = await supabase
+    .from('services')
+    .select('id')
+    .eq('code', serviceCode)
+    .single()
+
+  return service?.id ?? null
 }
 
 /**
@@ -46,30 +61,21 @@ const FACILITY_BASE_QUERY = `
 `
 
 /**
- * Fetch all facilities with optional service filter
+ * Fetch all facilities by service code
  */
-export async function fetchAllFacilities(serviceCode?: string): Promise<{ facilities: Facility[] | null; error: Error | null }> {
-  const supabase = await createClient()
-  let query = supabase
-    .from('facilities')
-    .select(FACILITY_BASE_QUERY)
+export async function fetchAllFacilities(serviceCode: string = SERVICE_CODES.MEDICAL): Promise<{ facilities: Facility[] | null; error: Error | null }> {
+  const serviceId = await getServiceId(serviceCode)
 
-  // Filter by service_id if serviceCode is provided
-  if (serviceCode !== undefined) {
-    const { data: service } = await supabase
-      .from('services')
-      .select('id')
-      .eq('code', serviceCode)
-      .single()
-
-    if (!service) {
-      return { facilities: [], error: null }
-    }
-
-    query = query.eq('service_id', service.id)
+  if (!serviceId) {
+    return { facilities: [], error: null }
   }
 
-  const { data: facilitiesData, error } = await query.order('id', { ascending: true })
+  const supabase = await createClient()
+  const { data: facilitiesData, error } = await supabase
+    .from('facilities')
+    .select(FACILITY_BASE_QUERY)
+    .eq('service_id', serviceId)
+    .order('id', { ascending: true })
 
   if (error) {
     return { facilities: null, error }
@@ -80,31 +86,22 @@ export async function fetchAllFacilities(serviceCode?: string): Promise<{ facili
 }
 
 /**
- * Fetch facilities by genre ID with optional service filter
+ * Fetch facilities by genre ID and service code
  */
-export async function fetchFacilitiesByGenre(genreId: string, serviceCode?: string): Promise<{ facilities: Facility[] | null; error: Error | null }> {
+export async function fetchFacilitiesByGenre(genreId: string, serviceCode: string = SERVICE_CODES.MEDICAL): Promise<{ facilities: Facility[] | null; error: Error | null }> {
+  const serviceId = await getServiceId(serviceCode)
+
+  if (!serviceId) {
+    return { facilities: [], error: null }
+  }
+
   const supabase = await createClient()
-  let query = supabase
+  const { data: facilitiesData, error } = await supabase
     .from('facilities')
     .select(FACILITY_BASE_QUERY)
     .eq('genre_id', genreId)
-
-  // Filter by service_id if serviceCode is provided
-  if (serviceCode !== undefined) {
-    const { data: service } = await supabase
-      .from('services')
-      .select('id')
-      .eq('code', serviceCode)
-      .single()
-
-    if (!service) {
-      return { facilities: [], error: null }
-    }
-
-    query = query.eq('service_id', service.id)
-  }
-
-  const { data: facilitiesData, error } = await query.order('id', { ascending: true })
+    .eq('service_id', serviceId)
+    .order('id', { ascending: true })
 
   if (error) {
     return { facilities: null, error }
@@ -115,68 +112,63 @@ export async function fetchFacilitiesByGenre(genreId: string, serviceCode?: stri
 }
 
 /**
- * Fetch single facility by ID with extended information
+ * Extended query for fetching a single facility with all relations
  */
-export async function fetchFacilityById(id: string, serviceCode?: string) {
-  const supabase = await createClient()
+const FACILITY_DETAIL_QUERY = `
+  *,
+  service:services(
+    id,
+    code,
+    name
+  ),
+  prefecture:prefectures(
+    id,
+    name
+  ),
+  area:areas(
+    id,
+    name
+  ),
+  company:companies(
+    id,
+    name
+  ),
+  genre:genres(
+    id,
+    name,
+    code
+  ),
+  detail:clinic_details!clinic_id(
+    name,
+    star,
+    user_review_count,
+    lat,
+    lng,
+    site_url,
+    postal_code,
+    address,
+    tel,
+    google_map_url
+  )
+`
 
-  let query = supabase
-    .from('facilities')
-    .select(`
-      *,
-      service:services(
-        id,
-        code,
-        name
-      ),
-      prefecture:prefectures(
-        id,
-        name
-      ),
-      area:areas(
-        id,
-        name
-      ),
-      company:companies(
-        id,
-        name
-      ),
-      genre:genres(
-        id,
-        name,
-        code
-      ),
-      detail:clinic_details!clinic_id(
-        name,
-        star,
-        user_review_count,
-        lat,
-        lng,
-        site_url,
-        postal_code,
-        address,
-        tel,
-        google_map_url
-      )
-    `)
-    .eq('id', id)
+/**
+ * Fetch single facility by ID and service code
+ */
+export async function fetchFacilityById(id: string, serviceCode: string = SERVICE_CODES.MEDICAL) {
+  const serviceId = await getServiceId(serviceCode)
 
-  // Filter by service_id if serviceCode is provided
-  if (serviceCode !== undefined) {
-    const { data: service } = await supabase
-      .from('services')
-      .select('id')
-      .eq('code', serviceCode)
-      .single()
-
-    if (!service) {
-      return { facility: null, error: new Error('Service not found') }
-    }
-
-    query = query.eq('service_id', service.id)
+  if (!serviceId) {
+    return { facility: null, error: new Error('Service not found') }
   }
 
-  const { data: facilityData, error } = await query.single()
+  const supabase = await createClient()
+  const { data: facilityData, error } = await supabase
+    .from('facilities')
+    .select(FACILITY_DETAIL_QUERY)
+    .eq('id', id)
+    .eq('service_id', serviceId)
+    .single()
 
   if (error || !facilityData) {
     return { facility: null, error }
