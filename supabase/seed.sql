@@ -6,12 +6,12 @@ INSERT INTO services (id, code, name) VALUES
   (4, 'vacation-stay', '宿泊施設');
 
 -- Seed genres table
-INSERT INTO genres (code, name) VALUES
-  ('pilates', 'ピラティス'),
-  ('medical', '内科系'),
-  ('surgery', '外科系'),
-  ('dental', '歯科系'),
-  ('dermatology', '皮膚科系');
+INSERT INTO genres (code, name, service_id) VALUES
+  ('pilates', 'ピラティス', 1),
+  ('medical', '内科系', 1),
+  ('surgery', '外科系', 1),
+  ('dental', '歯科系', 1),
+  ('dermatology', '皮膚科系', 1);
 
 -- Seed prefectures table
 INSERT INTO prefectures (name) VALUES
