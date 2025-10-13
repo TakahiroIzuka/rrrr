@@ -13,7 +13,17 @@ interface Genre {
   code: string
 }
 
-export default function Header() {
+interface HeaderProps {
+  imagePath?: string
+  lineColor?: string
+  color?: string
+}
+
+export default function Header({
+  imagePath = '/mrr/default/logo_header.png',
+  lineColor = '#a69a7e',
+  color = '#acd1e6'
+}: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
@@ -90,12 +100,12 @@ export default function Header() {
   return (
     <>
       {/* ヘッダー（スマホは固定、PCは通常） */}
-      <header className="bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-28 fixed md:relative z-[1000]" style={{ borderTop: '5px solid #a69a7e', width: '100%', top: 0, left: 0, right: 0 }}>
+      <header className="bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-28 fixed md:relative z-[1000]" style={{ borderTop: `5px solid ${lineColor}`, width: '100%', top: 0, left: 0, right: 0 }}>
       <div className="flex justify-between items-center h-full px-4 md:px-8">
         <div className="flex items-center gap-4">
           <Link href="/clinic" className="md:hidden">
             <Image
-              src="/mrr/default/logo_header.png"
+              src={imagePath}
               alt="メディカルクチコミランキング"
               width={180}
               height={40}
@@ -104,7 +114,7 @@ export default function Header() {
           </Link>
           <Link href="/clinic" className="hidden md:block">
             <Image
-              src="/mrr/default/logo_header.png"
+              src={imagePath}
               alt="メディカルクチコミランキング"
               width={320}
               height={72}
@@ -140,21 +150,21 @@ export default function Header() {
 
         {!isDetailPage && !isListPage && (
           <nav className="hidden md:flex gap-4 items-end">
-            <button onClick={() => scrollToSection('map-section')} className="bg-white text-[#acd1e6] px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm hover:text-[#d4e8f0] flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-0" style={{ fontSize: '14px' }}>
+            <button onClick={() => scrollToSection('map-section')} className="bg-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-0" style={{ fontSize: '14px', color }}>
               <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
-              <span className="pb-1 group-hover:border-[#d4e8f0] transition-colors duration-200 relative z-10" style={{ borderBottom: '2.5px solid #acd1e6' }}>マップで絞り込み検索</span>
+              <span className="pb-1 transition-colors duration-200 relative z-10" style={{ borderBottom: `2.5px solid ${color}` }}>マップで絞り込み検索</span>
               <span className="text-[15px] font-normal relative z-10">Map search</span>
             </button>
-            <button onClick={() => scrollToSection('list-section')} className="bg-white text-[#acd1e6] px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm hover:text-[#d4e8f0] flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-0" style={{ fontSize: '14px' }}>
+            <button onClick={() => scrollToSection('list-section')} className="bg-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-0" style={{ fontSize: '14px', color }}>
               <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
-              <span className="pb-1 group-hover:border-[#d4e8f0] transition-colors duration-200 relative z-10" style={{ borderBottom: '2.5px solid #acd1e6' }}>リストで絞り込み検索</span>
+              <span className="pb-1 transition-colors duration-200 relative z-10" style={{ borderBottom: `2.5px solid ${color}` }}>リストで絞り込み検索</span>
               <span className="text-[15px] font-normal relative z-10">List search</span>
             </button>
-            <button onClick={() => setIsGenreModalOpen(true)} className="bg-[#acd1e6] text-white px-4 py-2.5 rounded-md font-medium text-[15px] transition-all duration-200 flex items-center justify-center gap-2 relative overflow-hidden group mb-2">
+            <button onClick={() => setIsGenreModalOpen(true)} className="text-white px-4 py-2.5 rounded-md font-medium text-[15px] transition-all duration-200 flex items-center justify-center gap-2 relative overflow-hidden group mb-2" style={{ backgroundColor: color }}>
               <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-200"></span>
               <span className="relative z-10">業種から探す</span>
               <span className="flex items-center justify-center w-5 h-5 bg-white rounded-full relative z-10" style={{ transform: 'translateY(0px)' }}>
-                <span className="text-[#acd1e6] font-bold text-xl leading-none" style={{ transform: 'translate(0.5px, -2px)' }}>›</span>
+                <span className="font-bold text-xl leading-none" style={{ transform: 'translate(0.5px, -2px)', color }}>›</span>
               </span>
             </button>
           </nav>
@@ -169,7 +179,7 @@ export default function Header() {
       <MobileMenu
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
-        logoPath="/mrr/default/logo_header.png"
+        logoPath={imagePath}
         onMapClick={() => scrollToSection('map-section')}
         onListClick={() => scrollToSection('list-section')}
         onGenreClick={() => setIsGenreModalOpen(true)}
@@ -181,13 +191,13 @@ export default function Header() {
           className={`hidden md:block bg-white text-gray-700 h-28 fixed top-0 left-0 right-0 z-[1000] transition-transform duration-700 ease-out ${
             isVisible ? 'translate-y-0' : '-translate-y-full'
           }`}
-          style={{ borderTop: '5px solid #a69a7e' }}
+          style={{ borderTop: `5px solid ${lineColor}` }}
         >
           <div className="flex justify-between items-center h-full px-4 md:px-8">
             <div className="flex items-center gap-4">
               <Link href="/clinic" className="md:hidden">
                 <Image
-                  src="/mrr/default/logo_header.png"
+                  src={imagePath}
                   alt="メディカルクチコミランキング"
                   width={180}
                   height={40}
@@ -196,7 +206,7 @@ export default function Header() {
               </Link>
               <Link href="/clinic" className="hidden md:block">
                 <Image
-                  src="/mrr/default/logo_header.png"
+                  src={imagePath}
                   alt="メディカルクチコミランキング"
                   width={320}
                   height={72}
@@ -208,21 +218,21 @@ export default function Header() {
             {/* PC用のナビゲーション */}
             {!isDetailPage && !isListPage && (
               <nav className="hidden md:flex gap-4 items-end">
-                <button onClick={() => scrollToSection('map-section')} className="bg-white text-[#acd1e6] px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm hover:text-[#d4e8f0] flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-0" style={{ fontSize: '14px' }}>
+                <button onClick={() => scrollToSection('map-section')} className="bg-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-0" style={{ fontSize: '14px', color }}>
                   <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
-                  <span className="pb-1 group-hover:border-[#d4e8f0] transition-colors duration-200 relative z-10" style={{ borderBottom: '2.5px solid #acd1e6' }}>マップで絞り込み検索</span>
+                  <span className="pb-1 transition-colors duration-200 relative z-10" style={{ borderBottom: `2.5px solid ${color}` }}>マップで絞り込み検索</span>
                   <span className="text-[15px] font-normal relative z-10">Map search</span>
                 </button>
-                <button onClick={() => scrollToSection('list-section')} className="bg-white text-[#acd1e6] px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm hover:text-[#d4e8f0] flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-0" style={{ fontSize: '14px' }}>
+                <button onClick={() => scrollToSection('list-section')} className="bg-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-0" style={{ fontSize: '14px', color }}>
                   <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
-                  <span className="pb-1 group-hover:border-[#d4e8f0] transition-colors duration-200 relative z-10" style={{ borderBottom: '2.5px solid #acd1e6' }}>リストで絞り込み検索</span>
+                  <span className="pb-1 transition-colors duration-200 relative z-10" style={{ borderBottom: `2.5px solid ${color}` }}>リストで絞り込み検索</span>
                   <span className="text-[15px] font-normal relative z-10">List search</span>
                 </button>
-                <button onClick={() => setIsGenreModalOpen(true)} className="bg-[#acd1e6] text-white px-4 py-2.5 rounded-md font-medium text-[15px] transition-all duration-200 flex items-center justify-center gap-2 relative overflow-hidden group mb-2">
+                <button onClick={() => setIsGenreModalOpen(true)} className="text-white px-4 py-2.5 rounded-md font-medium text-[15px] transition-all duration-200 flex items-center justify-center gap-2 relative overflow-hidden group mb-2" style={{ backgroundColor: color }}>
                   <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-200"></span>
                   <span className="relative z-10">業種から探す</span>
                   <span className="flex items-center justify-center w-5 h-5 bg-white rounded-full relative z-10" style={{ transform: 'translateY(0px)' }}>
-                    <span className="text-[#acd1e6] font-bold text-xl leading-none" style={{ transform: 'translate(0.5px, -2px)' }}>›</span>
+                    <span className="font-bold text-xl leading-none" style={{ transform: 'translate(0.5px, -2px)', color }}>›</span>
                   </span>
                 </button>
               </nav>

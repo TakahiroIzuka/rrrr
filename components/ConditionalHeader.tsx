@@ -11,5 +11,17 @@ export default function ConditionalHeader() {
     return null
   }
 
-  return <Header />
+  // パスに応じてスタイルを変更
+  let imagePath = '/mrr/default/logo_header.png'
+  let lineColor = '#a69a7e'
+  let color = '#acd1e6'
+
+  // /kuchikomiru-base の場合
+  if (pathname?.startsWith('/kuchikomiru-base')) {
+    imagePath = '/kuchikomiru/default/logo_header.png'
+    lineColor = 'rgb(236, 106, 82)'
+    color = 'rgb(236, 106, 82)'
+  }
+
+  return <Header imagePath={imagePath} lineColor={lineColor} color={color} />
 }
