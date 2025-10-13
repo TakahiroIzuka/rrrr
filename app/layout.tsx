@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import ConditionalHeader from "@/components/ConditionalHeader";
-import ConditionalMarquee from "@/components/ConditionalMarquee";
 import ConditionalFooter from "@/components/ConditionalFooter";
 import "./globals.css";
 
@@ -50,7 +49,6 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ConditionalHeader />
-          <ConditionalMarquee />
           <main style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#F1F1F1' }}>
             {children}
           </main>

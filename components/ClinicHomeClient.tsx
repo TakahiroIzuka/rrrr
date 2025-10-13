@@ -45,15 +45,21 @@ export default function ClinicHomeClient({
   return (
     <>
       {/* Header with genre label (only for genre pages) */}
-      {showGenreHeader && (
+      {showGenreHeader ? (
         <>
           <DetailHeader
             genreName={genreName || ''}
             genreCode={genreCode}
             showNavButtons={true}
           />
-          <MarqueeText />
+          <div className="mt-16 md:mt-0">
+            <MarqueeText />
+          </div>
         </>
+      ) : (
+        <div className="mt-16 md:mt-0">
+          <MarqueeText />
+        </div>
       )}
 
       <div className="flex flex-col w-full">
