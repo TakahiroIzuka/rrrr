@@ -2,40 +2,21 @@
 
 import { usePathname } from 'next/navigation'
 import Footer from './Footer'
-import GenreFooter from './GenreFooter'
-import { useEffect, useState } from 'react'
 
 export default function ConditionalFooter() {
   const pathname = usePathname()
-  const [genreData, setGenreData] = useState<{ id: number; code: string } | null>(null)
 
-  // 業種別ページかどうかを判定
-  const isGenrePage = pathname?.match(/^\/clinic\/genres\/(\d+)$/)
+  // パスに応じてスタイルを変更
+  let imagePath = '/mrr/default/logo_footer.png'
+  let buttonText = 'クリニック・施設の掲載リクエストはこちら'
+  let type = 'clinic'
 
-  useEffect(() => {
-    if (isGenrePage) {
-      const id = parseInt(isGenrePage[1])
-      // Fetch genre data to get the code
-      fetch(`http://127.0.0.1:54321/rest/v1/genres?id=eq.${id}`, {
-        headers: {
-          'apikey': 'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH'
-        }
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.length > 0) {
-            setGenreData({ id: data[0].id, code: data[0].code })
-          }
-        })
-        .catch(err => console.error('Failed to fetch genre data:', err))
-    } else {
-      setGenreData(null)
-    }
-  }, [pathname, isGenrePage])
-
-  if (isGenrePage && genreData) {
-    return <GenreFooter genreId={genreData.id} genreCode={genreData.code} />
+  // /kuchikomiru-base の場合
+  if (pathname?.startsWith('/kuchikomiru-base')) {
+    imagePath = '/kuchikomiru/default/logo_footer.png'
+    buttonText = '地域密着店舗・施設の掲載リクエストはこちら'
+    type = 'accomodation'
   }
 
-  return <Footer />
+  return <Footer imagePath={imagePath} buttonText={buttonText} type={type} />
 }
