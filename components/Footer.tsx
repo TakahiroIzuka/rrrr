@@ -33,7 +33,7 @@ export default function Footer({
     <footer className="bg-[#eae3db] mx-0 md:mx-[15px] mb-0 md:mb-[15px] mt-0 md:mt-[15px] pt-[30px] pb-6 text-center md:rounded-lg">
       {/* Logo */}
       <div className="flex justify-center mb-6">
-        <img src={imagePath} alt="Medical Review Ranking" className="h-20 md:h-36" />
+        <img src={imagePath} alt="Medical Review Ranking" className="h-28 md:h-36" />
       </div>
 
       {/* Request Button */}

@@ -100,16 +100,16 @@ export default function Header({
   return (
     <>
       {/* ヘッダー（スマホは固定、PCは通常） */}
-      <header className="bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-28 fixed md:relative z-[1000]" style={{ borderTop: `5px solid ${lineColor}`, width: '100%', top: 0, left: 0, right: 0 }}>
+      <header className="bg-[#eae3db] md:bg-white text-gray-700 h-16 md:h-28 fixed md:relative z-[1000] border-t-0 md:border-t-[5px]" style={{ borderColor: lineColor, width: '100%', top: 0, left: 0, right: 0 }}>
       <div className="flex justify-between items-center h-full px-4 md:px-8">
         <div className="flex items-center gap-4">
           <Link href="/clinic" className="md:hidden">
             <Image
               src={imagePath}
               alt="メディカルクチコミランキング"
-              width={180}
-              height={40}
-              className="h-10"
+              width={200}
+              height={45}
+              className="h-12"
             />
           </Link>
           <Link href="/clinic" className="hidden md:block">
