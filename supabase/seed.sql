@@ -11,7 +11,8 @@ INSERT INTO genres (code, name, service_id) VALUES
   ('medical', '内科系', 1),
   ('surgery', '外科系', 1),
   ('dental', '歯科系', 1),
-  ('dermatology', '皮膚科系', 1);
+  ('dermatology', '皮膚科系', 1),
+  ('cosmetic-dermatology', '美容皮膚科', 2);
 
 -- Seed prefectures table
 INSERT INTO prefectures (name) VALUES
@@ -53,7 +54,8 @@ INSERT INTO facilities (genre_id, prefecture_id, area_id, company_id, uuid, serv
   (1, 9, 8, 2, '3462159b-aabf-edb1-a2b2-44366d637f5c', 1),
   (1, 9, 8, 2, '0fa9580f-c2b5-1ba6-f859-893fbee8633a', 1),
   (1, 9, 9, 2, '978813da-874b-8a97-9ed1-527bde7359d1', 1),
-  (2, 5, 1, 3, '0511baf3-69d4-5719-ddb4-7ddacd3d2676', 1);
+  (2, 5, 1, 3, '0511baf3-69d4-5719-ddb4-7ddacd3d2676', 1),
+  (6, 5, 1, 1, 'd4e5f6a7-b8c9-0123-4567-890abcdef123', 2);
 
 -- Seed clinic_details table
 INSERT INTO clinic_details (clinic_id, name, star, user_review_count, lat, lng, site_url, postal_code, address, tel) VALUES
@@ -64,3 +66,7 @@ INSERT INTO clinic_details (clinic_id, name, star, user_review_count, lat, lng, 
   (5, 'STUDIO IVY 恵比寿店', 5, 5, 35.64570669164102, 139.70429115767035, 'https://studio-ivy.jp', '150-0013', '東京都渋谷区恵比寿1-20-8', '03-3456-7890'),
   (6, 'STUDIO IVY 赤坂ANNEX店', 4.7, 3, 35.670664250365526, 139.7346120644181, 'https://studio-ivy.jp', '107-0052', '東京都港区赤坂4-2-6', '03-4567-8901'),
   (7, '西梅田シティクリニック', 3.3, 253, 34.69959423473339, 135.4954401355819, 'https://nishi-umeda-clinic.jp', '530-0001', '大阪府大阪市北区梅田2-5-25', '06-2345-6789');
+
+-- Seed kuchikomiru_details table
+INSERT INTO kuchikomiru_details (facility_id, name, star, user_review_count, lat, lng, site_url, postal_code, address, tel) VALUES
+  (8, 'DAILY SKIN CLINIC 心斎橋院', 4.7, 548, 34.675872736516, 135.49841414232787, 'https://daily-skin-clinic.jp', '542-0086', '大阪府大阪市中央区西心斎橋1-5-5', '06-1234-5678');
