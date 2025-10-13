@@ -12,7 +12,8 @@ interface ClinicDetailPageProps {
 }
 
 export default async function ClinicDetailPage({ params }: ClinicDetailPageProps) {
-  const { facility, error } = await fetchFacilityById(params.id)
+  // Fetch facility with code='medical'
+  const { facility, error } = await fetchFacilityById(params.id, 'medical')
 
   if (error || !facility) {
     notFound()

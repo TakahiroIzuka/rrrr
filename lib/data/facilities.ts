@@ -19,6 +19,11 @@ export function transformFacilityDetail(facilityData: unknown): Facility {
  */
 const FACILITY_BASE_QUERY = `
   *,
+  service:services(
+    id,
+    code,
+    name
+  ),
   prefecture:prefectures(
     id,
     name
@@ -41,14 +46,30 @@ const FACILITY_BASE_QUERY = `
 `
 
 /**
- * Fetch all facilities
+ * Fetch all facilities with optional service filter
  */
-export async function fetchAllFacilities(): Promise<{ facilities: Facility[] | null; error: Error | null }> {
+export async function fetchAllFacilities(serviceCode?: string): Promise<{ facilities: Facility[] | null; error: Error | null }> {
   const supabase = await createClient()
-  const { data: facilitiesData, error } = await supabase
+  let query = supabase
     .from('facilities')
     .select(FACILITY_BASE_QUERY)
-    .order('id', { ascending: true })
+
+  // Filter by service_id if serviceCode is provided
+  if (serviceCode !== undefined) {
+    const { data: service } = await supabase
+      .from('services')
+      .select('id')
+      .eq('code', serviceCode)
+      .single()
+
+    if (!service) {
+      return { facilities: [], error: null }
+    }
+
+    query = query.eq('service_id', service.id)
+  }
+
+  const { data: facilitiesData, error } = await query.order('id', { ascending: true })
 
   if (error) {
     return { facilities: null, error }
@@ -59,15 +80,31 @@ export async function fetchAllFacilities(): Promise<{ facilities: Facility[] | n
 }
 
 /**
- * Fetch facilities by genre ID
+ * Fetch facilities by genre ID with optional service filter
  */
-export async function fetchFacilitiesByGenre(genreId: string): Promise<{ facilities: Facility[] | null; error: Error | null }> {
+export async function fetchFacilitiesByGenre(genreId: string, serviceCode?: string): Promise<{ facilities: Facility[] | null; error: Error | null }> {
   const supabase = await createClient()
-  const { data: facilitiesData, error } = await supabase
+  let query = supabase
     .from('facilities')
     .select(FACILITY_BASE_QUERY)
     .eq('genre_id', genreId)
-    .order('id', { ascending: true })
+
+  // Filter by service_id if serviceCode is provided
+  if (serviceCode !== undefined) {
+    const { data: service } = await supabase
+      .from('services')
+      .select('id')
+      .eq('code', serviceCode)
+      .single()
+
+    if (!service) {
+      return { facilities: [], error: null }
+    }
+
+    query = query.eq('service_id', service.id)
+  }
+
+  const { data: facilitiesData, error } = await query.order('id', { ascending: true })
 
   if (error) {
     return { facilities: null, error }
@@ -80,13 +117,18 @@ export async function fetchFacilitiesByGenre(genreId: string): Promise<{ facilit
 /**
  * Fetch single facility by ID with extended information
  */
-export async function fetchFacilityById(id: string) {
+export async function fetchFacilityById(id: string, serviceCode?: string) {
   const supabase = await createClient()
 
-  const { data: facilityData, error } = await supabase
+  let query = supabase
     .from('facilities')
     .select(`
       *,
+      service:services(
+        id,
+        code,
+        name
+      ),
       prefecture:prefectures(
         id,
         name
@@ -118,7 +160,23 @@ export async function fetchFacilityById(id: string) {
       )
     `)
     .eq('id', id)
-    .single()
+
+  // Filter by service_id if serviceCode is provided
+  if (serviceCode !== undefined) {
+    const { data: service } = await supabase
+      .from('services')
+      .select('id')
+      .eq('code', serviceCode)
+      .single()
+
+    if (!service) {
+      return { facility: null, error: new Error('Service not found') }
+    }
+
+    query = query.eq('service_id', service.id)
+  }
+
+  const { data: facilityData, error } = await query.single()
 
   if (error || !facilityData) {
     return { facility: null, error }

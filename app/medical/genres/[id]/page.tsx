@@ -17,8 +17,8 @@ export default async function GenrePage({ params }: GenrePageProps) {
     notFound()
   }
 
-  // Get facilities filtered by genre_id
-  const { facilities, error } = await fetchFacilitiesByGenre(params.id)
+  // Get facilities filtered by genre_id and code='medical'
+  const { facilities, error } = await fetchFacilitiesByGenre(params.id, 'medical')
 
   if (error) {
     return <ErrorMessage message={error.message} />

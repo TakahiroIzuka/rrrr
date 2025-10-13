@@ -1,9 +1,9 @@
 -- Seed services table
-INSERT INTO services (code, name) VALUES
-  ('medical', 'メディカル'),
-  ('kuchikomiru', 'クチコミル'),
-  ('house-builder', '工務店'),
-  ('vacation-stay', '宿泊施設');
+INSERT INTO services (id, code, name) VALUES
+  (1, 'medical', 'メディカル'),
+  (2, 'kuchikomiru', 'クチコミル'),
+  (3, 'house-builder', '工務店'),
+  (4, 'vacation-stay', '宿泊施設');
 
 -- Seed genres table
 INSERT INTO genres (code, name) VALUES
@@ -46,14 +46,14 @@ INSERT INTO companies (name) VALUES
   ('西梅田シティクリニック');
 
 -- Seed facilities table
-INSERT INTO facilities (genre_id, prefecture_id, area_id, company_id, uuid) VALUES
-  (5, 8, 2, 1, '251dbcf3-1f07-3b9a-f66c-54f339f41f62'),
-  (5, 5, 1, 1, '97ad8f2a-f580-3426-6edf-5c4b2d630aa8'),
-  (5, 9, 6, 1, '2341607c-6889-170b-ba19-a9453d753dd9'),
-  (1, 9, 8, 2, '3462159b-aabf-edb1-a2b2-44366d637f5c'),
-  (1, 9, 8, 2, '0fa9580f-c2b5-1ba6-f859-893fbee8633a'),
-  (1, 9, 9, 2, '978813da-874b-8a97-9ed1-527bde7359d1'),
-  (2, 5, 1, 3, '0511baf3-69d4-5719-ddb4-7ddacd3d2676');
+INSERT INTO facilities (genre_id, prefecture_id, area_id, company_id, uuid, service_id) VALUES
+  (5, 8, 2, 1, '251dbcf3-1f07-3b9a-f66c-54f339f41f62', 1),
+  (5, 5, 1, 1, '97ad8f2a-f580-3426-6edf-5c4b2d630aa8', 1),
+  (5, 9, 6, 1, '2341607c-6889-170b-ba19-a9453d753dd9', 1),
+  (1, 9, 8, 2, '3462159b-aabf-edb1-a2b2-44366d637f5c', 1),
+  (1, 9, 8, 2, '0fa9580f-c2b5-1ba6-f859-893fbee8633a', 1),
+  (1, 9, 9, 2, '978813da-874b-8a97-9ed1-527bde7359d1', 1),
+  (2, 5, 1, 3, '0511baf3-69d4-5719-ddb4-7ddacd3d2676', 1);
 
 -- Seed clinic_details table
 INSERT INTO clinic_details (clinic_id, name, star, user_review_count, lat, lng, site_url, postal_code, address, tel) VALUES

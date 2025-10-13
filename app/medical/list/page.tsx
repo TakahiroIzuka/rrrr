@@ -4,7 +4,8 @@ import MedicalReviewRanking from '@/components/MedicalReviewRanking'
 import { fetchAllFacilities } from '@/lib/data/facilities'
 
 export default async function ClinicListPage() {
-  const { facilities, error } = await fetchAllFacilities()
+  // Fetch facilities with code='medical'
+  const { facilities, error } = await fetchAllFacilities('medical')
 
   if (error) {
     return <ErrorMessage message={error.message} />

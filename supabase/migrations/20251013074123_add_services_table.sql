@@ -1,7 +1,7 @@
 -- Create services table
 CREATE TABLE services (
   id SERIAL PRIMARY KEY,
-  code TEXT NOT NULL,
+  code TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL
 );
 
