@@ -31,6 +31,7 @@ export default async function ClinicListPage() {
           subtitle="List of Local places"
           width="3/4"
           gridCols="2"
+          serviceCode={SERVICE_CODES.MEDICAL}
         />
 
         {/* サイドバー - モバイルでは下に表示 */}

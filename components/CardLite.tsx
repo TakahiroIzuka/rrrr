@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import Link from 'next/link'
 import type { Facility } from '@/types/facility'
+import type { ServiceCode } from '@/lib/constants/services'
 import { getStarImage } from '@/lib/utils/starRating'
 import { IMAGE_COUNT } from '@/lib/constants'
 import { useImageSlider } from '@/hooks/useImageSlider'
@@ -12,6 +13,7 @@ interface CardLiteProps {
   isHovered: boolean
   onMouseEnter: () => void
   onMouseLeave: () => void
+  serviceCode: ServiceCode
 }
 
 const getGenreNoImage = (genreId: number): string => {
@@ -27,7 +29,7 @@ const getGenreNoImage = (genreId: number): string => {
   }
 }
 
-export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLeave }: CardLiteProps) {
+export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLeave, serviceCode }: CardLiteProps) {
   const dragRef = useRef<HTMLDivElement>(null)
   const {
     currentImageIndex,
@@ -152,7 +154,7 @@ export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLea
           </div>
         </div>
 
-        <Link href={`/medical/list/${facility.id}`}>
+        <Link href={`/${serviceCode}/list/${facility.id}`}>
           <button className="w-full py-2.5 px-2 bg-[#a59878] text-white text-[11px] font-semibold rounded hover:bg-black transition-all duration-300 group">
             <span className="text-center leading-tight inline-block">
               基本情報とクチコミ詳細<span className="inline-flex items-center justify-center w-3 h-3 bg-white rounded-full transition-all duration-300 group-hover:translate-x-1 ml-1 align-middle">

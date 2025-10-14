@@ -11,5 +11,5 @@ export default async function HomePage() {
     return <ErrorMessage message={error.message} />
   }
 
-  return <HomeClient facilities={facilities || []} />
+  return <HomeClient facilities={facilities || []} serviceCode={SERVICE_CODES.MEDICAL} />
 }

@@ -31,6 +31,7 @@ export default async function KuchikomiruListPage() {
           subtitle="List of Local places"
           width="3/4"
           gridCols="2"
+          serviceCode={SERVICE_CODES.KUCHIKOMIRU}
         />
 
         {/* サイドバー - モバイルでは下に表示 */}

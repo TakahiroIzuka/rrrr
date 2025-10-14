@@ -2,13 +2,15 @@
 
 import { useState } from 'react'
 import type { Facility } from '@/types/facility'
+import type { ServiceCode } from '@/lib/constants/services'
 import Card from './Card'
 
 interface ListPanelProps {
   facilities: Facility[]
+  serviceCode: ServiceCode
 }
 
-export default function ListPanel({ facilities }: ListPanelProps) {
+export default function ListPanel({ facilities, serviceCode }: ListPanelProps) {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
   return (
@@ -30,6 +32,7 @@ export default function ListPanel({ facilities }: ListPanelProps) {
               isHovered={hoveredCard === facility.id}
               onMouseEnter={() => setHoveredCard(facility.id)}
               onMouseLeave={() => setHoveredCard(null)}
+              serviceCode={serviceCode}
             />
           ))}
         </div>

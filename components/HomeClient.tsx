@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import type { Facility } from '@/types/facility'
+import type { ServiceCode } from '@/lib/constants/services'
 import ListPanel from '@/components/ListPanel'
 import MapPanel from '@/components/MapPanel'
 import GridSection from '@/components/GridSection'
@@ -12,12 +13,14 @@ interface HomeClientProps {
   genreId?: number
   genreName?: string
   genreCode?: string
+  serviceCode: ServiceCode
 }
 
 export default function HomeClient({
   facilities,
   genreId,
   genreName,
+  serviceCode,
 }: HomeClientProps) {
   // Normalize detail to handle both array and object formats
   const normalizedFacilities = useMemo(() => {
@@ -59,6 +62,7 @@ export default function HomeClient({
           <div className="w-full md:w-[430px] flex-shrink-0 h-1/2 md:h-full order-2 md:order-1 overflow-y-auto" style={{ backgroundColor: '#fff9f0'}}>
             <ListPanel
               facilities={selectedFacilityId ? filteredFacilities.filter(facility => facility.id === selectedFacilityId) : filteredFacilities}
+              serviceCode={serviceCode}
             />
           </div>
           {/* Map Full Width on Mobile, Right on PC */}
@@ -96,6 +100,7 @@ export default function HomeClient({
           onRankingChange={setSelectedRanking}
           onFilterChange={handleFilterChange}
           hideGenreFilter={hideGenreFilter}
+          serviceCode={serviceCode}
         />
       </div>
     </>

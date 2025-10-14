@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import type { Facility } from '@/types/facility'
+import type { ServiceCode } from '@/lib/constants/services'
 import { getStarImage } from '@/lib/utils/starRating'
 import { IMAGE_COUNT, SWIPE_THRESHOLD } from '@/lib/constants'
 
@@ -11,6 +12,7 @@ interface CardProps {
   isHovered: boolean
   onMouseEnter: () => void
   onMouseLeave: () => void
+  serviceCode: ServiceCode
 }
 
 const getGenreNoImage = (genreId: number): string => {
@@ -26,7 +28,7 @@ const getGenreNoImage = (genreId: number): string => {
   }
 }
 
-export default function Card({ facility, isHovered, onMouseEnter, onMouseLeave }: CardProps) {
+export default function Card({ facility, isHovered, onMouseEnter, onMouseLeave, serviceCode }: CardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
@@ -185,7 +187,7 @@ export default function Card({ facility, isHovered, onMouseEnter, onMouseLeave }
           </div>
         </div>
 
-        <Link href={`/medical/list/${facility.id}`}>
+        <Link href={`/${serviceCode}/list/${facility.id}`}>
           <button className="w-full py-2.5 px-4 bg-[#a59878] text-white text-sm font-bold rounded-md hover:bg-black transition-all duration-300 group relative overflow-visible">
             <span className="invisible">基本情報とクチコミ詳細はこちら</span>
             <span className="absolute inset-0 flex items-center justify-center gap-2 -translate-x-3">

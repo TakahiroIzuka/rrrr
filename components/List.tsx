@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { Facility } from '@/types/facility'
+import type { ServiceCode } from '@/lib/constants/services'
 import CardLite from './CardLite'
 
 interface ListProps {
@@ -10,6 +11,7 @@ interface ListProps {
   subtitle?: string
   width?: 'full' | '3/4'
   gridCols?: '2' | '5'
+  serviceCode: ServiceCode
 }
 
 export default function List({
@@ -17,7 +19,8 @@ export default function List({
   title = 'リストで絞り込み検索結果一覧はこちら',
   subtitle = 'List Search',
   width = '3/4',
-  gridCols = '5'
+  gridCols = '5',
+  serviceCode
 }: ListProps) {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
@@ -46,6 +49,7 @@ export default function List({
             isHovered={hoveredCard === facility.id}
             onMouseEnter={() => setHoveredCard(facility.id)}
             onMouseLeave={() => setHoveredCard(null)}
+            serviceCode={serviceCode}
           />
         ))}
       </div>
