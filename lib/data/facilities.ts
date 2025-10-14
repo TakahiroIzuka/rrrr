@@ -47,7 +47,7 @@ const FACILITY_BASE_QUERY = `
     id,
     name
   ),
-  detail:clinic_details!clinic_id(
+  detail:facility_details!facility_id(
     name,
     star,
     user_review_count,
@@ -138,7 +138,7 @@ const FACILITY_DETAIL_QUERY = `
     name,
     code
   ),
-  detail:clinic_details!clinic_id(
+  detail:facility_details!facility_id(
     name,
     star,
     user_review_count,

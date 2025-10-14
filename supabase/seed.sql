@@ -57,16 +57,13 @@ INSERT INTO facilities (genre_id, prefecture_id, area_id, company_id, uuid, serv
   (2, 5, 1, 3, '0511baf3-69d4-5719-ddb4-7ddacd3d2676', 1),
   (6, 5, 1, 1, 'd4e5f6a7-b8c9-0123-4567-890abcdef123', 2);
 
--- Seed clinic_details table
-INSERT INTO clinic_details (clinic_id, name, star, user_review_count, lat, lng, site_url, postal_code, address, tel) VALUES
+-- Seed facility_details table
+INSERT INTO facility_details (facility_id, name, star, user_review_count, lat, lng, site_url, postal_code, address, tel) VALUES
   (1, 'DAILY SKIN CLINIC 名古屋院', 4, 102, 35.21513224384904, 136.90848145863572, 'https://daily-skin-clinic.jp', '450-0002', '愛知県名古屋市中村区名駅4-26-9', '052-123-4567'),
   (2, 'DAILY SKIN CLINIC 心斎橋院', 4.7, 548, 34.675872736516, 135.49841414232787, 'https://daily-skin-clinic.jp', '542-0086', '大阪府大阪市中央区西心斎橋1-5-5', '06-1234-5678'),
   (3, 'DAILY SKIN CLINIC 新宿院', 4.5, 197, 35.69130895971996, 139.7036116918168, 'https://daily-skin-clinic.jp', '160-0022', '東京都新宿区新宿3-1-16', '03-1234-5678'),
   (4, 'STUDIO IVY 広尾ANNEX店', NULL, 0, 35.64839035285032, 139.7176866205972, 'https://studio-ivy.jp', '150-0012', '東京都渋谷区広尾5-16-3', '03-2345-6789'),
   (5, 'STUDIO IVY 恵比寿店', 5, 5, 35.64570669164102, 139.70429115767035, 'https://studio-ivy.jp', '150-0013', '東京都渋谷区恵比寿1-20-8', '03-3456-7890'),
   (6, 'STUDIO IVY 赤坂ANNEX店', 4.7, 3, 35.670664250365526, 139.7346120644181, 'https://studio-ivy.jp', '107-0052', '東京都港区赤坂4-2-6', '03-4567-8901'),
-  (7, '西梅田シティクリニック', 3.3, 253, 34.69959423473339, 135.4954401355819, 'https://nishi-umeda-clinic.jp', '530-0001', '大阪府大阪市北区梅田2-5-25', '06-2345-6789');
-
--- Seed kuchikomiru_details table
-INSERT INTO kuchikomiru_details (facility_id, name, star, user_review_count, lat, lng, site_url, postal_code, address, tel) VALUES
+  (7, '西梅田シティクリニック', 3.3, 253, 34.69959423473339, 135.4954401355819, 'https://nishi-umeda-clinic.jp', '530-0001', '大阪府大阪市北区梅田2-5-25', '06-2345-6789'),
   (8, 'DAILY SKIN CLINIC 心斎橋院', 4.7, 548, 34.675872736516, 135.49841414232787, 'https://daily-skin-clinic.jp', '542-0086', '大阪府大阪市中央区西心斎橋1-5-5', '06-1234-5678');
