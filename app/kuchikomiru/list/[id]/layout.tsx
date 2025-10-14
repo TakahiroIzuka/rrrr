@@ -3,15 +3,15 @@ import { notFound } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
-interface ClinicDetailLayoutProps {
+interface FacilityDetailLayoutProps {
   children: React.ReactNode
   params: { id: string }
 }
 
-export default async function ClinicDetailLayout({
+export default async function FacilityDetailLayout({
   children,
   params,
-}: ClinicDetailLayoutProps) {
+}: FacilityDetailLayoutProps) {
   const supabase = await createClient()
 
   const { data: facility, error } = await supabase
@@ -39,9 +39,9 @@ export default async function ClinicDetailLayout({
   return (
     <>
       <Header
-        imagePath="/mrr/default/logo_header.png"
-        lineColor="#a69a7e"
-        color="#acd1e6"
+        imagePath="/kuchikomiru/default/logo_header.png"
+        lineColor="rgb(236, 106, 82)"
+        color="rgb(236, 106, 82)"
         labelText={genreName || ''}
       />
       {/* Breadcrumb */}
@@ -50,11 +50,11 @@ export default async function ClinicDetailLayout({
           <nav className="text-[12px]">
             <ol className="flex items-center gap-2">
               <li>
-                <a href="/medical" className="text-black hover:underline transition-colors">トップ</a>
+                <a href="/kuchikomiru" className="text-black hover:underline transition-colors">トップ</a>
               </li>
               <li className="text-black">&gt;</li>
               <li>
-                <a href="/medical/list" className="text-black hover:underline transition-colors">クリニック・施設一覧</a>
+                <a href="/kuchikomiru/list" className="text-black hover:underline transition-colors">施設一覧</a>
               </li>
               <li className="text-black">&gt;</li>
               <li className="text-black">{facilityName}</li>
@@ -64,9 +64,9 @@ export default async function ClinicDetailLayout({
       </div>
       {children}
       <Footer
-        imagePath="/mrr/default/logo_footer.png"
-        buttonText="クリニック・施設の掲載リクエストはこちら"
-        type="clinic"
+        imagePath="/kuchikomiru/default/logo_footer.png"
+        buttonText="地域密着店舗・施設の掲載リクエストはこちら"
+        type="accomodation"
       />
     </>
   )
