@@ -1,16 +1,22 @@
+import { REVIEW_RANKING_CONFIG, SERVICE_CODES, type ServiceCode } from '@/lib/constants/services'
+
 interface ReviewRankingProps {
   variant?: 'mobile' | 'desktop'
-  serviceCode: 'medical' | 'kuchikomiru'
-  title: string
-  imagePath: string
+  serviceCode: ServiceCode
 }
 
 export default function ReviewRanking({
   variant = 'desktop',
-  serviceCode,
-  title,
-  imagePath
+  serviceCode
 }: ReviewRankingProps) {
+  const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]
+
+  if (!config) {
+    console.error(`No review ranking config found for service code: ${serviceCode}`)
+    return null
+  }
+
+  const { title, imagePath, buttonText } = config
   const isMobile = variant === 'mobile'
 
   const containerClass = isMobile
@@ -45,7 +51,7 @@ export default function ReviewRanking({
       {/* Button */}
       <button className={`w-full py-3 px-4 bg-[#a59878] text-white text-xs font-bold rounded-full ${buttonHoverClass} transition-all duration-300 group flex items-center justify-center gap-2 relative`}>
         <span className={`transition-transform duration-300 ${buttonScaleClass} inline-block`}>
-          {serviceCode === 'medical' ? 'クリニック' : '施設'}の掲載リクエストはこちら
+          {buttonText}
         </span>
         <span className="flex items-center justify-center w-4 h-4 bg-white rounded-full transition-all duration-300 group-hover:translate-x-2 flex-shrink-0">
           <span className="text-[#a59878] font-bold text-xl leading-none inline-block" style={{ transform: 'translate(0.5px, -2px)' }}>›</span>

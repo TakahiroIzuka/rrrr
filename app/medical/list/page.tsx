@@ -1,6 +1,6 @@
 import ErrorMessage from '@/components/ErrorMessage'
 import List from '@/components/List'
-import MedicalReviewRanking from '@/components/MedicalReviewRanking'
+import ReviewRanking from '@/components/ReviewRanking'
 import { fetchAllFacilities } from '@/lib/data/facilities'
 import { SERVICE_CODES } from '@/lib/constants/services'
 
@@ -37,7 +37,7 @@ export default async function ClinicListPage() {
         <div className="w-full md:w-1/4 flex flex-col gap-6">
           {/* メディカルクチコミランキング */}
           <div className="w-full">
-            <MedicalReviewRanking variant="desktop" />
+            <ReviewRanking variant="desktop" serviceCode={SERVICE_CODES.MEDICAL} />
           </div>
 
           {/* 各エリアから探す */}

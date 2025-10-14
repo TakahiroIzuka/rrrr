@@ -1,6 +1,6 @@
 import ErrorMessage from '@/components/ErrorMessage'
 import List from '@/components/List'
-import KuchikomiruReviewRanking from '@/components/KuchikomiruReviewRanking'
+import ReviewRanking from '@/components/ReviewRanking'
 import { fetchAllFacilities } from '@/lib/data/facilities'
 import { SERVICE_CODES } from '@/lib/constants/services'
 
@@ -37,7 +37,7 @@ export default async function KuchikomiruListPage() {
         <div className="w-full md:w-1/4 flex flex-col gap-6">
           {/* クチコミルランキング */}
           <div className="w-full">
-            <KuchikomiruReviewRanking variant="desktop" />
+            <ReviewRanking variant="desktop" serviceCode={SERVICE_CODES.KUCHIKOMIRU} />
           </div>
 
           {/* 各エリアから探す */}

@@ -4,7 +4,8 @@ import type { Facility } from '@/types/facility'
 import { useClinicFilter } from '@/hooks/useClinicFilter'
 import List from './List'
 import FilterControls from './FilterControls'
-import MedicalReviewRanking from './MedicalReviewRanking'
+import ReviewRanking from './ReviewRanking'
+import { SERVICE_CODES } from '@/lib/constants/services'
 
 interface GridSectionProps {
   facilities: Facility[]
@@ -59,7 +60,7 @@ export default function GridSection({
     <section className="pt-5 pb-10 px-[5px] md:px-5" style={{ backgroundColor: '#F1F1F1', borderTop: '2px solid #d1cab7' }}>
       <div className="mx-auto space-y-6">
         {/* メディカルクチコミランキング（スマホで表示） */}
-        <MedicalReviewRanking variant="mobile" />
+        <ReviewRanking variant="mobile" serviceCode={SERVICE_CODES.MEDICAL} />
 
         {/* リストで絞り込み検索（スマホで表示） */}
         <div className="md:hidden w-full bg-white rounded-2xl md:rounded-lg px-[5px] py-5 shadow-none md:shadow-md">
@@ -105,7 +106,7 @@ export default function GridSection({
 
           {/* Right Box - 1/4 width */}
           <div className="w-1/4">
-            <MedicalReviewRanking variant="desktop" />
+            <ReviewRanking variant="desktop" serviceCode={SERVICE_CODES.MEDICAL} />
           </div>
         </div>
 

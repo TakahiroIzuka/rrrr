@@ -9,3 +9,19 @@ export const SERVICE_CODES = {
 } as const
 
 export type ServiceCode = typeof SERVICE_CODES[keyof typeof SERVICE_CODES]
+
+/**
+ * Review ranking configuration for each service
+ */
+export const REVIEW_RANKING_CONFIG = {
+  [SERVICE_CODES.MEDICAL]: {
+    title: 'メディカルクチコミランキング',
+    imagePath: '/mrr/pin-profile.png',
+    buttonText: 'クリニックの掲載リクエストはこちら',
+  },
+  [SERVICE_CODES.KUCHIKOMIRU]: {
+    title: 'クチコミルランキング',
+    imagePath: '/kuchikomiru/pin-profile.png',
+    buttonText: '施設の掲載リクエストはこちら',
+  },
+} as const
