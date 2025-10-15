@@ -12,7 +12,11 @@ INSERT INTO genres (code, name, service_id) VALUES
   ('surgery', '外科系', 1),
   ('dental', '歯科系', 1),
   ('dermatology', '皮膚科系', 1),
-  ('cosmetic-dermatology', '美容皮膚科', 2);
+  ('cosmetic-dermatology', '美容皮膚科', 2),
+  ('wedding-venue', 'ウェディング', 2),
+  ('house-builder', '住宅会社', 2),
+  ('vacation-stay', '宿泊施設', 2),
+  ('restaurant', '飲食店', 2);
 
 -- Seed prefectures table
 INSERT INTO prefectures (name) VALUES
