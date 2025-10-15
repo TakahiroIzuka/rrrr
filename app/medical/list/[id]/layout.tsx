@@ -2,46 +2,51 @@ import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { getGenreColor } from '@/lib/utils/genreColors'
 
 interface ClinicDetailLayoutProps {
   children: React.ReactNode
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export default async function ClinicDetailLayout({
   children,
   params,
 }: ClinicDetailLayoutProps) {
+  const { id } = await params
   const supabase = await createClient()
 
   const { data: facility, error } = await supabase
     .from('facilities')
     .select(`
       genre:genres(
-        name
+        name,
+        code
       ),
       detail:facility_details!facility_id(
         name
       )
     `)
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
 
   if (error || !facility) {
     notFound()
   }
 
-  const genreName = (facility.genre as { name?: string })?.name || ''
+  const genreName = (facility.genre as { name?: string; code?: string })?.name || ''
+  const genreCode = (facility.genre as { name?: string; code?: string })?.code
   const facilityName = Array.isArray(facility.detail)
     ? (facility.detail[0] as { name?: string })?.name || ''
     : (facility.detail as { name?: string })?.name || ''
+  const genreColor = getGenreColor(genreCode)
 
   return (
     <>
       <Header
         imagePath="/medical/default/logo_header.png"
-        lineColor="#a69a7e"
-        color="#acd1e6"
+        lineColor={genreColor}
+        color={genreColor}
         labelText={genreName || ''}
       />
       {/* Breadcrumb */}

@@ -5,20 +5,25 @@ import ReviewCard from '@/app/medical/list/[id]/ReviewCard'
 import ScrollToReviewButton from '@/app/medical/list/[id]/ScrollToReviewButton'
 import { fetchFacilityById } from '@/lib/data/facilities'
 import { SERVICE_CODES } from '@/lib/constants/services'
+import { getGenreColor } from '@/lib/utils/genreColors'
 
 interface FacilityDetailPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default async function FacilityDetailPage({ params }: FacilityDetailPageProps) {
+  const { id } = await params
+
   // Fetch facility with code='kuchikomiru'
-  const { facility, error } = await fetchFacilityById(params.id, SERVICE_CODES.KUCHIKOMIRU)
+  const { facility, error } = await fetchFacilityById(id, SERVICE_CODES.KUCHIKOMIRU)
 
   if (error || !facility) {
     notFound()
   }
+
+  const genreColor = getGenreColor(facility.genre?.code)
 
   return (
     <div className="mx-[10px] mb-[10px] pt-[10px] md:mx-20 md:pt-10 md:pb-24 md:mb-0">
@@ -63,11 +68,11 @@ export default async function FacilityDetailPage({ params }: FacilityDetailPageP
             <div className="w-full md:w-[55%] flex flex-col">
               {/* バー */}
               <div className="relative mb-4 mt-2 hidden md:block">
-                <div className="w-full px-4 py-2 text-sm border-2 rounded text-center" style={{ borderColor: 'rgb(220, 194, 219)', color: 'rgb(220, 194, 219)' }}>
+                <div className="w-full px-4 py-2 text-sm border-2 rounded text-center" style={{ borderColor: genreColor, color: genreColor }}>
                   クチコミ投稿に是非ご協力ください！
                 </div>
                 {/* 下向き三角形 */}
-                <div className="absolute left-1/2 -translate-x-1/2 -bottom-3 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: 'rgb(220, 194, 219)' }}></div>
+                <div className="absolute left-1/2 -translate-x-1/2 -bottom-3 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: genreColor }}></div>
               </div>
 
               {/* ボタン */}
@@ -76,7 +81,7 @@ export default async function FacilityDetailPage({ params }: FacilityDetailPageP
           </div>
 
           {/* バー */}
-          <div className="px-4 py-2 text-white text-sm rounded text-center" style={{ backgroundColor: 'rgb(163, 151, 125)' }}>
+          <div className="px-4 py-2 text-white text-sm rounded text-center" style={{ backgroundColor: genreColor }}>
             Googleクチコミの情報は、常に最新情報が表示されています。
           </div>
         </div>
@@ -89,11 +94,11 @@ export default async function FacilityDetailPage({ params }: FacilityDetailPageP
         <div id="review-section" className="mb-2 p-4 rounded-lg" style={{ backgroundColor: 'rgb(255, 249, 240)', marginLeft: '3px', marginRight: '3px' }}>
           {/* バー */}
           <div className="relative mb-4">
-            <div className="w-full px-4 py-2 text-sm border-2 rounded text-center bg-white" style={{ borderColor: 'rgb(220, 194, 219)', color: 'rgb(220, 194, 219)' }}>
+            <div className="w-full px-4 py-2 text-sm border-2 rounded text-center bg-white" style={{ borderColor: genreColor, color: genreColor }}>
               {facility.name}のクチコミ一覧はこちら！
             </div>
             {/* 下向き三角形 */}
-            <div className="absolute left-1/2 -translate-x-1/2 -bottom-3 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: 'rgb(220, 194, 219)' }}></div>
+            <div className="absolute left-1/2 -translate-x-1/2 -bottom-3 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: genreColor }}></div>
           </div>
 
           {/* カードグリッド */}
@@ -122,7 +127,7 @@ export default async function FacilityDetailPage({ params }: FacilityDetailPageP
         {/* div4 */}
         <div className="p-4 flex justify-center">
           <a href="/kuchikomiru">
-            <button className="text-white text-sm w-64 md:w-[390px] h-12 md:h-[60px]" style={{ backgroundColor: 'rgb(163, 151, 125)' }}>
+            <button className="text-white text-sm w-64 md:w-[390px] h-12 md:h-[60px]" style={{ backgroundColor: genreColor }}>
               戻る
             </button>
           </a>

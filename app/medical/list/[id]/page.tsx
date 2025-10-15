@@ -7,14 +7,16 @@ import { fetchFacilityById } from '@/lib/data/facilities'
 import { SERVICE_CODES } from '@/lib/constants/services'
 
 interface ClinicDetailPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default async function ClinicDetailPage({ params }: ClinicDetailPageProps) {
+  const { id } = await params
+
   // Fetch facility with code='medical'
-  const { facility, error } = await fetchFacilityById(params.id, SERVICE_CODES.MEDICAL)
+  const { facility, error } = await fetchFacilityById(id, SERVICE_CODES.MEDICAL)
 
   if (error || !facility) {
     notFound()

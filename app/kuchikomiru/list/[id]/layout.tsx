@@ -2,46 +2,56 @@ import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { getGenreColor } from '@/lib/utils/genreColors'
+import { getGenreImagePath } from '@/lib/utils/imagePath'
 
 interface FacilityDetailLayoutProps {
   children: React.ReactNode
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export default async function FacilityDetailLayout({
   children,
   params,
 }: FacilityDetailLayoutProps) {
+  const { id } = await params
   const supabase = await createClient()
 
   const { data: facility, error } = await supabase
     .from('facilities')
     .select(`
       genre:genres(
-        name
+        name,
+        code
       ),
       detail:facility_details!facility_id(
         name
       )
     `)
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
 
   if (error || !facility) {
     notFound()
   }
 
-  const genreName = (facility.genre as { name?: string })?.name || ''
+  const genreData = facility.genre as { name?: string; code?: string } | null
+  const genreName = genreData?.name || ''
+  const genreCode = genreData?.code
   const facilityName = Array.isArray(facility.detail)
     ? (facility.detail[0] as { name?: string })?.name || ''
     : (facility.detail as { name?: string })?.name || ''
 
+  const genreColor = getGenreColor(genreCode)
+  const headerImagePath = getGenreImagePath('kuchikomiru', genreCode, 'logo_header.png')
+  const footerImagePath = getGenreImagePath('kuchikomiru', genreCode, 'logo_footer.png')
+
   return (
     <>
       <Header
-        imagePath="/kuchikomiru/default/logo_header.png"
-        lineColor="rgb(236, 106, 82)"
-        color="rgb(236, 106, 82)"
+        imagePath={headerImagePath}
+        lineColor={genreColor}
+        color={genreColor}
         labelText={genreName || ''}
       />
       {/* Breadcrumb */}
@@ -64,7 +74,7 @@ export default async function FacilityDetailLayout({
       </div>
       {children}
       <Footer
-        imagePath="/kuchikomiru/default/logo_footer.png"
+        imagePath={footerImagePath}
         buttonText="地域密着店舗・施設の掲載リクエストはこちら"
         type="accomodation"
       />

@@ -61,6 +61,11 @@ const FACILITY_BASE_QUERY = `
     id,
     name
   ),
+  genre:genres(
+    id,
+    name,
+    code
+  ),
   detail:facility_details!facility_id(
     name,
     star,

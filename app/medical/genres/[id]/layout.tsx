@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import MarqueeText from '@/components/MarqueeText'
 import Footer from '@/components/Footer'
 import { getGenreImagePath } from '@/lib/utils/imagePath'
+import { getGenreColor } from '@/lib/utils/genreColors'
 
 interface GenreLayoutProps {
   children: React.ReactNode
@@ -29,13 +30,14 @@ export default async function GenreLayout({
 
   const headerImagePath = getGenreImagePath('medical', genre.code, 'logo_header.png')
   const footerImagePath = getGenreImagePath('medical', genre.code, 'logo_footer.png')
+  const genreColor = getGenreColor(genre.code)
 
   return (
     <>
       <Header
         imagePath={headerImagePath}
-        lineColor="#a69a7e"
-        color="#acd1e6"
+        lineColor={genreColor}
+        color={genreColor}
         labelText={genre.name || ''}
       />
       <div className="mt-16 md:mt-0">

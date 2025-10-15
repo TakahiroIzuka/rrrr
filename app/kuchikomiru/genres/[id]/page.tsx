@@ -5,21 +5,23 @@ import { fetchFacilitiesByGenre, fetchGenreById } from '@/lib/data/facilities'
 import { SERVICE_CODES } from '@/lib/constants/services'
 
 interface GenrePageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default async function GenrePage({ params }: GenrePageProps) {
+  const { id } = await params
+
   // Get genre information
-  const { genre, error: genreError } = await fetchGenreById(params.id)
+  const { genre, error: genreError } = await fetchGenreById(id)
 
   if (genreError || !genre) {
     notFound()
   }
 
   // Get facilities filtered by genre_id
-  const { facilities, error } = await fetchFacilitiesByGenre(params.id, SERVICE_CODES.KUCHIKOMIRU)
+  const { facilities, error } = await fetchFacilitiesByGenre(id, SERVICE_CODES.KUCHIKOMIRU)
 
   if (error) {
     return <ErrorMessage message={error.message} />
