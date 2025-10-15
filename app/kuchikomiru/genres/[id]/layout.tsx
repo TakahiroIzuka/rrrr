@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Header from '@/components/Header'
 import MarqueeText from '@/components/MarqueeText'
 import Footer from '@/components/Footer'
+import { getGenreImagePath } from '@/lib/utils/imagePath'
 
 interface GenreLayoutProps {
   children: React.ReactNode
@@ -18,7 +19,7 @@ export default async function GenreLayout({
 
   const { data: genre, error } = await supabase
     .from('genres')
-    .select('name')
+    .select('name, code')
     .eq('id', id)
     .single()
 
@@ -26,10 +27,13 @@ export default async function GenreLayout({
     notFound()
   }
 
+  const headerImagePath = getGenreImagePath('kuchikomiru', genre.code, 'logo_header.png')
+  const footerImagePath = getGenreImagePath('kuchikomiru', genre.code, 'logo_footer.png')
+
   return (
     <>
       <Header
-        imagePath="/kuchikomiru/default/logo_header.png"
+        imagePath={headerImagePath}
         lineColor="rgb(236, 106, 82)"
         color="rgb(236, 106, 82)"
         labelText={genre.name || ''}
@@ -39,7 +43,7 @@ export default async function GenreLayout({
       </div>
       {children}
       <Footer
-        imagePath="/kuchikomiru/default/logo_footer.png"
+        imagePath={footerImagePath}
         buttonText="地域密着店舗・施設の掲載リクエストはこちら"
         type="accomodation"
       />

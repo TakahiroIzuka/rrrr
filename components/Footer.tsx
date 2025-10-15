@@ -9,7 +9,7 @@ interface FooterProps {
 }
 
 export default function Footer({
-  imagePath = '/mrr/default/logo_footer.png',
+  imagePath = '/medical/default/logo_footer.png',
   buttonText = 'クリニック・施設の掲載リクエストはこちら',
   type = 'clinic'
 }: FooterProps) {

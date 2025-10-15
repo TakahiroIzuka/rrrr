@@ -20,9 +20,9 @@ interface Genre {
 
 const getGenreLogoPath = (genreCode?: string): string => {
   if (!genreCode) {
-    return '/mrr/default/logo_header.png'
+    return '/medical/default/logo_header.png'
   }
-  return `/mrr/${genreCode}/logo_header.png`
+  return `/medical/${genreCode}/logo_header.png`
 }
 
 export default function DetailHeader({ genreName, genreCode, showNavButtons = false }: DetailHeaderProps) {

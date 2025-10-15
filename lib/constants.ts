@@ -10,9 +10,9 @@ export const RANKING_OPTIONS = ['トップ30', 'トップ20', 'トップ10', '�
 
 // Clinic images
 export const DEFAULT_CLINIC_IMAGES = [
-  '/mrr/medical/noimage.jpg',
-  '/mrr/medical/noimage.jpg',
-  '/mrr/medical/noimage.jpg'
+  '/medical/medical/noimage.jpg',
+  '/medical/medical/noimage.jpg',
+  '/medical/medical/noimage.jpg'
 ] as const
 
 export const IMAGE_COUNT = 3
@@ -22,10 +22,10 @@ export const SWIPE_THRESHOLD = 50
 
 // Map pin images based on genre
 export const MAP_PIN_IMAGES = {
-  unfocus: '/mrr/pin_unfocus.png',
-  pilates: '/mrr/pin_pilates.png',
-  medical: '/mrr/pin_medical.png',
-  purple: '/mrr/pin_purple.png'
+  unfocus: '/medical/pin_unfocus.png',
+  pilates: '/medical/pin_pilates.png',
+  medical: '/medical/pin_medical.png',
+  purple: '/medical/pin_purple.png'
 } as const
 
 // Star rating thresholds

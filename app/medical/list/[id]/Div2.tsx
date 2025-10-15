@@ -9,9 +9,9 @@ interface Div2Props {
 
 const getGenreNoImage = (genreCode?: string): string => {
   if (!genreCode) {
-    return '/mrr/default/noimage.jpg'
+    return '/medical/default/noimage.jpg'
   }
-  return `/mrr/${genreCode}/noimage.jpg`
+  return `/medical/${genreCode}/noimage.jpg`
 }
 
 export default function Div2({ facility }: Div2Props) {

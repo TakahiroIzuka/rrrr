@@ -21,7 +21,7 @@ interface HeaderProps {
 }
 
 export default function Header({
-  imagePath = '/mrr/default/logo_header.png',
+  imagePath = '/medical/default/logo_header.png',
   lineColor = '#a69a7e',
   color = '#acd1e6',
   labelText

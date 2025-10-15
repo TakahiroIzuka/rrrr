@@ -7,9 +7,9 @@ interface DetailFooterProps {
 
 const getGenreLogoPath = (genreCode?: string): string => {
   if (!genreCode) {
-    return '/mrr/default/logo_footer.png'
+    return '/medical/default/logo_footer.png'
   }
-  return `/mrr/${genreCode}/logo_footer.png`
+  return `/medical/${genreCode}/logo_footer.png`
 }
 
 export default function DetailFooter({ genreId, genreCode }: DetailFooterProps) {

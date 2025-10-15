@@ -16,7 +16,7 @@ export type ServiceCode = typeof SERVICE_CODES[keyof typeof SERVICE_CODES]
 export const REVIEW_RANKING_CONFIG = {
   [SERVICE_CODES.MEDICAL]: {
     title: 'メディカルクチコミランキング',
-    imagePath: '/mrr/pin-profile.png',
+    imagePath: '/medical/pin-profile.png',
     buttonText: 'クリニックの掲載リクエストはこちら',
   },
   [SERVICE_CODES.KUCHIKOMIRU]: {

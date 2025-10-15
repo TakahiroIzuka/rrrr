@@ -18,7 +18,7 @@ export default function ClinicLayout({
       {isClinicTopPage && (
         <>
           <Header
-            imagePath="/mrr/default/logo_header.png"
+            imagePath="/medical/default/logo_header.png"
             lineColor="#a69a7e"
             color="#acd1e6"
           />
@@ -30,7 +30,7 @@ export default function ClinicLayout({
       {children}
       {isClinicTopPage && (
         <Footer
-          imagePath="/mrr/default/logo_footer.png"
+          imagePath="/medical/default/logo_footer.png"
           buttonText="クリニック・施設の掲載リクエストはこちら"
           type="clinic"
         />

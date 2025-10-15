@@ -19,13 +19,13 @@ interface CardLiteProps {
 const getGenreNoImage = (genreId: number): string => {
   switch (genreId) {
     case 1:
-      return '/mrr/pilates/noimage.jpg'
+      return '/medical/pilates/noimage.jpg'
     case 2:
-      return '/mrr/medical/noimage.jpg'
+      return '/medical/medical/noimage.jpg'
     case 5:
-      return '/mrr/dermatology/noimage.jpg'
+      return '/medical/dermatology/noimage.jpg'
     default:
-      return '/mrr/medical/noimage.jpg'
+      return '/medical/medical/noimage.jpg'
   }
 }
 
