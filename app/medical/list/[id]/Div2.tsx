@@ -85,13 +85,13 @@ export default function Div2({ facility }: Div2Props) {
               <p className="font-semibold">住所</p>
             </div>
             <div className="w-full md:w-[70%] p-2">
-              {facility.detail?.postal_code && <p>〒{facility.detail.postal_code}</p>}
-              {facility.detail?.address && (
+              {facility.postal_code && <p>〒{facility.postal_code}</p>}
+              {facility.address && (
                 <p style={{ whiteSpace: 'pre-line' }}>
-                  {facility.detail.address.replace(/\\n/g, '\n')}
+                  {facility.address.replace(/\\n/g, '\n')}
                 </p>
               )}
-              {!facility.detail?.postal_code && !facility.detail?.address && <p>-</p>}
+              {!facility.postal_code && !facility.address && <p>-</p>}
             </div>
           </div>
           <div className="border-0 md:border-b border-gray-300 p-1.5 flex flex-col md:flex-row">
@@ -99,9 +99,9 @@ export default function Div2({ facility }: Div2Props) {
               <p className="font-semibold">オフィシャルHP</p>
             </div>
             <div className="w-full md:w-[70%] p-2 flex items-center">
-              {facility.detail?.site_url ? (
+              {facility.site_url ? (
                 <a
-                  href={facility.detail.site_url}
+                  href={facility.site_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="relative bg-white border-2 px-3 py-1.5 rounded font-medium hover:bg-gray-50 transition-colors overflow-visible"

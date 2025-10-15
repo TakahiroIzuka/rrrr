@@ -68,16 +68,16 @@ export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLea
           <div className="w-full h-32 bg-gray-100 overflow-hidden">
             <img
               src={getGenreNoImage(facility.genre_id)}
-              alt={`${facility.detail?.name}の画像`}
+              alt={`${facility.name}の画像`}
               className="w-full h-full object-cover"
               draggable={false}
             />
           </div>
 
           {/* HP Button */}
-          {facility.detail?.site_url && (
+          {facility.site_url && (
             <a
-              href={facility.detail.site_url}
+              href={facility.site_url}
               target="_blank"
               rel="noopener noreferrer"
               className="absolute top-1 right-1 bg-[#a59878] hover:bg-opacity-90 text-white text-[9px] px-1.5 py-0.5 rounded-md transition-colors flex items-center gap-0.5"
@@ -123,7 +123,7 @@ export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLea
 
       <div className="px-2.5 pb-2.5">
         <h3 className="m-0 mb-2 text-gray-900 text-sm font-semibold leading-tight">
-          {facility.detail?.name}
+          {facility.name}
         </h3>
 
         <div className="flex items-center mb-2 gap-1 pb-1.5 border-b border-[#a59878]">
@@ -144,13 +144,13 @@ export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLea
             />
             <span className="text-[#a69a7e] text-[10px]">クチコミ評価</span>
             <img
-              src={facility.detail?.star !== null ? getStarImage(facility.detail?.star) : '/common/star_0.5.png'}
-              alt={facility.detail?.star !== null ? `${facility.detail?.star}星評価` : '評価なし'}
+              src={facility.star !== null ? getStarImage(facility.star) : '/common/star_0.5.png'}
+              alt={facility.star !== null ? `${facility.star}星評価` : '評価なし'}
               className="w-12 h-2.5"
             />
           </div>
           <div className="text-[10px]">
-            評価平均 <span className="text-[#a69a7e] font-normal text-sm">{facility.detail?.star ?? ''}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-sm">{facility.detail?.user_review_count ?? 0}</span><span className="text-[#a69a7e] font-normal text-sm">人</span>
+            評価平均 <span className="text-[#a69a7e] font-normal text-sm">{facility.star ?? ''}</span> / 評価人数 <span className="text-[#a69a7e] font-normal text-sm">{facility.user_review_count ?? 0}</span><span className="text-[#a69a7e] font-normal text-sm">人</span>
           </div>
         </div>
 

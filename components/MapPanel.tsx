@@ -27,10 +27,10 @@ const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilitie
 
   const center = useMemo(() => {
     if (allFacilities.length > 0) {
-      const validFacilities = allFacilities.filter(facility => facility.detail?.lat && facility.detail?.lng)
+      const validFacilities = allFacilities.filter(facility => facility.lat && facility.lng)
       if (validFacilities.length > 0) {
-        const avgLat = validFacilities.reduce((sum, facility) => sum + (facility.detail?.lat || 0), 0) / validFacilities.length
-        const avgLng = validFacilities.reduce((sum, facility) => sum + (facility.detail?.lng || 0), 0) / validFacilities.length
+        const avgLat = validFacilities.reduce((sum, facility) => sum + (facility.lat || 0), 0) / validFacilities.length
+        const avgLng = validFacilities.reduce((sum, facility) => sum + (facility.lng || 0), 0) / validFacilities.length
         return { lat: avgLat, lng: avgLng }
       }
     }
@@ -104,14 +104,8 @@ const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilitie
     loaderRef.current.importLibrary('marker')
       .then(({ AdvancedMarkerElement }) => {
         allFacilities.forEach((facility) => {
-          // Skip if facility_detail is missing
-          if (!facility.detail) {
-            console.warn(`Facility ${facility.id} has no facility_detail`)
-            return
-          }
-
-          if (typeof facility.detail.lat !== 'number' || typeof facility.detail.lng !== 'number') {
-            console.error(`Invalid coordinates for facility ${facility.detail.name}:`, facility.detail.lat, facility.detail.lng)
+          if (typeof facility.lat !== 'number' || typeof facility.lng !== 'number') {
+            console.error(`Invalid coordinates for facility ${facility.name}:`, facility.lat, facility.lng)
             return
           }
 
@@ -159,7 +153,7 @@ const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilitie
             z-index: 1;
             margin: 0;
           `
-          starElement.textContent = facility.detail?.star !== null ? facility.detail?.star?.toString() : ''
+          starElement.textContent = facility.star !== null ? facility.star?.toString() : ''
 
           const reviewElement = document.createElement('p')
           reviewElement.style.cssText = `
@@ -174,7 +168,7 @@ const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilitie
             z-index: 1;
             margin: 0;
           `
-          reviewElement.textContent = facility.detail?.user_review_count?.toString() || '0'
+          reviewElement.textContent = facility.user_review_count?.toString() || '0'
 
           markerDiv.appendChild(imgElement)
           markerDiv.appendChild(starElement)
@@ -189,9 +183,9 @@ const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilitie
           updateMarkerContent(true)
 
           const marker = new AdvancedMarkerElement({
-            position: { lat: facility.detail.lat, lng: facility.detail.lng },
+            position: { lat: facility.lat, lng: facility.lng },
             map: googleMapRef.current,
-            title: facility.detail?.name,
+            title: facility.name,
             content: markerDiv
           })
 

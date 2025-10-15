@@ -3,15 +3,29 @@ import type { Facility } from '@/types/facility'
 import { SERVICE_CODES } from '@/lib/constants/services'
 
 /**
- * Transform detail from array to single object
+ * Transform detail from array to single object and flatten facility_details fields
  */
 function transformFacilityDetail(facilityData: unknown): Facility {
   const data = facilityData as Record<string, unknown>
+  const detail = Array.isArray(data.detail) ? data.detail[0] : data.detail
+  const detailObj = detail as Record<string, unknown> | undefined
+
+  // Extract detail fields and merge them into the main facility object
+  const { detail: _detail, ...rest } = data
+
   return {
-    ...data,
-    detail: Array.isArray(data.detail)
-      ? data.detail[0]
-      : data.detail
+    ...rest,
+    // Flatten facility_details fields (all fields from facility_details table)
+    name: detailObj?.name as string,
+    star: detailObj?.star as number | null,
+    user_review_count: detailObj?.user_review_count as number,
+    lat: detailObj?.lat as number,
+    lng: detailObj?.lng as number,
+    site_url: detailObj?.site_url as string | undefined,
+    postal_code: detailObj?.postal_code as string | undefined,
+    address: detailObj?.address as string | undefined,
+    tel: detailObj?.tel as string | undefined,
+    google_map_url: detailObj?.google_map_url as string | undefined,
   } as Facility
 }
 
