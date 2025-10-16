@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation'
 import { getStarImage } from '@/lib/utils/starRating'
-import Div2 from '@/app/medical/list/[id]/Div2'
-import ReviewCard from '@/app/medical/list/[id]/ReviewCard'
-import ScrollToReviewButton from '@/app/medical/list/[id]/ScrollToReviewButton'
+import Div2 from '@/components/facility/Div2'
+import ReviewCard from '@/components/facility/ReviewCard'
+import ScrollToReviewButton from '@/components/facility/ScrollToReviewButton'
 import { fetchFacilityById } from '@/lib/data/facilities'
 import { SERVICE_CODES } from '@/lib/constants/services'
 import { getGenreColor } from '@/lib/utils/genreColors'
@@ -81,13 +81,13 @@ export default async function FacilityDetailPage({ params }: FacilityDetailPageP
           </div>
 
           {/* バー */}
-          <div className="px-4 py-2 text-white text-sm rounded text-center" style={{ backgroundColor: genreColor }}>
+          <div className="px-4 py-2 text-white text-sm rounded text-center" style={{ backgroundColor: 'rgb(163, 151, 125)' }}>
             Googleクチコミの情報は、常に最新情報が表示されています。
           </div>
         </div>
 
         {/* div2 */}
-        <Div2 facility={facility} />
+        <Div2 facility={facility} serviceCode="kuchikomiru" />
 
 
         {/* div3 */}
@@ -127,7 +127,7 @@ export default async function FacilityDetailPage({ params }: FacilityDetailPageP
         {/* div4 */}
         <div className="p-4 flex justify-center">
           <a href="/kuchikomiru">
-            <button className="text-white text-sm w-64 md:w-[390px] h-12 md:h-[60px]" style={{ backgroundColor: genreColor }}>
+            <button className="text-white text-sm w-64 md:w-[390px] h-12 md:h-[60px]" style={{ backgroundColor: 'rgb(163, 151, 125)' }}>
               戻る
             </button>
           </a>

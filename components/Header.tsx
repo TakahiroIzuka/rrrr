@@ -57,10 +57,11 @@ export default function Header({
   }, [])
 
   // 詳細ページかどうかを判定
-  const isDetailPage = pathname?.startsWith('/medical/list/') && pathname !== '/medical/list'
+  const isDetailPage = (pathname?.startsWith('/medical/list/') && pathname !== '/medical/list') ||
+                       (pathname?.startsWith('/kuchikomiru/list/') && pathname !== '/kuchikomiru/list')
 
   // 一覧ページかどうかを判定
-  const isListPage = pathname === '/medical/list'
+  const isListPage = pathname === '/medical/list' || pathname === '/kuchikomiru/list'
 
   useEffect(() => {
     const handleScroll = () => {

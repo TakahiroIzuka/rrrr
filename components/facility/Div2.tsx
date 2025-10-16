@@ -5,16 +5,18 @@ import type { Facility } from '@/types/facility'
 
 interface Div2Props {
   facility: Facility
+  serviceCode?: string
 }
 
-const getGenreNoImage = (genreCode?: string): string => {
+const getGenreNoImage = (genreCode?: string, serviceCode?: string): string => {
+  const basePath = serviceCode === 'kuchikomiru' ? '/kuchikomiru' : '/medical'
   if (!genreCode) {
-    return '/medical/default/noimage.jpg'
+    return `${basePath}/default/noimage.jpg`
   }
-  return `/medical/${genreCode}/noimage.jpg`
+  return `${basePath}/${genreCode}/noimage.jpg`
 }
 
-export default function Div2({ facility }: Div2Props) {
+export default function Div2({ facility, serviceCode }: Div2Props) {
   const [selectedImage, setSelectedImage] = useState(0)
 
   return (
@@ -25,7 +27,7 @@ export default function Div2({ facility }: Div2Props) {
           {/* メイン画像 */}
           <div className="mb-2 bg-gray-100 rounded-lg overflow-hidden">
             <img
-              src={getGenreNoImage(facility.genre?.code)}
+              src={getGenreNoImage(facility.genre?.code, serviceCode)}
               alt={`${facility.name}の画像`}
               className="w-full h-72 md:h-80 object-cover"
             />
@@ -40,7 +42,7 @@ export default function Div2({ facility }: Div2Props) {
                 className="flex-1 overflow-hidden transition-all relative"
               >
                 <img
-                  src={getGenreNoImage(facility.genre?.code)}
+                  src={getGenreNoImage(facility.genre?.code, serviceCode)}
                   alt={`${facility.name}のサムネイル ${index + 1}`}
                   className="w-full h-16 object-cover"
                 />

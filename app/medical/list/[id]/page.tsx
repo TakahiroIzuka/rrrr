@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation'
 import { getStarImage } from '@/lib/utils/starRating'
-import Div2 from './Div2'
-import ReviewCard from './ReviewCard'
-import ScrollToReviewButton from './ScrollToReviewButton'
+import Div2 from '@/components/facility/Div2'
+import ReviewCard from '@/components/facility/ReviewCard'
+import ScrollToReviewButton from '@/components/facility/ScrollToReviewButton'
 import { fetchFacilityById } from '@/lib/data/facilities'
 import { SERVICE_CODES } from '@/lib/constants/services'
 
@@ -84,7 +84,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
         </div>
 
         {/* div2 */}
-        <Div2 facility={facility} />
+        <Div2 facility={facility} serviceCode="medical" />
 
 
         {/* div3 */}
