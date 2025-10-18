@@ -3,6 +3,7 @@ import { getStarImage } from '@/lib/utils/starRating'
 import Div2 from '@/components/facility/Div2'
 import ReviewCard from '@/components/facility/ReviewCard'
 import ScrollToReviewButton from '@/components/facility/ScrollToReviewButton'
+import { ImageGallery } from '@/components/facility/ImageGallery'
 import { fetchFacilityById } from '@/lib/data/facilities'
 import { SERVICE_CODES } from '@/lib/constants/services'
 import { getGenreColor } from '@/lib/utils/genreColors'
@@ -89,6 +90,11 @@ export default async function FacilityDetailPage({ params }: FacilityDetailPageP
         {/* div2 */}
         <Div2 facility={facility} serviceCode="kuchikomiru" />
 
+        {/* 画像ギャラリー */}
+        <div className="mb-4 p-4 rounded-lg bg-white">
+          <h2 className="text-lg font-bold mb-4" style={{ fontFamily: 'Kosugi Maru, sans-serif' }}>施設画像</h2>
+          <ImageGallery facilityId={Number(id)} />
+        </div>
 
         {/* div3 */}
         <div id="review-section" className="mb-2 p-4 rounded-lg" style={{ backgroundColor: 'rgb(255, 249, 240)', marginLeft: '3px', marginRight: '3px' }}>
