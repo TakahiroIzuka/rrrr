@@ -143,7 +143,38 @@ export async function getFacilityImages(facilityId: number) {
 }
 
 /**
- * 施設画像を完全にアップロード（Storage + DB）
+ * サムネイル画像を生成（Edge Function呼び出し）
+ * @param bucketName バケット名
+ * @param imagePath オリジナル画像のパス
+ * @param thumbnailPath サムネイル画像のパス
+ */
+async function generateThumbnail(
+  bucketName: string,
+  imagePath: string,
+  thumbnailPath: string
+) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase.functions.invoke("resize-image", {
+    body: {
+      bucketName,
+      imagePath,
+      thumbnailPath,
+      width: 150,
+      height: 150,
+    },
+  });
+
+  if (error) {
+    console.error("サムネイル生成に失敗しました:", error);
+    throw new Error(`サムネイル生成に失敗しました: ${error.message}`);
+  }
+
+  return data;
+}
+
+/**
+ * 施設画像を完全にアップロード（Storage + DB + サムネイル生成）
  * @param facilityId 施設ID
  * @param file アップロードするファイル
  * @param displayOrder 表示順序
@@ -160,7 +191,15 @@ export async function uploadFacilityImageComplete(
     file
   );
 
-  // 2. DBに保存
+  // 2. サムネイル生成（Edge Function呼び出し）
+  try {
+    await generateThumbnail("facility-images", originalPath, thumbnailPath);
+  } catch (error) {
+    console.error("サムネイル生成エラー:", error);
+    // サムネイル生成に失敗してもオリジナル画像のアップロードは成功しているので続行
+  }
+
+  // 3. DBに保存
   const imageData = await saveFacilityImageToDb(
     facilityId,
     originalPath,

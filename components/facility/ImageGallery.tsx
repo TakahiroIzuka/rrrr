@@ -55,15 +55,23 @@ export function ImageGallery({ facilityId }: ImageGalleryProps) {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      {images.map((image) => (
-        <div key={image.id} className="relative aspect-square">
-          <img
-            src={getFacilityImageUrl(image.image_path)}
-            alt={`施設画像 ${image.display_order + 1}`}
-            className="w-full h-full object-cover rounded-lg"
-          />
-        </div>
-      ))}
+      {images.map((image) => {
+        // サムネイルがあればサムネイルを、なければオリジナル画像を表示
+        const displayImagePath = image.thumbnail_path || image.image_path;
+        const originalImageUrl = getFacilityImageUrl(image.image_path);
+
+        return (
+          <div key={image.id} className="relative aspect-square">
+            <a href={originalImageUrl} target="_blank" rel="noopener noreferrer">
+              <img
+                src={getFacilityImageUrl(displayImagePath)}
+                alt={`施設画像 ${image.display_order + 1}`}
+                className="w-full h-full object-cover rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
+              />
+            </a>
+          </div>
+        );
+      })}
     </div>
   );
 }
