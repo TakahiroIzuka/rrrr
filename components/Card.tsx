@@ -7,12 +7,22 @@ import type { ServiceCode } from '@/lib/constants/services'
 import { getStarImage } from '@/lib/utils/starRating'
 import { IMAGE_COUNT, SWIPE_THRESHOLD } from '@/lib/constants'
 
+interface FacilityImage {
+  id: number
+  image_path: string
+  thumbnail_path: string | null
+  display_order: number
+  publicUrl: string
+  thumbnailUrl: string | null
+}
+
 interface CardProps {
   facility: Facility
   isHovered: boolean
   onMouseEnter: () => void
   onMouseLeave: () => void
   serviceCode: ServiceCode
+  images?: FacilityImage[]
 }
 
 const getGenreNoImage = (genreId: number): string => {
@@ -28,11 +38,20 @@ const getGenreNoImage = (genreId: number): string => {
   }
 }
 
-export default function Card({ facility, isHovered, onMouseEnter, onMouseLeave, serviceCode }: CardProps) {
+export default function Card({ facility, isHovered, onMouseEnter, onMouseLeave, serviceCode, images = [] }: CardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
   const [currentX, setCurrentX] = useState(0)
+
+  // Create an array of 3 images (display_order 1-3, or default images)
+  const displayImages = Array.from({ length: IMAGE_COUNT }).map((_, index) => {
+    const facilityImage = images[index]
+    if (facilityImage) {
+      return facilityImage.publicUrl
+    }
+    return getGenreNoImage(facility.genre_id)
+  })
 
   const handlePrevImage = () => {
     setCurrentImageIndex(prev => prev > 0 ? prev - 1 : IMAGE_COUNT - 1)
@@ -101,8 +120,8 @@ export default function Card({ facility, isHovered, onMouseEnter, onMouseLeave, 
             onTouchEnd={handleDragEnd}
           >
             <img
-              src={getGenreNoImage(facility.genre_id)}
-              alt={`${facility.name}の画像`}
+              src={displayImages[currentImageIndex]}
+              alt={`${facility.name}の画像 ${currentImageIndex + 1}`}
               className="w-full h-full object-cover pointer-events-none"
             />
           </div>

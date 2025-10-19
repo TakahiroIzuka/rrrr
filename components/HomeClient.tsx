@@ -8,12 +8,23 @@ import MapPanel from '@/components/MapPanel'
 import GridSection from '@/components/GridSection'
 import FilterButton from '@/components/FilterButton'
 
+interface FacilityImage {
+  id: number
+  facility_id: number
+  image_path: string
+  thumbnail_path: string | null
+  display_order: number
+  publicUrl: string
+  thumbnailUrl: string | null
+}
+
 interface HomeClientProps {
   facilities: Facility[]
   genreId?: number
   genreName?: string
   genreCode?: string
   serviceCode: ServiceCode
+  imagesMap?: Record<number, FacilityImage[]>
 }
 
 export default function HomeClient({
@@ -21,6 +32,7 @@ export default function HomeClient({
   genreId,
   genreName,
   serviceCode,
+  imagesMap = {},
 }: HomeClientProps) {
   // Normalize detail to handle both array and object formats
   const normalizedFacilities = useMemo(() => {
@@ -63,6 +75,7 @@ export default function HomeClient({
             <ListPanel
               facilities={selectedFacilityId ? filteredFacilities.filter(facility => facility.id === selectedFacilityId) : filteredFacilities}
               serviceCode={serviceCode}
+              imagesMap={imagesMap}
             />
           </div>
           {/* Map Full Width on Mobile, Right on PC */}
@@ -98,6 +111,7 @@ export default function HomeClient({
           onPrefecturesChange={setSelectedPrefectures}
           onGenresChange={setSelectedGenres}
           onRankingChange={setSelectedRanking}
+          imagesMap={imagesMap}
           onFilterChange={handleFilterChange}
           hideGenreFilter={hideGenreFilter}
           serviceCode={serviceCode}

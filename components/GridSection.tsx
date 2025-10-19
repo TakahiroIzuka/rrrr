@@ -7,6 +7,16 @@ import List from './List'
 import FilterControls from './FilterControls'
 import ReviewRanking from './ReviewRanking'
 
+interface FacilityImage {
+  id: number
+  facility_id: number
+  image_path: string
+  thumbnail_path: string | null
+  display_order: number
+  publicUrl: string
+  thumbnailUrl: string | null
+}
+
 interface GridSectionProps {
   facilities: Facility[]
   allFacilities: Facility[]
@@ -19,6 +29,7 @@ interface GridSectionProps {
   onFilterChange: (filteredFacilities: Facility[]) => void
   hideGenreFilter?: boolean
   serviceCode: ServiceCode
+  imagesMap?: Record<number, FacilityImage[]>
 }
 
 export default function GridSection({
@@ -32,7 +43,8 @@ export default function GridSection({
   onRankingChange,
   onFilterChange,
   hideGenreFilter = false,
-  serviceCode
+  serviceCode,
+  imagesMap = {}
 }: GridSectionProps) {
   const { applyFilters } = useClinicFilter(allFacilities)
 
@@ -104,6 +116,7 @@ export default function GridSection({
               width="full"
               gridCols="5"
               serviceCode={serviceCode}
+              imagesMap={imagesMap}
             />
           </div>
 
@@ -123,6 +136,7 @@ export default function GridSection({
             width="3/4"
             gridCols="2"
             serviceCode={serviceCode}
+            imagesMap={imagesMap}
           />
 
           {/* Right Box - 1/4 width - PC only */}

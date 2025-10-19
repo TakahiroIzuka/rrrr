@@ -5,12 +5,23 @@ import type { Facility } from '@/types/facility'
 import type { ServiceCode } from '@/lib/constants/services'
 import Card from './Card'
 
+interface FacilityImage {
+  id: number
+  facility_id: number
+  image_path: string
+  thumbnail_path: string | null
+  display_order: number
+  publicUrl: string
+  thumbnailUrl: string | null
+}
+
 interface ListPanelProps {
   facilities: Facility[]
   serviceCode: ServiceCode
+  imagesMap?: Record<number, FacilityImage[]>
 }
 
-export default function ListPanel({ facilities, serviceCode }: ListPanelProps) {
+export default function ListPanel({ facilities, serviceCode, imagesMap = {} }: ListPanelProps) {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
   return (
@@ -33,6 +44,7 @@ export default function ListPanel({ facilities, serviceCode }: ListPanelProps) {
               onMouseEnter={() => setHoveredCard(facility.id)}
               onMouseLeave={() => setHoveredCard(null)}
               serviceCode={serviceCode}
+              images={imagesMap[facility.id] || []}
             />
           ))}
         </div>

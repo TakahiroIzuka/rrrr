@@ -8,12 +8,22 @@ import { getStarImage } from '@/lib/utils/starRating'
 import { IMAGE_COUNT } from '@/lib/constants'
 import { useImageSlider } from '@/hooks/useImageSlider'
 
+interface FacilityImage {
+  id: number
+  image_path: string
+  thumbnail_path: string | null
+  display_order: number
+  publicUrl: string
+  thumbnailUrl: string | null
+}
+
 interface CardLiteProps {
   facility: Facility
   isHovered: boolean
   onMouseEnter: () => void
   onMouseLeave: () => void
   serviceCode: ServiceCode
+  images?: FacilityImage[]
 }
 
 const getGenreNoImage = (genreId: number): string => {
@@ -29,7 +39,7 @@ const getGenreNoImage = (genreId: number): string => {
   }
 }
 
-export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLeave, serviceCode }: CardLiteProps) {
+export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLeave, serviceCode, images = [] }: CardLiteProps) {
   const dragRef = useRef<HTMLDivElement>(null)
   const {
     currentImageIndex,
@@ -40,6 +50,17 @@ export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLea
     handleDragMove,
     handleDragEnd
   } = useImageSlider()
+
+  // Create an array of 3 images (display_order 1-3, or default images)
+  // Use thumbnail images for CardLite
+  const displayImages = Array.from({ length: IMAGE_COUNT }).map((_, index) => {
+    const facilityImage = images[index]
+    if (facilityImage) {
+      // Use thumbnailUrl if available, otherwise fallback to publicUrl
+      return facilityImage.thumbnailUrl || facilityImage.publicUrl
+    }
+    return getGenreNoImage(facility.genre_id)
+  })
 
   return (
     <div
@@ -67,8 +88,8 @@ export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLea
         >
           <div className="w-full h-32 bg-gray-100 overflow-hidden">
             <img
-              src={getGenreNoImage(facility.genre_id)}
-              alt={`${facility.name}の画像`}
+              src={displayImages[currentImageIndex]}
+              alt={`${facility.name}の画像 ${currentImageIndex + 1}`}
               className="w-full h-full object-cover"
               draggable={false}
             />

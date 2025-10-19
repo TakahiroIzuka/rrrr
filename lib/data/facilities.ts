@@ -241,3 +241,45 @@ export async function fetchFacilityImages(facilityId: number) {
 
   return { images: imagesWithUrls || [], error: null }
 }
+
+/**
+ * Fetch images for multiple facilities
+ * Returns a map of facility_id to images array
+ */
+export async function fetchFacilitiesImages(facilityIds: number[]) {
+  if (facilityIds.length === 0) {
+    return { imagesMap: {}, error: null }
+  }
+
+  const supabase = await createClient()
+
+  const { data: images, error } = await supabase
+    .from('facility_images')
+    .select('id, facility_id, image_path, thumbnail_path, display_order')
+    .in('facility_id', facilityIds)
+    .order('display_order', { ascending: true })
+    .lte('display_order', 3) // Only get display_order 1-3 for cards
+
+  if (error) {
+    return { imagesMap: {}, error }
+  }
+
+  // Create public URLs and group by facility_id
+  const imagesMap: Record<number, any[]> = {}
+
+  images?.forEach((image) => {
+    if (!imagesMap[image.facility_id]) {
+      imagesMap[image.facility_id] = []
+    }
+
+    imagesMap[image.facility_id].push({
+      ...image,
+      publicUrl: supabase.storage.from('facility-images').getPublicUrl(image.image_path).data.publicUrl,
+      thumbnailUrl: image.thumbnail_path
+        ? supabase.storage.from('facility-images').getPublicUrl(image.thumbnail_path).data.publicUrl
+        : null,
+    })
+  })
+
+  return { imagesMap, error: null }
+}

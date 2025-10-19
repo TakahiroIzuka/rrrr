@@ -5,6 +5,16 @@ import type { Facility } from '@/types/facility'
 import type { ServiceCode } from '@/lib/constants/services'
 import CardLite from './CardLite'
 
+interface FacilityImage {
+  id: number
+  facility_id: number
+  image_path: string
+  thumbnail_path: string | null
+  display_order: number
+  publicUrl: string
+  thumbnailUrl: string | null
+}
+
 interface ListProps {
   facilities: Facility[]
   title?: string
@@ -12,6 +22,7 @@ interface ListProps {
   width?: 'full' | '3/4'
   gridCols?: '2' | '5'
   serviceCode: ServiceCode
+  imagesMap?: Record<number, FacilityImage[]>
 }
 
 export default function List({
@@ -20,7 +31,8 @@ export default function List({
   subtitle = 'List Search',
   width = '3/4',
   gridCols = '5',
-  serviceCode
+  serviceCode,
+  imagesMap = {}
 }: ListProps) {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
@@ -50,6 +62,7 @@ export default function List({
             onMouseEnter={() => setHoveredCard(facility.id)}
             onMouseLeave={() => setHoveredCard(null)}
             serviceCode={serviceCode}
+            images={imagesMap[facility.id] || []}
           />
         ))}
       </div>
