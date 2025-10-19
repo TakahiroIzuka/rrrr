@@ -11,8 +11,10 @@ interface ResizeRequest {
   bucketName: string;
   imagePath: string;
   thumbnailPath: string;
-  width?: number;
-  height?: number;
+  originalWidth?: number;
+  originalHeight?: number;
+  thumbnailWidth?: number;
+  thumbnailHeight?: number;
 }
 
 serve(async (req) => {
@@ -23,8 +25,15 @@ serve(async (req) => {
 
   try {
     // Get the request body
-    const { bucketName, imagePath, thumbnailPath, width = 150, height = 150 }: ResizeRequest =
-      await req.json();
+    const {
+      bucketName,
+      imagePath,
+      thumbnailPath,
+      originalWidth = 600,
+      originalHeight = 400,
+      thumbnailWidth = 225,
+      thumbnailHeight = 150,
+    }: ResizeRequest = await req.json();
 
     // Create Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
@@ -32,7 +41,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Download the original image from storage
-    const { data: originalImage, error: downloadError } = await supabase.storage
+    const { data: originalImageBlob, error: downloadError } = await supabase.storage
       .from(bucketName)
       .download(imagePath);
 
@@ -41,36 +50,51 @@ serve(async (req) => {
     }
 
     // Convert blob to array buffer
-    const arrayBuffer = await originalImage.arrayBuffer();
+    const arrayBuffer = await originalImageBlob.arrayBuffer();
     const imageData = new Uint8Array(arrayBuffer);
 
-    // Resize the image using imagescript
+    // Import imagescript
     const { Image } = await import("https://deno.land/x/imagescript@1.2.15/mod.ts");
     const image = await Image.decode(imageData);
 
-    // Resize to thumbnail size (maintaining aspect ratio)
-    const thumbnail = image.resize(width, height);
+    // 1. Resize original image to 600x400
+    const resizedOriginal = image.resize(originalWidth, originalHeight);
+    const originalBuffer = await resizedOriginal.encodeJPEG(85); // 85% quality
 
-    // Encode as JPEG
+    // Upload resized original image (overwrite)
+    const { error: originalUploadError } = await supabase.storage
+      .from(bucketName)
+      .upload(imagePath, originalBuffer, {
+        contentType: "image/jpeg",
+        upsert: true,
+      });
+
+    if (originalUploadError) {
+      throw new Error(`Failed to upload resized original: ${originalUploadError.message}`);
+    }
+
+    // 2. Resize to thumbnail size (225x150)
+    const thumbnail = image.resize(thumbnailWidth, thumbnailHeight);
     const thumbnailBuffer = await thumbnail.encodeJPEG(85); // 85% quality
 
     // Upload thumbnail to storage
-    const { error: uploadError } = await supabase.storage
+    const { error: thumbnailUploadError } = await supabase.storage
       .from(bucketName)
       .upload(thumbnailPath, thumbnailBuffer, {
         contentType: "image/jpeg",
         upsert: true,
       });
 
-    if (uploadError) {
-      throw new Error(`Failed to upload thumbnail: ${uploadError.message}`);
+    if (thumbnailUploadError) {
+      throw new Error(`Failed to upload thumbnail: ${thumbnailUploadError.message}`);
     }
 
     return new Response(
       JSON.stringify({
         success: true,
+        imagePath,
         thumbnailPath,
-        message: "Thumbnail created successfully",
+        message: "Images resized successfully",
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -98,8 +98,8 @@ export default function TestUploadPage() {
               http://localhost:54323
             </a>
           </li>
-          <li>オリジナル画像とサムネイル（thumb_プレフィックス）が保存されているか確認</li>
-          <li>サムネイルが150x150pxにリサイズされているか確認</li>
+          <li>オリジナル画像（600×400px）とサムネイル（thumb_プレフィックス、225×150px）が保存されているか確認</li>
+          <li>画像サイズが正しくリサイズされているか確認</li>
         </ol>
       </div>
 
@@ -113,7 +113,7 @@ export default function TestUploadPage() {
               npx supabase functions serve resize-image --no-verify-jwt
             </code>
           </li>
-          <li>サムネイル生成には数秒かかる場合があります</li>
+          <li>画像リサイズ（600×400px、225×150px）には数秒かかる場合があります</li>
           <li>ページをリロードするとアップロード履歴はクリアされます</li>
         </ul>
       </div>

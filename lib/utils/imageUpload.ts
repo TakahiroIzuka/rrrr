@@ -1,15 +1,63 @@
 import { createClient } from "@/lib/supabase/client";
 
 /**
+ * 指定された施設IDと日付で次の画像インデックスを取得
+ * @param facilityId 施設ID
+ * @param dateStr 日付文字列（yyyymmdd形式）
+ * @returns 次のインデックス番号（0から始まる）
+ */
+async function getNextImageIndex(
+  facilityId: number,
+  dateStr: string
+): Promise<number> {
+  const supabase = createClient();
+
+  // 同じfacility_idで、同じ日付のimage_pathを持つレコードを取得
+  const { data, error } = await supabase
+    .from("facility_images")
+    .select("image_path")
+    .eq("facility_id", facilityId)
+    .like("image_path", `${facilityId}/${dateStr}/%`);
+
+  if (error) {
+    console.error("インデックス取得エラー:", error);
+    return 0;
+  }
+
+  // パスから既存のインデックス番号を抽出
+  const existingIndexes = (data || [])
+    .map((record) => {
+      // パス形式: {facilityId}/{dateStr}/{index}/{filename}
+      const pathParts = record.image_path.split("/");
+      if (pathParts.length >= 3) {
+        const indexStr = pathParts[2];
+        const index = parseInt(indexStr, 10);
+        return isNaN(index) ? -1 : index;
+      }
+      return -1;
+    })
+    .filter((index) => index >= 0);
+
+  // 最大値+1を返す（レコードがない場合は0）
+  if (existingIndexes.length === 0) {
+    return 0;
+  }
+
+  return Math.max(...existingIndexes) + 1;
+}
+
+/**
  * 施設画像のパスを生成
  * @param facilityId 施設ID
  * @param fileName ファイル名
+ * @param index インデックス番号
  * @param isThumbnail サムネイルかどうか
  * @returns 画像のパス
  */
 export function generateFacilityImagePath(
   facilityId: number,
   fileName: string,
+  index: number,
   isThumbnail = false
 ): string {
   const now = new Date();
@@ -18,10 +66,10 @@ export function generateFacilityImagePath(
   if (isThumbnail) {
     const fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf("."));
     const fileExt = fileName.substring(fileName.lastIndexOf("."));
-    return `${facilityId}/${dateStr}/thumb_${fileNameWithoutExt}${fileExt}`;
+    return `${facilityId}/${dateStr}/${index}/thumb_${fileNameWithoutExt}${fileExt}`;
   }
 
-  return `${facilityId}/${dateStr}/${fileName}`;
+  return `${facilityId}/${dateStr}/${index}/${fileName}`;
 }
 
 /**
@@ -33,7 +81,14 @@ export function generateFacilityImagePath(
 export async function uploadFacilityImage(facilityId: number, file: File) {
   const supabase = createClient();
 
-  const originalPath = generateFacilityImagePath(facilityId, file.name);
+  // 日付文字列を取得
+  const now = new Date();
+  const dateStr = now.toISOString().slice(0, 10).replace(/-/g, ""); // yyyymmdd
+
+  // 次のインデックス番号を取得
+  const index = await getNextImageIndex(facilityId, dateStr);
+
+  const originalPath = generateFacilityImagePath(facilityId, file.name, index);
 
   // オリジナル画像をアップロード
   const { data, error } = await supabase.storage
@@ -46,7 +101,7 @@ export async function uploadFacilityImage(facilityId: number, file: File) {
 
   return {
     originalPath,
-    thumbnailPath: generateFacilityImagePath(facilityId, file.name, true),
+    thumbnailPath: generateFacilityImagePath(facilityId, file.name, index, true),
     data,
   };
 }
@@ -83,7 +138,29 @@ export async function deleteFacilityImage(imagePath: string) {
 }
 
 /**
- * 施設画像をDBに保存
+ * 施設のservice_idを取得
+ * @param facilityId 施設ID
+ * @returns service_id
+ */
+async function getFacilityServiceId(facilityId: number): Promise<number | null> {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from("facilities")
+    .select("service_id")
+    .eq("id", facilityId)
+    .single();
+
+  if (error) {
+    console.error("施設のservice_id取得エラー:", error);
+    return null;
+  }
+
+  return data?.service_id ?? null;
+}
+
+/**
+ * 施設画像をDBに保存（facility_id + display_orderが重複する場合は更新）
  * @param facilityId 施設ID
  * @param imagePath 画像のパス
  * @param thumbnailPath サムネイル画像のパス
@@ -101,24 +178,60 @@ export async function saveFacilityImageToDb(
 ) {
   const supabase = createClient();
 
-  const { data, error } = await supabase
+  // 施設のservice_idを取得
+  const serviceId = await getFacilityServiceId(facilityId);
+
+  // 既存のレコードを確認
+  const { data: existingRecord } = await supabase
     .from("facility_images")
-    .insert({
-      facility_id: facilityId,
-      image_path: imagePath,
-      thumbnail_path: thumbnailPath,
-      file_size: fileSize,
-      mime_type: mimeType,
-      display_order: displayOrder,
-    })
-    .select()
+    .select("id")
+    .eq("facility_id", facilityId)
+    .eq("display_order", displayOrder)
     .single();
 
-  if (error) {
-    throw new Error(`DBへの保存に失敗しました: ${error.message}`);
-  }
+  if (existingRecord) {
+    // 既存レコードが存在する場合は更新
+    const { data, error } = await supabase
+      .from("facility_images")
+      .update({
+        service_id: serviceId,
+        image_path: imagePath,
+        thumbnail_path: thumbnailPath,
+        file_size: fileSize,
+        mime_type: mimeType,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", existingRecord.id)
+      .select()
+      .single();
 
-  return data;
+    if (error) {
+      throw new Error(`DBの更新に失敗しました: ${error.message}`);
+    }
+
+    return data;
+  } else {
+    // 新規レコードを作成
+    const { data, error } = await supabase
+      .from("facility_images")
+      .insert({
+        facility_id: facilityId,
+        service_id: serviceId,
+        image_path: imagePath,
+        thumbnail_path: thumbnailPath,
+        file_size: fileSize,
+        mime_type: mimeType,
+        display_order: displayOrder,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`DBへの保存に失敗しました: ${error.message}`);
+    }
+
+    return data;
+  }
 }
 
 /**
@@ -143,12 +256,13 @@ export async function getFacilityImages(facilityId: number) {
 }
 
 /**
- * サムネイル画像を生成（Edge Function呼び出し）
+ * 画像をリサイズ（Edge Function呼び出し）
+ * オリジナル: 600x400、サムネイル: 225x150
  * @param bucketName バケット名
  * @param imagePath オリジナル画像のパス
  * @param thumbnailPath サムネイル画像のパス
  */
-async function generateThumbnail(
+async function resizeImages(
   bucketName: string,
   imagePath: string,
   thumbnailPath: string
@@ -160,14 +274,16 @@ async function generateThumbnail(
       bucketName,
       imagePath,
       thumbnailPath,
-      width: 150,
-      height: 150,
+      originalWidth: 600,
+      originalHeight: 400,
+      thumbnailWidth: 225,
+      thumbnailHeight: 150,
     },
   });
 
   if (error) {
-    console.error("サムネイル生成に失敗しました:", error);
-    throw new Error(`サムネイル生成に失敗しました: ${error.message}`);
+    console.error("画像のリサイズに失敗しました:", error);
+    throw new Error(`画像のリサイズに失敗しました: ${error.message}`);
   }
 
   return data;
@@ -185,21 +301,46 @@ export async function uploadFacilityImageComplete(
   file: File,
   displayOrder = 0
 ) {
+  const supabase = createClient();
+
+  // 0. 既存レコードを確認し、古い画像があれば削除
+  const { data: existingRecord } = await supabase
+    .from("facility_images")
+    .select("image_path, thumbnail_path")
+    .eq("facility_id", facilityId)
+    .eq("display_order", displayOrder)
+    .single();
+
+  if (existingRecord) {
+    // 古い画像をStorageから削除
+    try {
+      const pathsToDelete = [existingRecord.image_path];
+      if (existingRecord.thumbnail_path) {
+        pathsToDelete.push(existingRecord.thumbnail_path);
+      }
+      await supabase.storage.from("facility-images").remove(pathsToDelete);
+    } catch (error) {
+      console.error("古い画像の削除エラー:", error);
+      // 削除に失敗しても続行
+    }
+  }
+
   // 1. Storageにアップロード
   const { originalPath, thumbnailPath } = await uploadFacilityImage(
     facilityId,
     file
   );
 
-  // 2. サムネイル生成（Edge Function呼び出し）
+  // 2. 画像リサイズ（Edge Function呼び出し）
+  // オリジナル: 600x400、サムネイル: 225x150
   try {
-    await generateThumbnail("facility-images", originalPath, thumbnailPath);
+    await resizeImages("facility-images", originalPath, thumbnailPath);
   } catch (error) {
-    console.error("サムネイル生成エラー:", error);
-    // サムネイル生成に失敗してもオリジナル画像のアップロードは成功しているので続行
+    console.error("画像リサイズエラー:", error);
+    // リサイズに失敗してもオリジナル画像のアップロードは成功しているので続行
   }
 
-  // 3. DBに保存
+  // 3. DBに保存（既存レコードがあれば更新）
   const imageData = await saveFacilityImageToDb(
     facilityId,
     originalPath,

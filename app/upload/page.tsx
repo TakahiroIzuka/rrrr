@@ -19,6 +19,7 @@ interface UploadedImage {
 
 export default function UploadPage() {
   const [facilityId, setFacilityId] = useState<number>(1);
+  const [displayOrder, setDisplayOrder] = useState<number>(1);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -26,7 +27,21 @@ export default function UploadPage() {
 
   const handleUploadSuccess = (imageData: UploadedImage) => {
     console.log("アップロード成功:", imageData);
-    setUploadedImages((prev) => [...prev, imageData]);
+
+    // 同じidを持つ画像が既に存在する場合は置き換え、存在しない場合は追加
+    setUploadedImages((prev) => {
+      const existingIndex = prev.findIndex((img) => img.id === imageData.id);
+      if (existingIndex >= 0) {
+        // 既存の画像を更新
+        const updated = [...prev];
+        updated[existingIndex] = imageData;
+        return updated;
+      } else {
+        // 新規追加
+        return [...prev, imageData];
+      }
+    });
+
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 3000);
   };
@@ -56,29 +71,54 @@ export default function UploadPage() {
         </div>
       )}
 
-      {/* 施設ID入力 */}
+      {/* 設定セクション */}
       <div className="mb-8 p-6 bg-white rounded-lg shadow-sm border">
-        <label className="block mb-4">
-          <span className="text-sm font-medium text-gray-700 mb-2 block">
-            施設ID
-          </span>
-          <input
-            type="number"
-            value={facilityId}
-            onChange={(e) => setFacilityId(Number(e.target.value))}
-            className="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            min="1"
-          />
-          <p className="mt-2 text-sm text-gray-500">
-            アップロード先の施設IDを入力してください
-          </p>
-        </label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {/* 施設ID入力 */}
+          <label className="block">
+            <span className="text-sm font-medium text-gray-700 mb-2 block">
+              施設ID
+            </span>
+            <input
+              type="number"
+              value={facilityId}
+              onChange={(e) => setFacilityId(Number(e.target.value))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              min="1"
+            />
+            <p className="mt-2 text-sm text-gray-500">
+              アップロード先の施設IDを入力してください
+            </p>
+          </label>
+
+          {/* 表示順序選択 */}
+          <label className="block">
+            <span className="text-sm font-medium text-gray-700 mb-2 block">
+              表示順序
+            </span>
+            <select
+              value={displayOrder}
+              onChange={(e) => setDisplayOrder(Number(e.target.value))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value={1}>1</option>
+              <option value={2}>2</option>
+              <option value={3}>3</option>
+              <option value={4}>4</option>
+              <option value={5}>5</option>
+            </select>
+            <p className="mt-2 text-sm text-gray-500">
+              画像の表示順序を選択してください（1-5）
+            </p>
+          </label>
+        </div>
 
         {/* アップロードコンポーネント */}
         <div className="mt-6">
           <h2 className="text-lg font-semibold mb-4">画像を選択</h2>
           <ImageUpload
             facilityId={facilityId}
+            displayOrder={displayOrder}
             onUploadSuccess={handleUploadSuccess}
             onUploadError={handleUploadError}
           />
@@ -156,6 +196,10 @@ export default function UploadPage() {
                       {image.facility_id}
                     </p>
                     <p>
+                      <span className="font-medium">表示順序:</span>{" "}
+                      {image.display_order}
+                    </p>
+                    <p>
                       <span className="font-medium">パス:</span>{" "}
                       {image.image_path}
                     </p>
@@ -190,9 +234,10 @@ export default function UploadPage() {
         <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg">
           <h3 className="font-semibold mb-3 text-blue-900">機能について:</h3>
           <ul className="list-disc list-inside space-y-2 text-sm text-blue-800">
-            <li>画像を選択すると自動的にアップロードが開始されます</li>
+            <li>施設IDと表示順序（1-5）を設定できます（デフォルト: 1）</li>
+            <li>画像を選択してプレビュー確認後、アップロードボタンでアップロード</li>
             <li>
-              オリジナル画像とサムネイル画像（150x150px）の両方がStorageに保存されます
+              オリジナル画像（600×400px）とサムネイル画像（225×150px）の両方が自動生成されStorageに保存されます
             </li>
             <li>facility_imagesテーブルに画像情報が登録されます</li>
             <li>アップロード履歴はページをリロードするとクリアされます</li>
@@ -210,7 +255,7 @@ export default function UploadPage() {
                 npx supabase functions serve resize-image --no-verify-jwt
               </code>
             </li>
-            <li>サムネイル生成には数秒かかる場合があります</li>
+            <li>画像リサイズ処理には数秒かかる場合があります</li>
             <li>対応画像形式: JPEG, PNG, GIF, WebP など</li>
           </ul>
         </div>

@@ -19,12 +19,14 @@ interface ImageData {
 
 interface ImageUploadProps {
   facilityId: number;
+  displayOrder?: number;
   onUploadSuccess?: (imageData: ImageData) => void;
   onUploadError?: (error: Error) => void;
 }
 
 export function ImageUpload({
   facilityId,
+  displayOrder = 1,
   onUploadSuccess,
   onUploadError,
 }: ImageUploadProps) {
@@ -52,7 +54,11 @@ export function ImageUpload({
     // アップロード
     setUploading(true);
     try {
-      const result = await uploadFacilityImageComplete(facilityId, selectedFile);
+      const result = await uploadFacilityImageComplete(
+        facilityId,
+        selectedFile,
+        displayOrder
+      );
       onUploadSuccess?.(result);
       // アップロード成功後、プレビューと選択ファイルをクリア
       setPreview(null);
