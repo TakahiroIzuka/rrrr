@@ -30,12 +30,13 @@ export function ImageUpload({
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    setSelectedFile(file);
 
     // プレビュー表示
     const reader = new FileReader();
@@ -43,12 +44,24 @@ export function ImageUpload({
       setPreview(reader.result as string);
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) return;
 
     // アップロード
     setUploading(true);
     try {
-      const result = await uploadFacilityImageComplete(facilityId, file);
+      const result = await uploadFacilityImageComplete(facilityId, selectedFile);
       onUploadSuccess?.(result);
+      // アップロード成功後、プレビューと選択ファイルをクリア
+      setPreview(null);
+      setSelectedFile(null);
+      // ファイル入力もリセット
+      const fileInput = document.getElementById("image-upload") as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = "";
+      }
     } catch (error) {
       console.error("Upload error:", error);
       onUploadError?.(error as Error);
@@ -64,7 +77,7 @@ export function ImageUpload({
           htmlFor="image-upload"
           className="cursor-pointer inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
         >
-          {uploading ? "アップロード中..." : "画像を選択"}
+          画像を選択
         </label>
         <input
           id="image-upload"
@@ -77,13 +90,22 @@ export function ImageUpload({
       </div>
 
       {preview && (
-        <div className="mt-4">
-          <p className="text-sm font-medium mb-2">プレビュー:</p>
-          <img
-            src={preview}
-            alt="Preview"
-            className="max-w-md rounded-lg border"
-          />
+        <div className="mt-4 space-y-4">
+          <div>
+            <p className="text-sm font-medium mb-2">プレビュー:</p>
+            <img
+              src={preview}
+              alt="Preview"
+              className="max-w-md rounded-lg border"
+            />
+          </div>
+          <button
+            onClick={handleUpload}
+            disabled={uploading}
+            className="inline-flex items-center justify-center rounded-md bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-700 disabled:pointer-events-none disabled:opacity-50"
+          >
+            {uploading ? "アップロード中..." : "アップロード"}
+          </button>
         </div>
       )}
     </div>
