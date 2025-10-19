@@ -211,3 +211,33 @@ export async function fetchGenreById(id: string) {
 
   return { genre, error }
 }
+
+/**
+ * Fetch facility images by facility ID
+ * Returns images sorted by display_order (1-5)
+ */
+export async function fetchFacilityImages(facilityId: number) {
+  const supabase = await createClient()
+
+  const { data: images, error } = await supabase
+    .from('facility_images')
+    .select('id, image_path, thumbnail_path, display_order')
+    .eq('facility_id', facilityId)
+    .order('display_order', { ascending: true })
+    .limit(5)
+
+  if (error) {
+    return { images: null, error }
+  }
+
+  // Create public URLs for images
+  const imagesWithUrls = images?.map((image) => ({
+    ...image,
+    publicUrl: supabase.storage.from('facility-images').getPublicUrl(image.image_path).data.publicUrl,
+    thumbnailUrl: image.thumbnail_path
+      ? supabase.storage.from('facility-images').getPublicUrl(image.thumbnail_path).data.publicUrl
+      : null,
+  }))
+
+  return { images: imagesWithUrls || [], error: null }
+}

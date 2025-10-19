@@ -3,9 +3,19 @@
 import { useState } from 'react'
 import type { Facility } from '@/types/facility'
 
+interface FacilityImage {
+  id: number
+  image_path: string
+  thumbnail_path: string | null
+  display_order: number
+  publicUrl: string
+  thumbnailUrl: string | null
+}
+
 interface Div2Props {
   facility: Facility
   serviceCode?: string
+  images?: FacilityImage[]
 }
 
 const getGenreNoImage = (genreCode?: string, serviceCode?: string): string => {
@@ -16,8 +26,25 @@ const getGenreNoImage = (genreCode?: string, serviceCode?: string): string => {
   return `${basePath}/${genreCode}/noimage.jpg`
 }
 
-export default function Div2({ facility, serviceCode }: Div2Props) {
+export default function Div2({ facility, serviceCode, images = [] }: Div2Props) {
   const [selectedImage, setSelectedImage] = useState(0)
+
+  // Create an array of 5 items (fill with images or default)
+  const displayImages = Array.from({ length: 5 }).map((_, index) => {
+    const facilityImage = images[index]
+    if (facilityImage) {
+      return {
+        url: facilityImage.publicUrl,
+        thumbnailUrl: facilityImage.thumbnailUrl || facilityImage.publicUrl,
+        alt: `${facility.name}の画像 ${index + 1}`,
+      }
+    }
+    return {
+      url: getGenreNoImage(facility.genre?.code, serviceCode),
+      thumbnailUrl: getGenreNoImage(facility.genre?.code, serviceCode),
+      alt: `${facility.name}のデフォルト画像 ${index + 1}`,
+    }
+  })
 
   return (
     <div className="p-0 md:py-4 md:px-[10px]">
@@ -27,23 +54,23 @@ export default function Div2({ facility, serviceCode }: Div2Props) {
           {/* メイン画像 */}
           <div className="mb-2 bg-gray-100 rounded-lg overflow-hidden">
             <img
-              src={getGenreNoImage(facility.genre?.code, serviceCode)}
-              alt={`${facility.name}の画像`}
+              src={displayImages[selectedImage].url}
+              alt={displayImages[selectedImage].alt}
               className="w-full h-72 md:h-80 object-cover"
             />
           </div>
 
           {/* サムネイル画像 */}
           <div className="flex rounded-lg overflow-hidden">
-            {Array.from({ length: 5 }).map((_, index) => (
+            {displayImages.map((image, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedImage(index)}
                 className="flex-1 overflow-hidden transition-all relative"
               >
                 <img
-                  src={getGenreNoImage(facility.genre?.code, serviceCode)}
-                  alt={`${facility.name}のサムネイル ${index + 1}`}
+                  src={image.thumbnailUrl}
+                  alt={image.alt}
                   className="w-full h-16 object-cover"
                 />
                 {selectedImage !== index && (
