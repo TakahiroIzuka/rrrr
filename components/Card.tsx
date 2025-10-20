@@ -45,8 +45,10 @@ export default function Card({ facility, isHovered, onMouseEnter, onMouseLeave, 
   const [currentX, setCurrentX] = useState(0)
 
   // Create an array of 3 images (display_order 1-3, or default images)
+  // Map images by display_order to ensure correct positioning
   const displayImages = Array.from({ length: IMAGE_COUNT }).map((_, index) => {
-    const facilityImage = images[index]
+    const targetDisplayOrder = index + 1 // display_order is 1-indexed
+    const facilityImage = images.find(img => img.display_order === targetDisplayOrder)
     if (facilityImage) {
       return facilityImage.publicUrl
     }

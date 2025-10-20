@@ -30,8 +30,10 @@ export default function Div2({ facility, serviceCode, images = [] }: Div2Props) 
   const [selectedImage, setSelectedImage] = useState(0)
 
   // Create an array of 5 items (fill with images or default)
+  // Map images by display_order to ensure correct positioning
   const displayImages = Array.from({ length: 5 }).map((_, index) => {
-    const facilityImage = images[index]
+    const targetDisplayOrder = index + 1 // display_order is 1-indexed
+    const facilityImage = images.find(img => img.display_order === targetDisplayOrder)
     if (facilityImage) {
       return {
         url: facilityImage.publicUrl,

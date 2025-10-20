@@ -239,7 +239,10 @@ export async function fetchFacilityImages(facilityId: number) {
       : null,
   }))
 
-  return { images: imagesWithUrls || [], error: null }
+  // Ensure images are sorted by display_order
+  const sortedImages = imagesWithUrls?.sort((a, b) => a.display_order - b.display_order) || []
+
+  return { images: sortedImages, error: null }
 }
 
 /**
@@ -257,6 +260,7 @@ export async function fetchFacilitiesImages(facilityIds: number[]) {
     .from('facility_images')
     .select('id, facility_id, image_path, thumbnail_path, display_order')
     .in('facility_id', facilityIds)
+    .order('facility_id', { ascending: true })
     .order('display_order', { ascending: true })
     .lte('display_order', 3) // Only get display_order 1-3 for cards
 
@@ -279,6 +283,11 @@ export async function fetchFacilitiesImages(facilityIds: number[]) {
         ? supabase.storage.from('facility-images').getPublicUrl(image.thumbnail_path).data.publicUrl
         : null,
     })
+  })
+
+  // Ensure each facility's images are sorted by display_order
+  Object.keys(imagesMap).forEach((facilityId) => {
+    imagesMap[Number(facilityId)].sort((a, b) => a.display_order - b.display_order)
   })
 
   return { imagesMap, error: null }

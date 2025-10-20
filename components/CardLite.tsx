@@ -53,8 +53,10 @@ export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLea
 
   // Create an array of 3 images (display_order 1-3, or default images)
   // Use thumbnail images for CardLite
+  // Map images by display_order to ensure correct positioning
   const displayImages = Array.from({ length: IMAGE_COUNT }).map((_, index) => {
-    const facilityImage = images[index]
+    const targetDisplayOrder = index + 1 // display_order is 1-indexed
+    const facilityImage = images.find(img => img.display_order === targetDisplayOrder)
     if (facilityImage) {
       // Use thumbnailUrl if available, otherwise fallback to publicUrl
       return facilityImage.thumbnailUrl || facilityImage.publicUrl
