@@ -38,8 +38,8 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      // Redirect to admin dashboard after successful login
-      router.push("/admin");
+      // Redirect to management companies page after successful login
+      router.push("/management/companies");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {

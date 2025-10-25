@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import DeleteFacilityButton from '@/components/admin/DeleteFacilityButton'
+import DeleteFacilityButton from '@/components/management/DeleteFacilityButton'
 
 export default async function FacilitiesPage() {
   const supabase = await createClient()
@@ -26,7 +26,7 @@ export default async function FacilitiesPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">施設管理</h1>
         <Link
-          href="/admin/facilities/new"
+          href="/management/facilities/new"
           className="px-4 py-2 bg-[#2271b1] text-white rounded text-sm hover:bg-[#135e96] transition-colors font-medium"
         >
           新規追加
@@ -81,7 +81,7 @@ export default async function FacilitiesPage() {
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-right text-sm">
                     <Link
-                      href={`/admin/facilities/${facility.id}/edit`}
+                      href={`/management/facilities/${facility.id}/edit`}
                       className="text-[#2271b1] hover:text-[#135e96] mr-4 font-medium"
                     >
                       編集

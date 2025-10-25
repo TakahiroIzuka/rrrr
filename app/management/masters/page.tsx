@@ -1,32 +1,10 @@
-import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import FacilityForm from '@/components/admin/FacilityForm'
+import MasterManager from '@/components/management/MasterManager'
 
-interface PageProps {
-  params: Promise<{
-    id: string
-  }>
-}
-
-export default async function EditFacilityPage({ params }: PageProps) {
-  const { id } = await params
+export default async function MastersPage() {
   const supabase = await createClient()
 
-  // Fetch facility data
-  const { data: facility, error } = await supabase
-    .from('facilities')
-    .select(`
-      *,
-      detail:facility_details!facility_id(*)
-    `)
-    .eq('id', id)
-    .single()
-
-  if (error || !facility) {
-    notFound()
-  }
-
-  // Fetch master data
+  // Fetch all master data
   const [
     { data: services },
     { data: genres },
@@ -43,14 +21,13 @@ export default async function EditFacilityPage({ params }: PageProps) {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-gray-900 mb-6">施設を編集</h1>
-      <FacilityForm
+      <h1 className="text-2xl font-semibold text-gray-900 mb-6">マスタ管理</h1>
+      <MasterManager
         services={services || []}
         genres={genres || []}
         prefectures={prefectures || []}
         areas={areas || []}
         companies={companies || []}
-        initialData={facility}
       />
     </div>
   )

@@ -5,24 +5,24 @@ import { usePathname } from 'next/navigation'
 
 const menuItems = [
   {
-    label: 'ダッシュボード',
-    href: '/admin',
-  },
-  {
-    label: '施設管理',
-    href: '/admin/facilities',
-  },
-  {
-    label: '画像管理',
-    href: '/admin/images',
-  },
-  {
-    label: 'マスタ管理',
-    href: '/admin/masters',
+    label: '会社管理',
+    href: '/management/companies',
   },
   {
     label: 'ユーザー管理',
-    href: '/admin/users',
+    href: '/management/users',
+  },
+  {
+    label: '施設管理',
+    href: '/management/facilities',
+  },
+  {
+    label: 'クチコミ管理',
+    href: '/management/reviews',
+  },
+  {
+    label: 'マスタ管理',
+    href: '/management/masters',
   }
 ]
 
@@ -30,9 +30,6 @@ export default function AdminSidebar() {
   const pathname = usePathname()
 
   const isActive = (href: string) => {
-    if (href === '/admin') {
-      return pathname === href
-    }
     return pathname.startsWith(href)
   }
 

@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import ImageManager from '@/components/admin/ImageManager'
+import ImageManager from '@/components/management/ImageManager'
 
 export default async function ImagesPage() {
   const supabase = await createClient()

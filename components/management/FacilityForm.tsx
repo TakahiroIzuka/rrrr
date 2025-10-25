@@ -130,7 +130,7 @@ export default function FacilityForm({
         alert('施設を追加しました')
       }
 
-      router.push('/admin/facilities')
+      router.push('/management/facilities')
       router.refresh()
     } catch (error) {
       console.error('Error saving facility:', error)
@@ -392,7 +392,7 @@ export default function FacilityForm({
           </button>
           <button
             type="button"
-            onClick={() => router.push('/admin/facilities')}
+            onClick={() => router.push('/management/facilities')}
             className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50 transition-colors font-medium"
           >
             キャンセル

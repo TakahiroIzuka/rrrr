@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import FacilityForm from '@/components/admin/FacilityForm'
+import FacilityForm from '@/components/management/FacilityForm'
 
 export default async function NewFacilityPage() {
   const supabase = await createClient()
