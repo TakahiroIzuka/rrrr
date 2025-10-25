@@ -18,6 +18,7 @@ interface ServiceData {
 }
 
 interface MasterManagerProps {
+  masterType: 'genres' | 'regions'
   services: ServiceData[]
   genres: MasterData[]
   prefectures: MasterData[]
@@ -28,17 +29,18 @@ type MasterType = 'genres' | 'regions'
 
 const masterLabels = {
   genres: 'ジャンル',
-  regions: '都道府県・エリア'
+  regions: '都道府県・地域'
 }
 
 export default function MasterManager({
+  masterType,
   services,
   genres,
   prefectures,
   areas
 }: MasterManagerProps) {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<MasterType>('genres')
+  const activeTab = masterType
   const [selectedServiceId, setSelectedServiceId] = useState<number>(services[0]?.id || 1)
   const [isUpdating, setIsUpdating] = useState(false)
 
@@ -228,29 +230,6 @@ export default function MasterManager({
 
   return (
     <div className="space-y-6">
-      {/* Tabs */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-        <div className="flex border-b border-gray-200">
-          {(Object.keys(masterLabels) as MasterType[]).map((type) => (
-            <button
-              key={type}
-              onClick={() => {
-                setActiveTab(type)
-                setEditingId(null)
-                setIsAdding(false)
-              }}
-              className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-                activeTab === type
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              {masterLabels[type]}
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* Service Tabs (only for genres) */}
       {activeTab === 'genres' && (
         <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
@@ -283,7 +262,7 @@ export default function MasterManager({
             {activeTab === 'genres'
               ? `${services.find(s => s.id === selectedServiceId)?.name} - ${masterLabels[activeTab]}一覧 (${data.length}件)`
               : activeTab === 'regions'
-              ? `${masterLabels[activeTab]}一覧 (都道府県: ${prefectures.length}件、エリア: ${areas.length}件)`
+              ? `${masterLabels[activeTab]}一覧 (都道府県: ${prefectures.length}件、地域: ${areas.length}件)`
               : `${masterLabels[activeTab]}一覧 (${data.length}件)`
             }
           </h2>
@@ -316,7 +295,7 @@ export default function MasterManager({
               {activeTab === 'regions'
                 ? addingType === 'prefecture'
                   ? '都道府県を追加'
-                  : `エリアを追加（${prefectures.find(p => p.id === addingPrefectureId)?.name}）`
+                  : `地域を追加（${prefectures.find(p => p.id === addingPrefectureId)?.name}）`
                 : '新規追加'
               }
             </h3>
@@ -399,7 +378,7 @@ export default function MasterManager({
                       ) : (
                         <span className="font-medium text-gray-900">{prefecture.name}</span>
                       )}
-                      <span className="text-xs text-gray-500">({prefectureAreas.length}エリア)</span>
+                      <span className="text-xs text-gray-500">({prefectureAreas.length}地域)</span>
                     </div>
                     <div className="flex items-center gap-2">
                       {isEditing ? (
@@ -428,7 +407,7 @@ export default function MasterManager({
                             }}
                             className="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
                           >
-                            エリア追加
+                            地域追加
                           </button>
                           <button
                             onClick={() => handleEdit(prefecture, 'prefecture')}
@@ -508,7 +487,7 @@ export default function MasterManager({
                       })}
                       {prefectureAreas.length === 0 && (
                         <div className="px-4 py-3 pl-12 text-sm text-gray-500">
-                          エリアがありません
+                          地域がありません
                         </div>
                       )}
                     </div>

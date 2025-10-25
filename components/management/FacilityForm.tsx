@@ -207,7 +207,7 @@ export default function FacilityForm({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                エリア <span className="text-red-500">*</span>
+                地域 <span className="text-red-500">*</span>
               </label>
               <select
                 required

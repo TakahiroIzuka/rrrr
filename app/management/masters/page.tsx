@@ -1,31 +1,5 @@
-import { createClient } from '@/lib/supabase/server'
-import MasterManager from '@/components/management/MasterManager'
+import { redirect } from 'next/navigation'
 
-export default async function MastersPage() {
-  const supabase = await createClient()
-
-  // Fetch all master data
-  const [
-    { data: services },
-    { data: genres },
-    { data: prefectures },
-    { data: areas }
-  ] = await Promise.all([
-    supabase.from('services').select('*').order('id'),
-    supabase.from('genres').select('*').order('service_id, id'),
-    supabase.from('prefectures').select('*').order('id'),
-    supabase.from('areas').select('*').order('id')
-  ])
-
-  return (
-    <div>
-      <h1 className="text-2xl font-semibold text-gray-900 mb-6">マスタ管理</h1>
-      <MasterManager
-        services={services || []}
-        genres={genres || []}
-        prefectures={prefectures || []}
-        areas={areas || []}
-      />
-    </div>
-  )
+export default function MastersPage() {
+  redirect('/management/masters/genres')
 }
