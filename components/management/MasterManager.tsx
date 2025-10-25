@@ -8,35 +8,38 @@ interface MasterData {
   id: number
   name: string
   code?: string
+  service_id?: number
+}
+
+interface ServiceData {
+  id: number
+  name: string
 }
 
 interface MasterManagerProps {
-  services: MasterData[]
+  services: ServiceData[]
   genres: MasterData[]
   prefectures: MasterData[]
   areas: MasterData[]
-  companies: MasterData[]
 }
 
-type MasterType = 'services' | 'genres' | 'prefectures' | 'areas' | 'companies'
+type MasterType = 'genres' | 'prefectures' | 'areas'
 
 const masterLabels = {
-  services: 'サービス',
   genres: 'ジャンル',
   prefectures: '都道府県',
-  areas: 'エリア',
-  companies: '会社'
+  areas: 'エリア'
 }
 
 export default function MasterManager({
   services,
   genres,
   prefectures,
-  areas,
-  companies
+  areas
 }: MasterManagerProps) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<MasterType>('genres')
+  const [selectedServiceId, setSelectedServiceId] = useState<number>(services[0]?.id || 1)
   const [isUpdating, setIsUpdating] = useState(false)
 
   // Edit state
@@ -51,20 +54,16 @@ export default function MasterManager({
 
   const getCurrentData = (): MasterData[] => {
     switch (activeTab) {
-      case 'services':
-        return services
       case 'genres':
-        return genres
+        return genres.filter(g => g.service_id === selectedServiceId)
       case 'prefectures':
         return prefectures
       case 'areas':
         return areas
-      case 'companies':
-        return companies
     }
   }
 
-  const hasCodeField = activeTab === 'services' || activeTab === 'genres'
+  const hasCodeField = activeTab === 'genres'
 
   const handleEdit = (item: MasterData) => {
     setEditingId(item.id)
@@ -163,6 +162,9 @@ export default function MasterManager({
       if (hasCodeField) {
         insertData.code = newCode.trim()
       }
+      if (activeTab === 'genres') {
+        insertData.service_id = selectedServiceId
+      }
 
       const { error } = await supabase
         .from(activeTab)
@@ -210,11 +212,39 @@ export default function MasterManager({
         </div>
       </div>
 
+      {/* Service Tabs (only for genres) */}
+      {activeTab === 'genres' && (
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+          <div className="flex border-b border-gray-200 overflow-x-auto">
+            {services.map((service) => (
+              <button
+                key={service.id}
+                onClick={() => {
+                  setSelectedServiceId(service.id)
+                  setEditingId(null)
+                  setIsAdding(false)
+                }}
+                className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
+                  selectedServiceId === service.id
+                    ? 'bg-[#2271b1] text-white border-b-2 border-[#135e96]'
+                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                {service.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Content */}
       <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-900">
-            {masterLabels[activeTab]}一覧 ({data.length}件)
+            {activeTab === 'genres'
+              ? `${services.find(s => s.id === selectedServiceId)?.name} - ${masterLabels[activeTab]}一覧 (${data.length}件)`
+              : `${masterLabels[activeTab]}一覧 (${data.length}件)`
+            }
           </h2>
           <button
             onClick={() => setIsAdding(true)}

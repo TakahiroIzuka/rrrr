@@ -9,14 +9,12 @@ export default async function MastersPage() {
     { data: services },
     { data: genres },
     { data: prefectures },
-    { data: areas },
-    { data: companies }
+    { data: areas }
   ] = await Promise.all([
     supabase.from('services').select('*').order('id'),
-    supabase.from('genres').select('*').order('id'),
+    supabase.from('genres').select('*').order('service_id, id'),
     supabase.from('prefectures').select('*').order('id'),
-    supabase.from('areas').select('*').order('id'),
-    supabase.from('companies').select('*').order('id')
+    supabase.from('areas').select('*').order('id')
   ])
 
   return (
@@ -27,7 +25,6 @@ export default async function MastersPage() {
         genres={genres || []}
         prefectures={prefectures || []}
         areas={areas || []}
-        companies={companies || []}
       />
     </div>
   )
