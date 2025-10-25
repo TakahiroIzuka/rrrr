@@ -9,6 +9,7 @@ interface MasterData {
   name: string
   code?: string
   service_id?: number
+  prefecture_id?: number
 }
 
 interface ServiceData {
@@ -23,12 +24,11 @@ interface MasterManagerProps {
   areas: MasterData[]
 }
 
-type MasterType = 'genres' | 'prefectures' | 'areas'
+type MasterType = 'genres' | 'regions'
 
 const masterLabels = {
   genres: 'ジャンル',
-  prefectures: '都道府県',
-  areas: 'エリア'
+  regions: '都道府県・エリア'
 }
 
 export default function MasterManager({
@@ -44,35 +44,51 @@ export default function MasterManager({
 
   // Edit state
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [editingType, setEditingType] = useState<'prefecture' | 'area' | null>(null)
   const [editName, setEditName] = useState('')
   const [editCode, setEditCode] = useState('')
 
   // Add state
   const [isAdding, setIsAdding] = useState(false)
+  const [addingType, setAddingType] = useState<'prefecture' | 'area' | null>(null)
+  const [addingPrefectureId, setAddingPrefectureId] = useState<number | null>(null)
   const [newName, setNewName] = useState('')
   const [newCode, setNewCode] = useState('')
+
+  // Prefecture expansion state
+  const [expandedPrefectures, setExpandedPrefectures] = useState<Set<number>>(new Set())
 
   const getCurrentData = (): MasterData[] => {
     switch (activeTab) {
       case 'genres':
         return genres.filter(g => g.service_id === selectedServiceId)
-      case 'prefectures':
+      case 'regions':
         return prefectures
-      case 'areas':
-        return areas
     }
   }
 
   const hasCodeField = activeTab === 'genres'
 
-  const handleEdit = (item: MasterData) => {
+  const togglePrefecture = (prefectureId: number) => {
+    const newExpanded = new Set(expandedPrefectures)
+    if (newExpanded.has(prefectureId)) {
+      newExpanded.delete(prefectureId)
+    } else {
+      newExpanded.add(prefectureId)
+    }
+    setExpandedPrefectures(newExpanded)
+  }
+
+  const handleEdit = (item: MasterData, type?: 'prefecture' | 'area') => {
     setEditingId(item.id)
+    setEditingType(type || null)
     setEditName(item.name)
     setEditCode(item.code || '')
   }
 
   const handleCancelEdit = () => {
     setEditingId(null)
+    setEditingType(null)
     setEditName('')
     setEditCode('')
   }
@@ -93,8 +109,13 @@ export default function MasterManager({
         updateData.code = editCode.trim()
       }
 
+      let tableName = activeTab
+      if (activeTab === 'regions') {
+        tableName = editingType === 'prefecture' ? 'prefectures' : 'areas'
+      }
+
       const { error } = await supabase
-        .from(activeTab)
+        .from(tableName as string)
         .update(updateData)
         .eq('id', editingId)
 
@@ -102,6 +123,7 @@ export default function MasterManager({
 
       alert('更新しました')
       setEditingId(null)
+      setEditingType(null)
       setEditName('')
       setEditCode('')
       router.refresh()
@@ -113,7 +135,7 @@ export default function MasterManager({
     }
   }
 
-  const handleDelete = async (id: number, name: string) => {
+  const handleDelete = async (id: number, name: string, type?: 'prefecture' | 'area') => {
     if (!confirm(`「${name}」を削除してもよろしいですか？\n\n注意: このマスタを使用している施設がある場合、削除できません。`)) {
       return
     }
@@ -123,8 +145,13 @@ export default function MasterManager({
     try {
       const supabase = createClient()
 
+      let tableName = activeTab
+      if (activeTab === 'regions') {
+        tableName = type === 'prefecture' ? 'prefectures' : 'areas'
+      }
+
       const { error } = await supabase
-        .from(activeTab)
+        .from(tableName as string)
         .delete()
         .eq('id', id)
 
@@ -166,14 +193,26 @@ export default function MasterManager({
         insertData.service_id = selectedServiceId
       }
 
+      let tableName = activeTab
+      if (activeTab === 'regions') {
+        if (addingType === 'area') {
+          tableName = 'areas'
+          insertData.prefecture_id = addingPrefectureId
+        } else {
+          tableName = 'prefectures'
+        }
+      }
+
       const { error } = await supabase
-        .from(activeTab)
+        .from(tableName as string)
         .insert(insertData)
 
       if (error) throw error
 
       alert('追加しました')
       setIsAdding(false)
+      setAddingType(null)
+      setAddingPrefectureId(null)
       setNewName('')
       setNewCode('')
       router.refresh()
@@ -243,22 +282,44 @@ export default function MasterManager({
           <h2 className="text-lg font-semibold text-gray-900">
             {activeTab === 'genres'
               ? `${services.find(s => s.id === selectedServiceId)?.name} - ${masterLabels[activeTab]}一覧 (${data.length}件)`
+              : activeTab === 'regions'
+              ? `${masterLabels[activeTab]}一覧 (都道府県: ${prefectures.length}件、エリア: ${areas.length}件)`
               : `${masterLabels[activeTab]}一覧 (${data.length}件)`
             }
           </h2>
-          <button
-            onClick={() => setIsAdding(true)}
-            disabled={isAdding}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 font-medium"
-          >
-            新規追加
-          </button>
+          {activeTab === 'regions' ? (
+            <button
+              onClick={() => {
+                setIsAdding(true)
+                setAddingType('prefecture')
+              }}
+              disabled={isAdding}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 font-medium"
+            >
+              都道府県を追加
+            </button>
+          ) : (
+            <button
+              onClick={() => setIsAdding(true)}
+              disabled={isAdding}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 font-medium"
+            >
+              新規追加
+            </button>
+          )}
         </div>
 
         {/* Add Form */}
         {isAdding && (
           <div className="mb-4 p-4 border border-blue-200 bg-blue-50 rounded-lg">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">新規追加</h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">
+              {activeTab === 'regions'
+                ? addingType === 'prefecture'
+                  ? '都道府県を追加'
+                  : `エリアを追加（${prefectures.find(p => p.id === addingPrefectureId)?.name}）`
+                : '新規追加'
+              }
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -296,6 +357,8 @@ export default function MasterManager({
               <button
                 onClick={() => {
                   setIsAdding(false)
+                  setAddingType(null)
+                  setAddingPrefectureId(null)
                   setNewName('')
                   setNewCode('')
                 }}
@@ -307,7 +370,157 @@ export default function MasterManager({
           </div>
         )}
 
-        {/* Table */}
+        {/* Regions Hierarchical View */}
+        {activeTab === 'regions' && (
+          <div className="space-y-2">
+            {prefectures.map((prefecture) => {
+              const prefectureAreas = areas.filter(a => a.prefecture_id === prefecture.id)
+              const isExpanded = expandedPrefectures.has(prefecture.id)
+              const isEditing = editingId === prefecture.id && editingType === 'prefecture'
+
+              return (
+                <div key={prefecture.id} className="border border-gray-200 rounded">
+                  {/* Prefecture Row */}
+                  <div className="bg-gray-50 px-4 py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-3 flex-1">
+                      <button
+                        onClick={() => togglePrefecture(prefecture.id)}
+                        className="text-gray-600 hover:text-gray-900"
+                      >
+                        {isExpanded ? '▼' : '▶'}
+                      </button>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      ) : (
+                        <span className="font-medium text-gray-900">{prefecture.name}</span>
+                      )}
+                      <span className="text-xs text-gray-500">({prefectureAreas.length}エリア)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {isEditing ? (
+                        <>
+                          <button
+                            onClick={handleSaveEdit}
+                            disabled={isUpdating}
+                            className="text-blue-600 hover:text-blue-900 text-sm font-medium disabled:opacity-50"
+                          >
+                            保存
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+                          >
+                            キャンセル
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => {
+                              setIsAdding(true)
+                              setAddingType('area')
+                              setAddingPrefectureId(prefecture.id)
+                            }}
+                            className="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                          >
+                            エリア追加
+                          </button>
+                          <button
+                            onClick={() => handleEdit(prefecture, 'prefecture')}
+                            className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                          >
+                            編集
+                          </button>
+                          <button
+                            onClick={() => handleDelete(prefecture.id, prefecture.name, 'prefecture')}
+                            disabled={isUpdating}
+                            className="text-red-600 hover:text-red-900 text-sm font-medium disabled:opacity-50"
+                          >
+                            削除
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Areas under this prefecture */}
+                  {isExpanded && (
+                    <div className="bg-white divide-y divide-gray-100">
+                      {prefectureAreas.map((area) => {
+                        const isEditingArea = editingId === area.id && editingType === 'area'
+
+                        return (
+                          <div key={area.id} className="px-4 py-2 pl-12 flex items-center justify-between hover:bg-gray-50">
+                            <div className="flex items-center gap-2 flex-1">
+                              {isEditingArea ? (
+                                <input
+                                  type="text"
+                                  value={editName}
+                                  onChange={(e) => setEditName(e.target.value)}
+                                  className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                              ) : (
+                                <span className="text-sm text-gray-700">{area.name}</span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {isEditingArea ? (
+                                <>
+                                  <button
+                                    onClick={handleSaveEdit}
+                                    disabled={isUpdating}
+                                    className="text-blue-600 hover:text-blue-900 text-sm font-medium disabled:opacity-50"
+                                  >
+                                    保存
+                                  </button>
+                                  <button
+                                    onClick={handleCancelEdit}
+                                    className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+                                  >
+                                    キャンセル
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <button
+                                    onClick={() => handleEdit(area, 'area')}
+                                    className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                                  >
+                                    編集
+                                  </button>
+                                  <button
+                                    onClick={() => handleDelete(area.id, area.name, 'area')}
+                                    disabled={isUpdating}
+                                    className="text-red-600 hover:text-red-900 text-sm font-medium disabled:opacity-50"
+                                  >
+                                    削除
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                      {prefectureAreas.length === 0 && (
+                        <div className="px-4 py-3 pl-12 text-sm text-gray-500">
+                          エリアがありません
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Table (for genres) */}
+        {activeTab === 'genres' && (
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -405,6 +618,7 @@ export default function MasterManager({
             </tbody>
           </table>
         </div>
+        )}
       </div>
     </div>
   )
