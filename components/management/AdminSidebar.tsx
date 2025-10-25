@@ -5,19 +5,19 @@ import { usePathname } from 'next/navigation'
 
 const menuItems = [
   {
-    label: '会社管理',
+    label: '会社一覧',
     href: '/management/companies',
   },
   {
-    label: 'ユーザー管理',
+    label: 'ユーザー一覧',
     href: '/management/users',
   },
   {
-    label: '施設管理',
+    label: '施設一覧',
     href: '/management/facilities',
   },
   {
-    label: 'クチコミ管理',
+    label: 'クチコミ一覧',
     href: '/management/reviews',
   },
   {
