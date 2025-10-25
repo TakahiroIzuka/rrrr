@@ -50,9 +50,10 @@ export default function CompanyForm({ company }: CompanyFormProps) {
 
       router.push('/management/companies')
       router.refresh()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving company:', error)
-      alert('会社の保存に失敗しました')
+      const errorMessage = error?.message || '会社の保存に失敗しました'
+      alert(`エラー: ${errorMessage}`)
     } finally {
       setIsSubmitting(false)
     }
