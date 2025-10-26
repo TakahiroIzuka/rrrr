@@ -71,3 +71,29 @@ INSERT INTO facility_details (facility_id, name, star, user_review_count, lat, l
   (6, 'STUDIO IVY 赤坂ANNEX店', 4.7, 3, 35.670664250365526, 139.7346120644181, 'https://www.pilates-ivy.jp', '107-0052', '東京都港区赤坂4-2-6', '03-4567-8901'),
   (7, '西梅田シティクリニック', 3.3, 253, 34.69959423473339, 135.4954401355819, 'https://nishiumeda.city-clinic.jp', '530-0001', '大阪府大阪市北区梅田2-5-25', '06-2345-6789'),
   (8, 'DAILY SKIN CLINIC 心斎橋院', 4.7, 548, 34.675872736516, 135.49841414232787, 'https://dailyskinclinic.jp', '542-0086', '大阪府大阪市中央区西心斎橋1-5-5', '06-1234-5678');
+
+-- Seed users table with Supabase Auth integration
+-- Note: All passwords are 'password'
+-- type: 'admin' = company_id is NULL, 'user' = company_id is NOT NULL
+
+-- Create auth users and link them to users table
+DO $$
+DECLARE
+  admin_auth_id UUID;
+  daily_skin_auth_id UUID;
+  studio_ivy_auth_id UUID;
+  umeda_clinic_auth_id UUID;
+BEGIN
+  -- Create Supabase Auth users
+  admin_auth_id := create_auth_user('admin@example.com', 'password');
+  daily_skin_auth_id := create_auth_user('user@dailyskinclinic.jp', 'password');
+  studio_ivy_auth_id := create_auth_user('user@studio-ivy.jp', 'password');
+  umeda_clinic_auth_id := create_auth_user('user@nishiumeda-clinic.jp', 'password');
+
+  -- Insert into users table with auth_user_id
+  INSERT INTO users (email, type, company_id, auth_user_id) VALUES
+    ('admin@example.com', 'admin', NULL, admin_auth_id),
+    ('user@dailyskinclinic.jp', 'user', 1, daily_skin_auth_id),
+    ('user@studio-ivy.jp', 'user', 2, studio_ivy_auth_id),
+    ('user@nishiumeda-clinic.jp', 'user', 3, umeda_clinic_auth_id);
+END $$;

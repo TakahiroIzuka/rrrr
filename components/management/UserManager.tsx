@@ -3,61 +3,59 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { hashPassword } from '@/lib/utils/password'
 
 interface User {
   id: number
-  code: string
-  name: string | null
   email: string
+  type: 'admin' | 'user'
+  company_id: number | null
   created_at: string
   updated_at: string
 }
 
-interface UserManagerProps {
-  users: User[]
+interface Company {
+  id: number
+  name: string
+  code: string
 }
 
-export default function UserManager({ users: initialUsers }: UserManagerProps) {
+interface UserManagerProps {
+  users: User[]
+  companies: Company[]
+}
+
+export default function UserManager({ users: initialUsers, companies }: UserManagerProps) {
   const router = useRouter()
   const [isUpdating, setIsUpdating] = useState(false)
 
   // Edit state
   const [editingId, setEditingId] = useState<number | null>(null)
-  const [editCode, setEditCode] = useState('')
-  const [editName, setEditName] = useState('')
   const [editEmail, setEditEmail] = useState('')
-  const [editPassword, setEditPassword] = useState('')
+  const [editType, setEditType] = useState<'admin' | 'user'>('user')
+  const [editCompanyId, setEditCompanyId] = useState<number | null>(null)
 
   // Add state
   const [isAdding, setIsAdding] = useState(false)
-  const [newCode, setNewCode] = useState('')
-  const [newName, setNewName] = useState('')
   const [newEmail, setNewEmail] = useState('')
+  const [newType, setNewType] = useState<'admin' | 'user'>('user')
+  const [newCompanyId, setNewCompanyId] = useState<number | null>(null)
   const [newPassword, setNewPassword] = useState('')
 
   const handleEdit = (user: User) => {
     setEditingId(user.id)
-    setEditCode(user.code)
-    setEditName(user.name || '')
     setEditEmail(user.email)
-    setEditPassword('')
+    setEditType(user.type)
+    setEditCompanyId(user.company_id)
   }
 
   const handleCancelEdit = () => {
     setEditingId(null)
-    setEditCode('')
-    setEditName('')
     setEditEmail('')
-    setEditPassword('')
+    setEditType('user')
+    setEditCompanyId(null)
   }
 
   const handleSaveEdit = async () => {
-    if (!editCode.trim()) {
-      alert('コードを入力してください')
-      return
-    }
-
     if (!editEmail.trim()) {
       alert('メールアドレスを入力してください')
       return
@@ -70,20 +68,26 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
       return
     }
 
+    // Validate type and company_id relationship
+    if (editType === 'admin' && editCompanyId !== null) {
+      alert('管理者ユーザーは会社を選択できません')
+      return
+    }
+
+    if (editType === 'user' && editCompanyId === null) {
+      alert('一般ユーザーは会社を選択する必要があります')
+      return
+    }
+
     setIsUpdating(true)
 
     try {
       const supabase = createClient()
-      const updateData: { code: string; name: string | null; email: string; password?: string; updated_at: string } = {
-        code: editCode.trim(),
-        name: editName.trim() || null,
+      const updateData = {
         email: editEmail.trim(),
+        type: editType,
+        company_id: editCompanyId,
         updated_at: new Date().toISOString()
-      }
-
-      // Only update password if provided
-      if (editPassword.trim()) {
-        updateData.password = await hashPassword(editPassword.trim())
       }
 
       const { error } = await supabase
@@ -95,19 +99,14 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
 
       alert('更新しました')
       setEditingId(null)
-      setEditCode('')
-      setEditName('')
       setEditEmail('')
-      setEditPassword('')
+      setEditType('user')
+      setEditCompanyId(null)
       router.refresh()
     } catch (error: any) {
       console.error('Error updating:', error)
       if (error.code === '23505') {
-        if (error.message?.includes('code')) {
-          alert('このコードは既に使用されています')
-        } else {
-          alert('このメールアドレスは既に使用されています')
-        }
+        alert('このメールアドレスは既に使用されています')
       } else {
         alert('更新に失敗しました')
       }
@@ -144,11 +143,6 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
   }
 
   const handleAdd = async () => {
-    if (!newCode.trim()) {
-      alert('コードを入力してください')
-      return
-    }
-
     if (!newEmail.trim()) {
       alert('メールアドレスを入力してください')
       return
@@ -172,41 +166,59 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
       return
     }
 
+    // Validate type and company_id relationship
+    if (newType === 'admin' && newCompanyId !== null) {
+      alert('管理者ユーザーは会社を選択できません')
+      return
+    }
+
+    if (newType === 'user' && newCompanyId === null) {
+      alert('一般ユーザーは会社を選択する必要があります')
+      return
+    }
+
     setIsUpdating(true)
 
     try {
       const supabase = createClient()
 
-      const hashedPassword = await hashPassword(newPassword.trim())
+      // Create Supabase Auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: newEmail.trim(),
+        password: newPassword.trim(),
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
+        }
+      })
 
+      if (authError) throw authError
+      if (!authData.user) throw new Error('ユーザーの作成に失敗しました')
+
+      // Insert into users table
       const { error } = await supabase
         .from('users')
         .insert({
-          code: newCode.trim(),
-          name: newName.trim() || null,
           email: newEmail.trim(),
-          password: hashedPassword
+          type: newType,
+          company_id: newCompanyId,
+          auth_user_id: authData.user.id
         })
 
       if (error) throw error
 
       alert('追加しました')
       setIsAdding(false)
-      setNewCode('')
-      setNewName('')
       setNewEmail('')
+      setNewType('user')
+      setNewCompanyId(null)
       setNewPassword('')
       router.refresh()
     } catch (error: any) {
       console.error('Error adding:', error)
       if (error.code === '23505') {
-        if (error.message?.includes('code')) {
-          alert('このコードは既に使用されています')
-        } else {
-          alert('このメールアドレスは既に使用されています')
-        }
+        alert('このメールアドレスは既に使用されています')
       } else {
-        alert('追加に失敗しました')
+        alert(`追加に失敗しました: ${error.message}`)
       }
     } finally {
       setIsUpdating(false)
@@ -238,30 +250,6 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  コード <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={newCode}
-                  onChange={(e) => setNewCode(e.target.value)}
-                  placeholder="一意のコード"
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  名前
-                </label>
-                <input
-                  type="text"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  placeholder="ユーザー名（任意）"
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
                   メールアドレス <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -284,6 +272,55 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  ユーザータイプ <span className="text-red-500">*</span>
+                </label>
+                <div className="flex gap-4 items-center h-[38px]">
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      value="admin"
+                      checked={newType === 'admin'}
+                      onChange={(e) => {
+                        setNewType(e.target.value as 'admin' | 'user')
+                        setNewCompanyId(null)
+                      }}
+                      className="mr-2"
+                    />
+                    <span className="text-sm">管理者</span>
+                  </label>
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      value="user"
+                      checked={newType === 'user'}
+                      onChange={(e) => setNewType(e.target.value as 'admin' | 'user')}
+                      className="mr-2"
+                    />
+                    <span className="text-sm">一般ユーザー</span>
+                  </label>
+                </div>
+              </div>
+              {newType === 'user' && (
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    会社 <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={newCompanyId || ''}
+                    onChange={(e) => setNewCompanyId(e.target.value ? Number(e.target.value) : null)}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">選択してください</option>
+                    {companies.map((company) => (
+                      <option key={company.id} value={company.id}>
+                        {company.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
             <div className="flex gap-2 mt-3">
               <button
@@ -296,9 +333,9 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
               <button
                 onClick={() => {
                   setIsAdding(false)
-                  setNewCode('')
-                  setNewName('')
                   setNewEmail('')
+                  setNewType('user')
+                  setNewCompanyId(null)
                   setNewPassword('')
                 }}
                 className="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
@@ -318,16 +355,13 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
                   ID
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  コード
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  名前
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   メールアドレス
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  パスワード
+                  タイプ
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  会社
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   作成日時
@@ -347,24 +381,6 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
                       </td>
                       <td className="px-4 py-3">
                         <input
-                          type="text"
-                          value={editCode}
-                          onChange={(e) => setEditCode(e.target.value)}
-                          placeholder="コード"
-                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </td>
-                      <td className="px-4 py-3">
-                        <input
-                          type="text"
-                          value={editName}
-                          onChange={(e) => setEditName(e.target.value)}
-                          placeholder="名前（任意）"
-                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </td>
-                      <td className="px-4 py-3">
-                        <input
                           type="email"
                           value={editEmail}
                           onChange={(e) => setEditEmail(e.target.value)}
@@ -373,13 +389,38 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
                         />
                       </td>
                       <td className="px-4 py-3">
-                        <input
-                          type="password"
-                          value={editPassword}
-                          onChange={(e) => setEditPassword(e.target.value)}
-                          placeholder="変更する場合のみ入力"
+                        <select
+                          value={editType}
+                          onChange={(e) => {
+                            const newTypeValue = e.target.value as 'admin' | 'user'
+                            setEditType(newTypeValue)
+                            if (newTypeValue === 'admin') {
+                              setEditCompanyId(null)
+                            }
+                          }}
                           className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                        >
+                          <option value="admin">管理者</option>
+                          <option value="user">一般ユーザー</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-3">
+                        {editType === 'user' ? (
+                          <select
+                            value={editCompanyId || ''}
+                            onChange={(e) => setEditCompanyId(e.target.value ? Number(e.target.value) : null)}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="">選択してください</option>
+                            {companies.map((company) => (
+                              <option key={company.id} value={company.id}>
+                                {company.name}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <span className="text-sm text-gray-500">-</span>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">
                         {new Date(user.created_at).toLocaleString('ja-JP')}
@@ -405,17 +446,20 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
                       <td className="px-4 py-3 text-sm text-gray-900">
                         {user.id}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">
-                        {user.code}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {user.name || '-'}
-                      </td>
                       <td className="px-4 py-3 text-sm text-gray-900">
                         {user.email}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        ••••••••
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                          user.type === 'admin'
+                            ? 'bg-purple-100 text-purple-800'
+                            : 'bg-green-100 text-green-800'
+                        }`}>
+                          {user.type === 'admin' ? '管理者' : '一般ユーザー'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {user.company_id ? companies.find(c => c.id === user.company_id)?.name || '-' : '-'}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">
                         {new Date(user.created_at).toLocaleString('ja-JP')}
