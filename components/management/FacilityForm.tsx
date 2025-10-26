@@ -8,6 +8,8 @@ interface MasterData {
   id: number
   name: string
   code?: string
+  prefecture_id?: number
+  service_id?: number
 }
 
 interface FacilityFormProps {
@@ -57,6 +59,28 @@ export default function FacilityForm({
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+
+  // Reset areaId when prefectureId changes
+  useEffect(() => {
+    if (prefectureId && areaId) {
+      // Check if current area belongs to selected prefecture
+      const selectedArea = areas.find(a => a.id === Number(areaId))
+      if (selectedArea && selectedArea.prefecture_id !== Number(prefectureId)) {
+        setAreaId('')
+      }
+    }
+  }, [prefectureId, areaId, areas])
+
+  // Reset genreId when serviceId changes
+  useEffect(() => {
+    if (serviceId && genreId) {
+      // Check if current genre belongs to selected service
+      const selectedGenre = genres.find(g => g.id === Number(genreId))
+      if (selectedGenre && selectedGenre.service_id !== Number(serviceId)) {
+        setGenreId('')
+      }
+    }
+  }, [serviceId, genreId, genres])
 
   // Detail fields
   const detail = initialData?.detail?.[0] || initialData?.detail || {}
@@ -206,14 +230,19 @@ export default function FacilityForm({
                 required
                 value={genreId}
                 onChange={(e) => setGenreId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={!serviceId}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
               >
-                <option value="">選択してください</option>
-                {genres.map((genre) => (
-                  <option key={genre.id} value={genre.id}>
-                    {genre.name}
-                  </option>
-                ))}
+                <option value="">
+                  {serviceId ? '選択してください' : 'サービスを先に選択してください'}
+                </option>
+                {serviceId && genres
+                  .filter((genre) => genre.service_id === Number(serviceId))
+                  .map((genre) => (
+                    <option key={genre.id} value={genre.id}>
+                      {genre.name}
+                    </option>
+                  ))}
               </select>
             </div>
 
@@ -243,14 +272,19 @@ export default function FacilityForm({
               <select
                 value={areaId}
                 onChange={(e) => setAreaId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={!prefectureId}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
               >
-                <option value="">選択してください</option>
-                {areas.map((area) => (
-                  <option key={area.id} value={area.id}>
-                    {area.name}
-                  </option>
-                ))}
+                <option value="">
+                  {prefectureId ? '選択してください' : '都道府県を先に選択してください'}
+                </option>
+                {prefectureId && areas
+                  .filter((area) => area.prefecture_id === Number(prefectureId))
+                  .map((area) => (
+                    <option key={area.id} value={area.id}>
+                      {area.name}
+                    </option>
+                  ))}
               </select>
             </div>
 

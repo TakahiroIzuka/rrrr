@@ -13,9 +13,9 @@ export default async function NewFacilityPage() {
     { data: companies }
   ] = await Promise.all([
     supabase.from('services').select('*').order('id'),
-    supabase.from('genres').select('*').order('id'),
+    supabase.from('genres').select('*, service_id').order('id'),
     supabase.from('prefectures').select('*').order('id'),
-    supabase.from('areas').select('*').order('id'),
+    supabase.from('areas').select('*, prefecture_id').order('id'),
     supabase.from('companies').select('*').order('id')
   ])
 
