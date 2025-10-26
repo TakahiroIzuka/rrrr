@@ -70,7 +70,8 @@ export default function AdminSidebar({ currentUserType }: AdminSidebarProps) {
               </li>
             ))}
 
-            {/* Master Management with Submenu */}
+            {/* Master Management with Submenu (Admin only) */}
+            {currentUserType === 'admin' && (
             <li>
               <button
                 onClick={() => setIsMasterExpanded(!isMasterExpanded)}
@@ -103,6 +104,7 @@ export default function AdminSidebar({ currentUserType }: AdminSidebarProps) {
                 </ul>
               )}
             </li>
+            )}
           </ul>
         </nav>
       </div>
