@@ -22,9 +22,11 @@ interface Company {
 interface UserManagerProps {
   users: User[]
   companies: Company[]
+  currentUserType: 'admin' | 'user'
+  currentUserCompanyId: number | null
 }
 
-export default function UserManager({ users: initialUsers, companies }: UserManagerProps) {
+export default function UserManager({ users: initialUsers, companies, currentUserType, currentUserCompanyId }: UserManagerProps) {
   const router = useRouter()
   const [isUpdating, setIsUpdating] = useState(false)
 
@@ -75,7 +77,12 @@ export default function UserManager({ users: initialUsers, companies }: UserMana
   // Filter and sort users
   const filteredAndSortedUsers = [...initialUsers]
     .filter((user) => {
-      // Filter by company code
+      // If current user is 'user' type, only show users with same company_id
+      if (currentUserType === 'user') {
+        return user.company_id === currentUserCompanyId
+      }
+
+      // Filter by company code (admin only)
       if (filterCompanyId === null) return true
       return user.company_id === filterCompanyId
     })
@@ -210,6 +217,12 @@ export default function UserManager({ users: initialUsers, companies }: UserMana
   }
 
   const handleAdd = async () => {
+    // Check if current user is allowed to add users
+    if (currentUserType === 'user') {
+      alert('権限がありません')
+      return
+    }
+
     if (!newEmail.trim()) {
       alert('メールアドレスを入力してください')
       return
@@ -302,33 +315,37 @@ export default function UserManager({ users: initialUsers, companies }: UserMana
           <h2 className="text-lg font-semibold text-gray-900">
             ユーザー一覧 ({filteredAndSortedUsers.length}件 / 全{initialUsers.length}件)
           </h2>
-          <button
-            onClick={() => setIsAdding(true)}
-            disabled={isAdding}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 font-medium"
-          >
-            新規追加
-          </button>
+          {currentUserType === 'admin' && (
+            <button
+              onClick={() => setIsAdding(true)}
+              disabled={isAdding}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 font-medium"
+            >
+              新規追加
+            </button>
+          )}
         </div>
 
         {/* Filter */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            会社コードで絞り込み
-          </label>
-          <select
-            value={filterCompanyId || ''}
-            onChange={(e) => setFilterCompanyId(e.target.value ? Number(e.target.value) : null)}
-            className="w-full md:w-64 px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">全て</option>
-            {companies.map((company) => (
-              <option key={company.id} value={company.id}>
-                {company.code} - {company.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        {currentUserType === 'admin' && (
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              会社コードで絞り込み
+            </label>
+            <select
+              value={filterCompanyId || ''}
+              onChange={(e) => setFilterCompanyId(e.target.value ? Number(e.target.value) : null)}
+              className="w-full md:w-64 px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">全て</option>
+              {companies.map((company) => (
+                <option key={company.id} value={company.id}>
+                  {company.code} - {company.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Add Form */}
         {isAdding && (
@@ -489,27 +506,33 @@ export default function UserManager({ users: initialUsers, companies }: UserMana
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   編集
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  ID
-                </th>
+                {currentUserType === 'admin' && (
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    ID
+                  </th>
+                )}
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   メールアドレス
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  タイプ
-                </th>
-                <th
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100 select-none"
-                  onClick={handleSortByCompanyCode}
-                >
-                  <div className="flex items-center gap-1">
-                    <span>会社コード</span>
-                    {sortOrder === 'asc' && <span>▲</span>}
-                    {sortOrder === 'desc' && <span>▼</span>}
-                  </div>
-                </th>
+                {currentUserType === 'admin' && (
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    タイプ
+                  </th>
+                )}
+                {currentUserType === 'admin' && (
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100 select-none"
+                    onClick={handleSortByCompanyCode}
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>会社コード</span>
+                      {sortOrder === 'asc' && <span>▲</span>}
+                      {sortOrder === 'desc' && <span>▼</span>}
+                    </div>
+                  </th>
+                )}
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                  削除
+                  操作
                 </th>
               </tr>
             </thead>
@@ -527,9 +550,11 @@ export default function UserManager({ users: initialUsers, companies }: UserMana
                           保存
                         </button>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {user.id}
-                      </td>
+                      {currentUserType === 'admin' && (
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {user.id}
+                        </td>
+                      )}
                       <td className="px-4 py-3">
                         <input
                           type="email"
@@ -539,26 +564,29 @@ export default function UserManager({ users: initialUsers, companies }: UserMana
                           className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </td>
-                      <td className="px-4 py-3">
-                        <select
-                          value={editType}
-                          onChange={(e) => {
-                            const newTypeValue = e.target.value as 'admin' | 'user'
-                            setEditType(newTypeValue)
-                            if (newTypeValue === 'admin') {
-                              setEditCompanyId(null)
-                              setEditCompanyCodeInput('')
-                            }
-                          }}
-                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          <option value="admin">管理者</option>
-                          <option value="user">一般ユーザー</option>
-                        </select>
-                      </td>
-                      <td className="px-4 py-3">
-                        {editType === 'user' ? (
-                          <div className="relative" ref={editCompanyDropdownRef}>
+                      {currentUserType === 'admin' && (
+                        <td className="px-4 py-3">
+                          <select
+                            value={editType}
+                            onChange={(e) => {
+                              const newTypeValue = e.target.value as 'admin' | 'user'
+                              setEditType(newTypeValue)
+                              if (newTypeValue === 'admin') {
+                                setEditCompanyId(null)
+                                setEditCompanyCodeInput('')
+                              }
+                            }}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="admin">管理者</option>
+                            <option value="user">一般ユーザー</option>
+                          </select>
+                        </td>
+                      )}
+                      {currentUserType === 'admin' && (
+                        <td className="px-4 py-3">
+                          {editType === 'user' ? (
+                            <div className="relative" ref={editCompanyDropdownRef}>
                             <button
                               type="button"
                               onClick={() => setEditCompanyCodeFocused(!editCompanyCodeFocused)}
@@ -617,8 +645,9 @@ export default function UserManager({ users: initialUsers, companies }: UserMana
                           </div>
                         ) : (
                           <span className="text-sm text-gray-500">-</span>
-                        )}
-                      </td>
+                          )}
+                        </td>
+                      )}
                       <td className="px-4 py-3 text-right">
                         <button
                           onClick={handleCancelEdit}
@@ -638,32 +667,40 @@ export default function UserManager({ users: initialUsers, companies }: UserMana
                           編集
                         </button>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {user.id}
-                      </td>
+                      {currentUserType === 'admin' && (
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {user.id}
+                        </td>
+                      )}
                       <td className="px-4 py-3 text-sm text-gray-900">
                         {user.email}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                          user.type === 'admin'
-                            ? 'bg-purple-100 text-purple-800'
-                            : 'bg-green-100 text-green-800'
-                        }`}>
-                          {user.type === 'admin' ? '管理者' : '一般ユーザー'}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {user.company_id ? companies.find(c => c.id === user.company_id)?.code || '-' : '-'}
-                      </td>
+                      {currentUserType === 'admin' && (
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                            user.type === 'admin'
+                              ? 'bg-purple-100 text-purple-800'
+                              : 'bg-green-100 text-green-800'
+                          }`}>
+                            {user.type === 'admin' ? '管理者' : '一般ユーザー'}
+                          </span>
+                        </td>
+                      )}
+                      {currentUserType === 'admin' && (
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {user.company_id ? companies.find(c => c.id === user.company_id)?.code || '-' : '-'}
+                        </td>
+                      )}
                       <td className="px-4 py-3 text-right">
-                        <button
-                          onClick={() => handleDelete(user.id, user.email)}
-                          disabled={isUpdating}
-                          className="text-red-600 hover:text-red-900 text-sm font-medium disabled:opacity-50"
-                        >
-                          削除
-                        </button>
+                        {currentUserType === 'admin' && (
+                          <button
+                            onClick={() => handleDelete(user.id, user.email)}
+                            disabled={isUpdating}
+                            className="text-red-600 hover:text-red-900 text-sm font-medium disabled:opacity-50"
+                          >
+                            削除
+                          </button>
+                        )}
                       </td>
                     </>
                   )}
