@@ -30,7 +30,7 @@ export default async function FacilitiesPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">施設管理</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">施設一覧</h1>
         <Link
           href="/management/facilities/new"
           className="px-4 py-2 bg-[#2271b1] text-white rounded text-sm hover:bg-[#135e96] transition-colors font-medium"
