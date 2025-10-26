@@ -182,6 +182,11 @@ export default function MasterManager({
       return
     }
 
+    if (hasCodeField && !newCode.trim()) {
+      alert('コードを入力してください')
+      return
+    }
+
     setIsUpdating(true)
 
     try {
@@ -314,7 +319,7 @@ export default function MasterManager({
               {hasCodeField && (
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">
-                    コード
+                    コード <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -505,6 +510,9 @@ export default function MasterManager({
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  編集
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   ID
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -516,7 +524,7 @@ export default function MasterManager({
                   </th>
                 )}
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                  操作
+                  削除
                 </th>
               </tr>
             </thead>
@@ -525,6 +533,15 @@ export default function MasterManager({
                 <tr key={item.id} className="hover:bg-gray-50">
                   {editingId === item.id ? (
                     <>
+                      <td className="px-4 py-3 text-left">
+                        <button
+                          onClick={handleSaveEdit}
+                          disabled={isUpdating}
+                          className="text-blue-600 hover:text-blue-900 text-sm font-medium disabled:opacity-50"
+                        >
+                          保存
+                        </button>
+                      </td>
                       <td className="px-4 py-3 text-sm text-gray-900">
                         {item.id}
                       </td>
@@ -546,14 +563,7 @@ export default function MasterManager({
                           />
                         </td>
                       )}
-                      <td className="px-4 py-3 text-right space-x-2">
-                        <button
-                          onClick={handleSaveEdit}
-                          disabled={isUpdating}
-                          className="text-blue-600 hover:text-blue-900 text-sm font-medium disabled:opacity-50"
-                        >
-                          保存
-                        </button>
+                      <td className="px-4 py-3 text-right">
                         <button
                           onClick={handleCancelEdit}
                           className="text-gray-600 hover:text-gray-900 text-sm font-medium"
@@ -564,6 +574,14 @@ export default function MasterManager({
                     </>
                   ) : (
                     <>
+                      <td className="px-4 py-3 text-left">
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                        >
+                          編集
+                        </button>
+                      </td>
                       <td className="px-4 py-3 text-sm text-gray-900">
                         {item.id}
                       </td>
@@ -575,13 +593,7 @@ export default function MasterManager({
                           {item.code || '-'}
                         </td>
                       )}
-                      <td className="px-4 py-3 text-right space-x-3">
-                        <button
-                          onClick={() => handleEdit(item)}
-                          className="text-blue-600 hover:text-blue-900 text-sm font-medium"
-                        >
-                          編集
-                        </button>
+                      <td className="px-4 py-3 text-right">
                         <button
                           onClick={() => handleDelete(item.id, item.name)}
                           disabled={isUpdating}

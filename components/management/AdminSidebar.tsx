@@ -81,7 +81,7 @@ export default function AdminSidebar({ currentUserType }: AdminSidebarProps) {
                 }`}
               >
                 <span>マスタ管理</span>
-                <span className="text-xs">{isMasterExpanded ? '▼' : '▶'}</span>
+                <span className="text-xs">{isMasterExpanded ? '▼' : '▲'}</span>
               </button>
 
               {isMasterExpanded && (
