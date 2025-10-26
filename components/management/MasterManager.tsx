@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import * as XLSX from 'xlsx'
 
 interface MasterData {
   id: number
@@ -59,6 +60,10 @@ export default function MasterManager({
 
   // Prefecture expansion state
   const [expandedPrefectures, setExpandedPrefectures] = useState<Set<number>>(new Set())
+
+  // File import state
+  const [isImporting, setIsImporting] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const getCurrentData = (): MasterData[] => {
     switch (activeTab) {
@@ -231,6 +236,112 @@ export default function MasterManager({
     }
   }
 
+  const handleFileImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setIsImporting(true)
+
+    try {
+      const supabase = createClient()
+
+      // Read file
+      const data = await file.arrayBuffer()
+      const workbook = XLSX.read(data)
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]]
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: ['prefecture', 'area'], defval: '' })
+
+      // Skip header row if exists
+      const rows = jsonData.slice(1) as { prefecture: string; area: string }[]
+
+      let addedPrefectures = 0
+      let addedAreas = 0
+      let skippedAreas = 0
+      let currentPrefecture: any = null
+      let currentPrefectureName = ''
+
+      for (const row of rows) {
+        let prefectureName = String(row.prefecture || '').trim()
+        const areaName = String(row.area || '').trim()
+
+        // If prefecture column is empty, use the last prefecture
+        if (!prefectureName && currentPrefectureName) {
+          prefectureName = currentPrefectureName
+          currentPrefecture = currentPrefecture // Keep using the same prefecture object
+        } else if (prefectureName) {
+          // New prefecture name found
+          currentPrefectureName = prefectureName
+
+          // Check if prefecture exists in database
+          const { data: existingPrefecture } = await supabase
+            .from('prefectures')
+            .select('*')
+            .eq('name', prefectureName)
+            .single()
+
+          currentPrefecture = existingPrefecture
+
+          if (!currentPrefecture) {
+            // Add new prefecture
+            const { data: newPrefecture, error: prefError } = await supabase
+              .from('prefectures')
+              .insert({ name: prefectureName })
+              .select()
+              .single()
+
+            if (prefError) {
+              console.error('Error adding prefecture:', prefError)
+              continue
+            }
+
+            currentPrefecture = newPrefecture
+            addedPrefectures++
+          }
+        }
+
+        // Add area if provided and we have a current prefecture
+        if (areaName && currentPrefecture) {
+          // Check if area already exists for this prefecture in database
+          const { data: existingArea } = await supabase
+            .from('areas')
+            .select('*')
+            .eq('name', areaName)
+            .eq('prefecture_id', currentPrefecture.id)
+            .single()
+
+          if (!existingArea) {
+            const { error: areaError } = await supabase
+              .from('areas')
+              .insert({
+                name: areaName,
+                prefecture_id: currentPrefecture.id
+              })
+
+            if (areaError) {
+              console.error('Error adding area:', areaError)
+              continue
+            }
+
+            addedAreas++
+          } else {
+            skippedAreas++
+          }
+        }
+      }
+
+      alert(`インポート完了\n都道府県: ${addedPrefectures}件追加\n地域: ${addedAreas}件追加\n地域: ${skippedAreas}件スキップ`)
+      router.refresh()
+    } catch (error) {
+      console.error('Error importing file:', error)
+      alert('ファイルの読み込みに失敗しました')
+    } finally {
+      setIsImporting(false)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
   const data = getCurrentData()
 
   return (
@@ -272,16 +383,32 @@ export default function MasterManager({
             }
           </h2>
           {activeTab === 'regions' ? (
-            <button
-              onClick={() => {
-                setIsAdding(true)
-                setAddingType('prefecture')
-              }}
-              disabled={isAdding}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 font-medium"
-            >
-              都道府県を追加
-            </button>
+            <div className="flex gap-2">
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept=".xlsx,.xls"
+                onChange={handleFileImport}
+                className="hidden"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isImporting}
+                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 font-medium"
+              >
+                {isImporting ? 'インポート中...' : 'Excelでインポート'}
+              </button>
+              <button
+                onClick={() => {
+                  setIsAdding(true)
+                  setAddingType('prefecture')
+                }}
+                disabled={isAdding}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 font-medium"
+              >
+                都道府県を追加
+              </button>
+            </div>
           ) : (
             <button
               onClick={() => setIsAdding(true)}
