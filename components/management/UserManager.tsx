@@ -454,9 +454,10 @@ export default function UserManager({ users: initialUsers, companies, currentUse
                                 setNewCompanyCodeInput('')
                                 setNewCompanyCodeFocused(false)
                               }}
-                              className="px-3 py-2 text-sm hover:bg-blue-50 cursor-pointer"
+                              className="px-3 py-2 hover:bg-blue-50 cursor-pointer"
                             >
-                              {company.code} - {company.name}
+                              <div className="text-sm font-medium text-gray-900">{company.code}</div>
+                              <div className="text-xs text-gray-500">{company.name}</div>
                             </div>
                           ))}
                         {companies.filter((company) =>
@@ -627,9 +628,10 @@ export default function UserManager({ users: initialUsers, companies, currentUse
                                           setEditCompanyCodeInput('')
                                           setEditCompanyCodeFocused(false)
                                         }}
-                                        className="px-2 py-1 text-sm hover:bg-blue-50 cursor-pointer"
+                                        className="px-2 py-1 hover:bg-blue-50 cursor-pointer"
                                       >
-                                        {company.code} - {company.name}
+                                        <div className="text-sm font-medium text-gray-900">{company.code}</div>
+                                        <div className="text-xs text-gray-500">{company.name}</div>
                                       </div>
                                     ))}
                                   {companies.filter((company) =>
@@ -682,7 +684,7 @@ export default function UserManager({ users: initialUsers, companies, currentUse
                               ? 'bg-purple-100 text-purple-800'
                               : 'bg-green-100 text-green-800'
                           }`}>
-                            {user.type === 'admin' ? '管理者' : '一般ユーザー'}
+                            {user.type === 'admin' ? '管理者' : '一般'}
                           </span>
                         </td>
                       )}
