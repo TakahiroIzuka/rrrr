@@ -8,7 +8,7 @@ interface CompanyFormProps {
   company?: {
     id: number
     name: string
-    code?: string
+    code: string
   }
 }
 
@@ -26,6 +26,11 @@ export default function CompanyForm({ company }: CompanyFormProps) {
       return
     }
 
+    if (!code.trim()) {
+      alert('コードを入力してください')
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
@@ -35,7 +40,7 @@ export default function CompanyForm({ company }: CompanyFormProps) {
         // Update existing company
         const { error } = await supabase
           .from('companies')
-          .update({ name, code: code.trim() || null })
+          .update({ name, code: code.trim() })
           .eq('id', company.id)
 
         if (error) throw error
@@ -44,7 +49,7 @@ export default function CompanyForm({ company }: CompanyFormProps) {
         // Insert new company
         const { error } = await supabase
           .from('companies')
-          .insert({ name, code: code.trim() || null })
+          .insert({ name, code: code.trim() })
 
         if (error) throw error
         alert('会社を追加しました')
@@ -80,7 +85,7 @@ export default function CompanyForm({ company }: CompanyFormProps) {
 
         <div className="mb-6">
           <label htmlFor="code" className="block text-sm font-semibold text-gray-700 mb-2">
-            コード
+            コード <span className="text-red-600">*</span>
           </label>
           <input
             type="text"
@@ -88,7 +93,8 @@ export default function CompanyForm({ company }: CompanyFormProps) {
             value={code}
             onChange={(e) => setCode(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#2271b1] focus:border-transparent"
-            placeholder="任意のコードを入力"
+            placeholder="一意のコードを入力"
+            required
           />
         </div>
 
