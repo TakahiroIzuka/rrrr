@@ -12,6 +12,7 @@ interface ServiceData {
 interface FacilityData {
   id: number
   service_id: number
+  company_id: number | null
   service?: { name: string }
   prefecture?: { name: string }
   area?: { name: string }
@@ -22,12 +23,22 @@ interface FacilityData {
 interface FacilitiesListProps {
   services: ServiceData[]
   facilities: FacilityData[]
+  currentUserType: 'admin' | 'user'
+  currentUserCompanyId: number | null
 }
 
-export default function FacilitiesList({ services, facilities }: FacilitiesListProps) {
+export default function FacilitiesList({ services, facilities, currentUserType, currentUserCompanyId }: FacilitiesListProps) {
   const [selectedServiceId, setSelectedServiceId] = useState<number>(services[0]?.id || 1)
 
-  const filteredFacilities = facilities.filter(f => f.service_id === selectedServiceId)
+  const filteredFacilities = facilities
+    .filter(f => f.service_id === selectedServiceId)
+    .filter(f => {
+      // If current user is 'user' type, only show facilities with same company_id
+      if (currentUserType === 'user') {
+        return f.company_id === currentUserCompanyId
+      }
+      return true
+    })
 
   return (
     <div className="space-y-6">
@@ -63,9 +74,11 @@ export default function FacilitiesList({ services, facilities }: FacilitiesListP
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
                 編集
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
-                ID
-              </th>
+              {currentUserType === 'admin' && (
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
+                  ID
+                </th>
+              )}
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
                 施設名
               </th>
@@ -75,9 +88,11 @@ export default function FacilitiesList({ services, facilities }: FacilitiesListP
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
                 都道府県・地域
               </th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700">
-                削除
-              </th>
+              {currentUserType === 'admin' && (
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700">
+                  削除
+                </th>
+              )}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -95,9 +110,11 @@ export default function FacilitiesList({ services, facilities }: FacilitiesListP
                       編集
                     </Link>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                    {facility.id}
-                  </td>
+                  {currentUserType === 'admin' && (
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                      {facility.id}
+                    </td>
+                  )}
                   <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 font-medium">
                     {facilityName}
                   </td>
@@ -107,9 +124,11 @@ export default function FacilitiesList({ services, facilities }: FacilitiesListP
                   <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
                     {facility.prefecture?.name} {facility.area?.name}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-right text-sm">
-                    <DeleteFacilityButton facilityId={facility.id} />
-                  </td>
+                  {currentUserType === 'admin' && (
+                    <td className="px-4 py-3 whitespace-nowrap text-right text-sm">
+                      <DeleteFacilityButton facilityId={facility.id} />
+                    </td>
+                  )}
                 </tr>
               )
             })}

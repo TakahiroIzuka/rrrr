@@ -12,6 +12,16 @@ export default async function EditFacilityPage({ params }: PageProps) {
   const { id } = await params
   const supabase = await createClient()
 
+  // Get current logged-in user
+  const { data: { user: authUser } } = await supabase.auth.getUser()
+
+  // Fetch current user's data from users table
+  const { data: currentUser } = await supabase
+    .from('users')
+    .select('*')
+    .eq('auth_user_id', authUser?.id)
+    .single()
+
   // Fetch facility data
   const { data: facility, error } = await supabase
     .from('facilities')
@@ -51,6 +61,7 @@ export default async function EditFacilityPage({ params }: PageProps) {
         areas={areas || []}
         companies={companies || []}
         initialData={facility}
+        currentUserType={currentUser?.type || 'user'}
       />
     </div>
   )

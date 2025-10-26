@@ -17,6 +17,7 @@ interface FacilityFormProps {
   areas: MasterData[]
   companies: MasterData[]
   initialData?: any
+  currentUserType?: 'admin' | 'user'
 }
 
 export default function FacilityForm({
@@ -25,7 +26,8 @@ export default function FacilityForm({
   prefectures,
   areas,
   companies,
-  initialData
+  initialData,
+  currentUserType = 'admin'
 }: FacilityFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -78,34 +80,43 @@ export default function FacilityForm({
 
       if (initialData) {
         // Update existing facility
-        const { error: facilityError } = await supabase
-          .from('facilities')
-          .update({
-            service_id: parseInt(serviceId),
-            genre_id: parseInt(genreId),
-            prefecture_id: parseInt(prefectureId),
-            area_id: areaId ? parseInt(areaId) : null,
-            company_id: companyId ? parseInt(companyId) : null
-          })
-          .eq('id', initialData.id)
+        // Only update basic info if user is admin
+        if (currentUserType === 'admin') {
+          const { error: facilityError } = await supabase
+            .from('facilities')
+            .update({
+              service_id: parseInt(serviceId),
+              genre_id: parseInt(genreId),
+              prefecture_id: parseInt(prefectureId),
+              area_id: areaId ? parseInt(areaId) : null,
+              company_id: companyId ? parseInt(companyId) : null
+            })
+            .eq('id', initialData.id)
 
-        if (facilityError) throw facilityError
+          if (facilityError) throw facilityError
+        }
 
         // Update facility_details
+        const detailUpdateData: any = {
+          name,
+          star: star ? parseFloat(star) : null,
+          user_review_count: userReviewCount ? parseInt(userReviewCount) : 0,
+          lat: lat ? parseFloat(lat) : 0,
+          lng: lng ? parseFloat(lng) : 0,
+          site_url: siteUrl || null,
+          postal_code: postalCode || null,
+          address: address || null,
+          tel: tel || null
+        }
+
+        // Only update google_map_url if user is admin
+        if (currentUserType === 'admin') {
+          detailUpdateData.google_map_url = googleMapUrl
+        }
+
         const { error: detailError } = await supabase
           .from('facility_details')
-          .update({
-            name,
-            star: star ? parseFloat(star) : null,
-            user_review_count: userReviewCount ? parseInt(userReviewCount) : 0,
-            lat: lat ? parseFloat(lat) : 0,
-            lng: lng ? parseFloat(lng) : 0,
-            site_url: siteUrl || null,
-            postal_code: postalCode || null,
-            address: address || null,
-            tel: tel || null,
-            google_map_url: googleMapUrl
-          })
+          .update(detailUpdateData)
           .eq('facility_id', initialData.id)
 
         if (detailError) throw detailError
@@ -163,10 +174,11 @@ export default function FacilityForm({
     <form onSubmit={handleSubmit} className="bg-white rounded shadow border border-gray-200 p-6 max-w-3xl">
       <div className="space-y-6">
         {/* Basic Info */}
-        <div>
-          <h2 className="text-base font-semibold text-gray-900 mb-4">基本情報</h2>
+        {currentUserType === 'admin' && (
+          <div>
+            <h2 className="text-base font-semibold text-gray-900 mb-4">基本情報</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 サービス <span className="text-red-500">*</span>
@@ -305,6 +317,7 @@ export default function FacilityForm({
             </div>
           </div>
         </div>
+        )}
 
         {/* Detail Info */}
         <div>
@@ -429,18 +442,20 @@ export default function FacilityForm({
               />
             </div>
 
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Google Map URL <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="url"
-                required
-                value={googleMapUrl}
-                onChange={(e) => setGoogleMapUrl(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+            {currentUserType === 'admin' && (
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Google Map URL <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="url"
+                  required
+                  value={googleMapUrl}
+                  onChange={(e) => setGoogleMapUrl(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            )}
           </div>
         </div>
 
