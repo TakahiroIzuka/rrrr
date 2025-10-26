@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import DeleteFacilityButton from './DeleteFacilityButton'
 
@@ -28,7 +28,21 @@ interface FacilitiesListProps {
 }
 
 export default function FacilitiesList({ services, facilities, currentUserType, currentUserCompanyId }: FacilitiesListProps) {
-  const [selectedServiceId, setSelectedServiceId] = useState<number>(services[0]?.id || 1)
+  // Filter services based on user type
+  const visibleServices = currentUserType === 'user'
+    ? services.filter(service =>
+        facilities.some(f => f.service_id === service.id && f.company_id === currentUserCompanyId)
+      )
+    : services
+
+  const [selectedServiceId, setSelectedServiceId] = useState<number>(visibleServices[0]?.id || 1)
+
+  // Update selectedServiceId when visibleServices changes
+  useEffect(() => {
+    if (!visibleServices.some(s => s.id === selectedServiceId)) {
+      setSelectedServiceId(visibleServices[0]?.id || 1)
+    }
+  }, [visibleServices, selectedServiceId])
 
   const filteredFacilities = facilities
     .filter(f => f.service_id === selectedServiceId)
@@ -45,7 +59,7 @@ export default function FacilitiesList({ services, facilities, currentUserType, 
       {/* Service Tabs */}
       <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
         <div className="flex border-b border-gray-200 overflow-x-auto">
-          {services.map((service) => (
+          {visibleServices.map((service) => (
             <button
               key={service.id}
               onClick={() => setSelectedServiceId(service.id)}
