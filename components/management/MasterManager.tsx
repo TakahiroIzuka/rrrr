@@ -367,6 +367,22 @@ export default function MasterManager({
                   {/* Prefecture Row */}
                   <div className="bg-gray-50 px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3 flex-1">
+                      {isEditing ? (
+                        <button
+                          onClick={handleSaveEdit}
+                          disabled={isUpdating}
+                          className="text-blue-600 hover:text-blue-900 text-sm font-medium disabled:opacity-50"
+                        >
+                          保存
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleEdit(prefecture, 'prefecture')}
+                          className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                        >
+                          編集
+                        </button>
+                      )}
                       <button
                         onClick={() => togglePrefecture(prefecture.id)}
                         className="text-gray-600 hover:text-gray-900"
@@ -384,50 +400,35 @@ export default function MasterManager({
                         <span className="font-medium text-gray-900">{prefecture.name}</span>
                       )}
                       <span className="text-xs text-gray-500">({prefectureAreas.length}地域)</span>
+                      {!isEditing && (
+                        <button
+                          onClick={() => {
+                            setIsAdding(true)
+                            setAddingType('area')
+                            setAddingPrefectureId(prefecture.id)
+                          }}
+                          className="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                        >
+                          地域追加
+                        </button>
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
                       {isEditing ? (
-                        <>
-                          <button
-                            onClick={handleSaveEdit}
-                            disabled={isUpdating}
-                            className="text-blue-600 hover:text-blue-900 text-sm font-medium disabled:opacity-50"
-                          >
-                            保存
-                          </button>
-                          <button
-                            onClick={handleCancelEdit}
-                            className="text-gray-600 hover:text-gray-900 text-sm font-medium"
-                          >
-                            キャンセル
-                          </button>
-                        </>
+                        <button
+                          onClick={handleCancelEdit}
+                          className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+                        >
+                          キャンセル
+                        </button>
                       ) : (
-                        <>
-                          <button
-                            onClick={() => {
-                              setIsAdding(true)
-                              setAddingType('area')
-                              setAddingPrefectureId(prefecture.id)
-                            }}
-                            className="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
-                          >
-                            地域追加
-                          </button>
-                          <button
-                            onClick={() => handleEdit(prefecture, 'prefecture')}
-                            className="text-blue-600 hover:text-blue-900 text-sm font-medium"
-                          >
-                            編集
-                          </button>
-                          <button
-                            onClick={() => handleDelete(prefecture.id, prefecture.name, 'prefecture')}
-                            disabled={isUpdating}
-                            className="text-red-600 hover:text-red-900 text-sm font-medium disabled:opacity-50"
-                          >
-                            削除
-                          </button>
-                        </>
+                        <button
+                          onClick={() => handleDelete(prefecture.id, prefecture.name, 'prefecture')}
+                          disabled={isUpdating}
+                          className="text-red-600 hover:text-red-900 text-sm font-medium disabled:opacity-50"
+                        >
+                          削除
+                        </button>
                       )}
                     </div>
                   </div>
