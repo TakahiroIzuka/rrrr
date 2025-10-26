@@ -4,9 +4,13 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
-const menuItems = [
+interface AdminSidebarProps {
+  currentUserType: 'admin' | 'user'
+}
+
+const getMenuItems = (userType: 'admin' | 'user') => [
   {
-    label: '会社一覧',
+    label: userType === 'user' ? '会社管理' : '会社一覧',
     href: '/management/companies',
   },
   {
@@ -34,9 +38,10 @@ const masterItems = [
   },
 ]
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ currentUserType }: AdminSidebarProps) {
   const pathname = usePathname()
   const [isMasterExpanded, setIsMasterExpanded] = useState(pathname.startsWith('/management/masters'))
+  const menuItems = getMenuItems(currentUserType)
 
   const isActive = (href: string) => {
     return pathname.startsWith(href)

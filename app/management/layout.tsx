@@ -17,13 +17,16 @@ export default async function AdminLayout({
     redirect('/auth/login')
   }
 
-  // TODO: Add admin role check here
-  // For now, any authenticated user can access admin panel
-  // You can add role-based access control by checking user metadata or a separate admins table
+  // Fetch current user's data from users table
+  const { data: currentUser } = await supabase
+    .from('users')
+    .select('*')
+    .eq('auth_user_id', user?.id)
+    .single()
 
   return (
     <div className="flex min-h-screen bg-[#f0f0f1]">
-      <AdminSidebar />
+      <AdminSidebar currentUserType={currentUser?.type || 'user'} />
       <div className="flex-1 ml-64">
         <AdminHeader />
         <main className="p-6">
