@@ -36,6 +36,9 @@ export default async function CompaniesPage() {
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
                 会社名
               </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
+                コード
+              </th>
               <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700">
                 操作
               </th>
@@ -49,6 +52,9 @@ export default async function CompaniesPage() {
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 font-medium">
                   {company.name}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                  {company.code || '-'}
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap text-right text-sm">
                   <Link

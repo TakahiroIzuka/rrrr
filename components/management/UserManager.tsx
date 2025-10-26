@@ -7,6 +7,8 @@ import { hashPassword } from '@/lib/utils/password'
 
 interface User {
   id: number
+  code: string
+  name: string | null
   email: string
   created_at: string
   updated_at: string
@@ -22,27 +24,40 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
 
   // Edit state
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [editCode, setEditCode] = useState('')
+  const [editName, setEditName] = useState('')
   const [editEmail, setEditEmail] = useState('')
   const [editPassword, setEditPassword] = useState('')
 
   // Add state
   const [isAdding, setIsAdding] = useState(false)
+  const [newCode, setNewCode] = useState('')
+  const [newName, setNewName] = useState('')
   const [newEmail, setNewEmail] = useState('')
   const [newPassword, setNewPassword] = useState('')
 
   const handleEdit = (user: User) => {
     setEditingId(user.id)
+    setEditCode(user.code)
+    setEditName(user.name || '')
     setEditEmail(user.email)
     setEditPassword('')
   }
 
   const handleCancelEdit = () => {
     setEditingId(null)
+    setEditCode('')
+    setEditName('')
     setEditEmail('')
     setEditPassword('')
   }
 
   const handleSaveEdit = async () => {
+    if (!editCode.trim()) {
+      alert('コードを入力してください')
+      return
+    }
+
     if (!editEmail.trim()) {
       alert('メールアドレスを入力してください')
       return
@@ -59,7 +74,9 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
 
     try {
       const supabase = createClient()
-      const updateData: { email: string; password?: string; updated_at: string } = {
+      const updateData: { code: string; name: string | null; email: string; password?: string; updated_at: string } = {
+        code: editCode.trim(),
+        name: editName.trim() || null,
         email: editEmail.trim(),
         updated_at: new Date().toISOString()
       }
@@ -78,13 +95,19 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
 
       alert('更新しました')
       setEditingId(null)
+      setEditCode('')
+      setEditName('')
       setEditEmail('')
       setEditPassword('')
       router.refresh()
     } catch (error: any) {
       console.error('Error updating:', error)
       if (error.code === '23505') {
-        alert('このメールアドレスは既に使用されています')
+        if (error.message?.includes('code')) {
+          alert('このコードは既に使用されています')
+        } else {
+          alert('このメールアドレスは既に使用されています')
+        }
       } else {
         alert('更新に失敗しました')
       }
@@ -121,6 +144,11 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
   }
 
   const handleAdd = async () => {
+    if (!newCode.trim()) {
+      alert('コードを入力してください')
+      return
+    }
+
     if (!newEmail.trim()) {
       alert('メールアドレスを入力してください')
       return
@@ -154,6 +182,8 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
       const { error } = await supabase
         .from('users')
         .insert({
+          code: newCode.trim(),
+          name: newName.trim() || null,
           email: newEmail.trim(),
           password: hashedPassword
         })
@@ -162,13 +192,19 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
 
       alert('追加しました')
       setIsAdding(false)
+      setNewCode('')
+      setNewName('')
       setNewEmail('')
       setNewPassword('')
       router.refresh()
     } catch (error: any) {
       console.error('Error adding:', error)
       if (error.code === '23505') {
-        alert('このメールアドレスは既に使用されています')
+        if (error.message?.includes('code')) {
+          alert('このコードは既に使用されています')
+        } else {
+          alert('このメールアドレスは既に使用されています')
+        }
       } else {
         alert('追加に失敗しました')
       }
@@ -200,6 +236,30 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
               ユーザーを追加
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  コード <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newCode}
+                  onChange={(e) => setNewCode(e.target.value)}
+                  placeholder="一意のコード"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  名前
+                </label>
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="ユーザー名（任意）"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   メールアドレス <span className="text-red-500">*</span>
@@ -236,6 +296,8 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
               <button
                 onClick={() => {
                   setIsAdding(false)
+                  setNewCode('')
+                  setNewName('')
                   setNewEmail('')
                   setNewPassword('')
                 }}
@@ -254,6 +316,12 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   ID
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  コード
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  名前
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   メールアドレス
@@ -276,6 +344,24 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
                     <>
                       <td className="px-4 py-3 text-sm text-gray-900">
                         {user.id}
+                      </td>
+                      <td className="px-4 py-3">
+                        <input
+                          type="text"
+                          value={editCode}
+                          onChange={(e) => setEditCode(e.target.value)}
+                          placeholder="コード"
+                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <input
+                          type="text"
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          placeholder="名前（任意）"
+                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
                       </td>
                       <td className="px-4 py-3">
                         <input
@@ -318,6 +404,12 @@ export default function UserManager({ users: initialUsers }: UserManagerProps) {
                     <>
                       <td className="px-4 py-3 text-sm text-gray-900">
                         {user.id}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                        {user.code}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {user.name || '-'}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-900">
                         {user.email}

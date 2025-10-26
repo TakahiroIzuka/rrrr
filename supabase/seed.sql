@@ -45,10 +45,10 @@ INSERT INTO areas (prefecture_id, name) VALUES
   (9, '港区');
 
 -- Seed companies table
-INSERT INTO companies (name) VALUES
-  ('DAILY SKIN CLINIC'),
-  ('STUDIO IVY'),
-  ('西梅田シティクリニック');
+INSERT INTO companies (code, name) VALUES
+  ('dairy_skin_clinic', 'DAILY SKIN CLINIC'),
+  ('studio_ivy', 'STUDIO IVY'),
+  ('umeda_clinic', '西梅田シティクリニック');
 
 -- Seed facilities table
 INSERT INTO facilities (genre_id, prefecture_id, area_id, company_id, uuid, service_id) VALUES
