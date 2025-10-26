@@ -54,12 +54,15 @@ export default function FacilitiesList({ services, facilities }: FacilitiesListP
       <div className="bg-white rounded shadow border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-base font-semibold text-gray-900">
-            {services.find(s => s.id === selectedServiceId)?.name} - 施設一覧 ({filteredFacilities.length}件)
+            施設一覧 ({filteredFacilities.length}件)
           </h2>
         </div>
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
+                編集
+              </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
                 ID
               </th>
@@ -70,10 +73,10 @@ export default function FacilitiesList({ services, facilities }: FacilitiesListP
                 ジャンル
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
-                地域
+                都道府県・地域
               </th>
               <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700">
-                操作
+                削除
               </th>
             </tr>
           </thead>
@@ -84,6 +87,14 @@ export default function FacilitiesList({ services, facilities }: FacilitiesListP
 
               return (
                 <tr key={facility.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 whitespace-nowrap text-sm">
+                    <Link
+                      href={`/management/facilities/${facility.id}/edit`}
+                      className="text-[#2271b1] hover:text-[#135e96] font-medium"
+                    >
+                      編集
+                    </Link>
+                  </td>
                   <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                     {facility.id}
                   </td>
@@ -97,12 +108,6 @@ export default function FacilitiesList({ services, facilities }: FacilitiesListP
                     {facility.prefecture?.name} {facility.area?.name}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-right text-sm">
-                    <Link
-                      href={`/management/facilities/${facility.id}/edit`}
-                      className="text-[#2271b1] hover:text-[#135e96] mr-4 font-medium"
-                    >
-                      編集
-                    </Link>
                     <DeleteFacilityButton facilityId={facility.id} />
                   </td>
                 </tr>

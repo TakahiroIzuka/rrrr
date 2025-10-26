@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
@@ -36,6 +36,25 @@ export default function FacilityForm({
   const [prefectureId, setPrefectureId] = useState(initialData?.prefecture_id || '')
   const [areaId, setAreaId] = useState(initialData?.area_id || '')
   const [companyId, setCompanyId] = useState(initialData?.company_id || '')
+  const [companyCodeInput, setCompanyCodeInput] = useState('')
+  const [companyCodeFocused, setCompanyCodeFocused] = useState(false)
+
+  // Ref for dropdown click outside detection
+  const companyDropdownRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (companyDropdownRef.current && !companyDropdownRef.current.contains(event.target as Node)) {
+        setCompanyCodeFocused(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   // Detail fields
   const detail = initialData?.detail?.[0] || initialData?.detail || {}
@@ -65,7 +84,7 @@ export default function FacilityForm({
             service_id: parseInt(serviceId),
             genre_id: parseInt(genreId),
             prefecture_id: parseInt(prefectureId),
-            area_id: parseInt(areaId),
+            area_id: areaId ? parseInt(areaId) : null,
             company_id: companyId ? parseInt(companyId) : null
           })
           .eq('id', initialData.id)
@@ -85,7 +104,7 @@ export default function FacilityForm({
             postal_code: postalCode || null,
             address: address || null,
             tel: tel || null,
-            google_map_url: googleMapUrl || null
+            google_map_url: googleMapUrl
           })
           .eq('facility_id', initialData.id)
 
@@ -100,7 +119,7 @@ export default function FacilityForm({
             service_id: parseInt(serviceId),
             genre_id: parseInt(genreId),
             prefecture_id: parseInt(prefectureId),
-            area_id: parseInt(areaId),
+            area_id: areaId ? parseInt(areaId) : null,
             company_id: companyId ? parseInt(companyId) : null
           })
           .select()
@@ -122,7 +141,7 @@ export default function FacilityForm({
             postal_code: postalCode || null,
             address: address || null,
             tel: tel || null,
-            google_map_url: googleMapUrl || null
+            google_map_url: googleMapUrl
           })
 
         if (detailError) throw detailError
@@ -207,10 +226,9 @@ export default function FacilityForm({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                地域 <span className="text-red-500">*</span>
+                地域
               </label>
               <select
-                required
                 value={areaId}
                 onChange={(e) => setAreaId(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -224,22 +242,66 @@ export default function FacilityForm({
               </select>
             </div>
 
-            <div className="md:col-span-2">
+            <div className="md:col-span-2 relative" ref={companyDropdownRef}>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                会社
+                会社コード
               </label>
-              <select
-                value={companyId}
-                onChange={(e) => setCompanyId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <button
+                type="button"
+                onClick={() => setCompanyCodeFocused(!companyCodeFocused)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-left flex items-center justify-between"
               >
-                <option value="">選択してください</option>
-                {companies.map((company) => (
-                  <option key={company.id} value={company.id}>
-                    {company.name}
-                  </option>
-                ))}
-              </select>
+                <span className={companyId ? 'text-gray-900' : 'text-gray-500'}>
+                  {companyId
+                    ? companies.find(c => c.id === Number(companyId))?.code || '選択してください'
+                    : '選択してください'
+                  }
+                </span>
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {companyCodeFocused && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                  <div className="p-2 border-b border-gray-200">
+                    <input
+                      type="text"
+                      value={companyCodeInput}
+                      onChange={(e) => setCompanyCodeInput(e.target.value)}
+                      placeholder="会社コードで検索..."
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      autoFocus
+                    />
+                  </div>
+                  <div className="max-h-60 overflow-y-auto">
+                    {companies
+                      .filter((company) =>
+                        company.code?.toLowerCase().includes(companyCodeInput.toLowerCase())
+                      )
+                      .map((company) => (
+                        <div
+                          key={company.id}
+                          onClick={() => {
+                            setCompanyId(company.id.toString())
+                            setCompanyCodeInput('')
+                            setCompanyCodeFocused(false)
+                          }}
+                          className="px-3 py-2 hover:bg-blue-50 cursor-pointer"
+                        >
+                          <div className="text-sm font-medium text-gray-900">{company.code}</div>
+                          <div className="text-xs text-gray-500">{company.name}</div>
+                        </div>
+                      ))}
+                    {companies.filter((company) =>
+                      company.code?.toLowerCase().includes(companyCodeInput.toLowerCase())
+                    ).length === 0 && (
+                      <div className="px-3 py-2 text-sm text-gray-500">
+                        該当する会社が見つかりません
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -369,10 +431,11 @@ export default function FacilityForm({
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Google Map URL
+                Google Map URL <span className="text-red-500">*</span>
               </label>
               <input
                 type="url"
+                required
                 value={googleMapUrl}
                 onChange={(e) => setGoogleMapUrl(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
