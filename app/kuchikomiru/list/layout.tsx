@@ -21,7 +21,6 @@ export default function KuchikomiruListLayout({
   return (
     <>
       <Header
-        headerImagePath="/kuchikomiru/default/logo_header.png"
         pageType="list"
         serviceName="クチコミル"
       />

@@ -16,7 +16,6 @@ interface Genre {
 
 interface HeaderProps {
   serviceName?: string
-  headerImagePath?: string
   lineColor?: string
   color?: string
   pageType?: 'top' | 'list' | 'detail' | 'genre-top'
@@ -26,7 +25,6 @@ interface HeaderProps {
 
 export default function Header({
   serviceName = '住宅会社',
-  headerImagePath = '/house-builder/default/logo_header.png',
   lineColor: lineColorProp = "rgb(248, 176, 66)",
   color: colorProp = "rgb(248, 176, 66)",
   pageType = 'top',
@@ -34,6 +32,7 @@ export default function Header({
   genreCode,
 }: HeaderProps) {
   const serviceCode = useServiceCode()
+  const [headerImagePath, setHeaderImagePath] = useState<string>(`/${serviceCode}/default/logo_header.png`)
 
   const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]
   // pageTypeがdetailまたはgenre-topの場合、REVIEW_RANKING_CONFIGからlineColorとcolorを取得
@@ -47,6 +46,31 @@ export default function Header({
       color = genreConfig.color ?? color
     }
   }
+
+  // 画像の存在チェック
+  useEffect(() => {
+    // pageTypeがdetailまたはgenre-topで、genreCodeがある場合のみチェック
+    if ((pageType === 'detail' || pageType === 'genre-top') && genreCode) {
+      // REVIEW_RANKING_CONFIGのgenresにgenreCodeが定義されているかチェック
+      const genreConfig = config.genres?.[genreCode as keyof typeof config.genres]
+      if (genreConfig) {
+        const genreSpecificPath = `/${serviceCode}/${genreCode}/logo_header.png`
+
+        // 画像の存在を確認
+        const img = new window.Image()
+        img.onload = () => {
+          // 画像が存在する場合、ジャンル固有のパスを使用
+          setHeaderImagePath(genreSpecificPath)
+        }
+        img.onerror = () => {
+          // 画像が存在しない場合、デフォルトのパスを使用
+          setHeaderImagePath(`/${serviceCode}/default/logo_header.png`)
+        }
+        img.src = genreSpecificPath
+      }
+    }
+  }, [serviceCode, pageType, genreCode, config])
+
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)

@@ -21,7 +21,6 @@ export default function HouseBuilderListLayout({
   return (
     <>
       <Header
-        headerImagePath="/house-builder/default/logo_header.png"
         pageType="list"
         serviceName="住宅会社"
       />

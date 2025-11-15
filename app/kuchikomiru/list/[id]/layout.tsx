@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { getGenreColor } from '@/lib/utils/genreColors'
-import { getGenreImagePath } from '@/lib/utils/imagePath'
 import { SERVICE_CODES } from '@/lib/constants/services'
 
 interface FacilityDetailLayoutProps {
@@ -44,12 +43,10 @@ export default async function FacilityDetailLayout({
     : (facility.detail as { name?: string })?.name || ''
 
   const genreColor = getGenreColor(genreCode)
-  const headerImagePath = getGenreImagePath('kuchikomiru', genreCode, 'logo_header.png')
 
   return (
     <>
       <Header
-        headerImagePath={headerImagePath}
         labelText={genreName || ''}
         pageType="detail"
         serviceName="クチコミル"

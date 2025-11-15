@@ -45,7 +45,6 @@ export default async function ClinicDetailLayout({
   return (
     <>
       <Header
-        headerImagePath="/medical/default/logo_header.png"
         labelText={genreName || ''}
         pageType="detail"
         serviceName="メディカル"

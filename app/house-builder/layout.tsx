@@ -20,7 +20,6 @@ export default function HouseBuilderLayout({
       {isHouseBuilderTopPage && (
         <>
           <Header
-            headerImagePath="/house-builder/default/logo_header.png"
             serviceName="住宅会社"
           />
           <div className="mt-16 md:mt-0">
