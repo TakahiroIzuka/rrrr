@@ -19,11 +19,11 @@ interface Div2Props {
 }
 
 const getGenreNoImage = (genreCode?: string, serviceCode?: string): string => {
-  const basePath = serviceCode === 'kuchikomiru' ? '/kuchikomiru' : '/medical'
+  const basePath = serviceCode || 'medical'
   if (!genreCode) {
-    return `${basePath}/default/noimage.jpg`
+    return `/${basePath}/default/noimage.jpg`
   }
-  return `${basePath}/${genreCode}/noimage.jpg`
+  return `/${basePath}/${genreCode}/noimage.jpg`
 }
 
 export default function Div2({ facility, serviceCode, images = [] }: Div2Props) {

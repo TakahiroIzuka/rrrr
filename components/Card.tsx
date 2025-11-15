@@ -25,17 +25,11 @@ interface CardProps {
   images?: FacilityImage[]
 }
 
-const getGenreNoImage = (genreId: number): string => {
-  switch (genreId) {
-    case 1:
-      return '/medical/pilates/noimage.jpg'
-    case 2:
-      return '/medical/medical/noimage.jpg'
-    case 5:
-      return '/medical/dermatology/noimage.jpg'
-    default:
-      return '/medical/medical/noimage.jpg'
+const getGenreNoImage = (genreCode: string | undefined, serviceCode: ServiceCode): string => {
+  if (genreCode) {
+    return `/${serviceCode}/${genreCode}/noimage.jpg`
   }
+  return `/${serviceCode}/default/noimage.jpg`
 }
 
 export default function Card({ facility, isHovered, onMouseEnter, onMouseLeave, serviceCode, images = [] }: CardProps) {
@@ -52,7 +46,7 @@ export default function Card({ facility, isHovered, onMouseEnter, onMouseLeave, 
     if (facilityImage) {
       return facilityImage.publicUrl
     }
-    return getGenreNoImage(facility.genre_id)
+    return getGenreNoImage(facility.genre?.code, serviceCode)
   })
 
   const handlePrevImage = () => {

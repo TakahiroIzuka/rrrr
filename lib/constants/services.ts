@@ -24,4 +24,9 @@ export const REVIEW_RANKING_CONFIG = {
     imagePath: '/kuchikomiru/icon.png',
     buttonText: '施設の掲載リクエストはこちら',
   },
+  [SERVICE_CODES.HOUSE_BUILDER]: {
+    title: '住宅会社ランキング',
+    imagePath: '/house-builder/icon.png',
+    buttonText: '住宅会社の掲載リクエストはこちら',
+  },
 } as const
