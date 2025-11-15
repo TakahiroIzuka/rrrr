@@ -16,12 +16,12 @@ export type ServiceCode = typeof SERVICE_CODES[keyof typeof SERVICE_CODES]
 export const REVIEW_RANKING_CONFIG = {
   [SERVICE_CODES.MEDICAL]: {
     title: 'メディカルクチコミランキング',
-    imagePath: '/medical/pin-profile.png',
+    imagePath: '/medical/icon.png',
     buttonText: 'クリニックの掲載リクエストはこちら',
   },
   [SERVICE_CODES.KUCHIKOMIRU]: {
     title: 'クチコミルランキング',
-    imagePath: '/kuchikomiru/pin-profile.png',
+    imagePath: '/kuchikomiru/icon.png',
     buttonText: '施設の掲載リクエストはこちら',
   },
 } as const
