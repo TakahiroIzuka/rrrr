@@ -31,14 +31,13 @@ export default async function ClinicListPage() {
           subtitle="List of Local places"
           width="3/4"
           gridCols="2"
-          serviceCode={SERVICE_CODES.MEDICAL}
         />
 
         {/* サイドバー - モバイルでは下に表示 */}
         <div className="w-full md:w-1/4 flex flex-col gap-6">
           {/* メディカルクチコミランキング */}
           <div className="w-full">
-            <ReviewRanking variant="desktop" serviceCode={SERVICE_CODES.MEDICAL} />
+            <ReviewRanking variant="desktop" />
           </div>
 
           {/* 各エリアから探す */}

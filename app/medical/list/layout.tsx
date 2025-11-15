@@ -24,7 +24,6 @@ export default function ClinicListLayout({
         imagePath="/medical/default/logo_header.png"
         lineColor="#a69a7e"
         color="#acd1e6"
-        serviceCode="medical"
         pageType="list"
         serviceName="メディカル"
       />
@@ -35,7 +34,7 @@ export default function ClinicListLayout({
         ]}
       />
       {children}
-      <Footer serviceCode={SERVICE_CODES.MEDICAL} />
+      <Footer />
     </>
   )
 }

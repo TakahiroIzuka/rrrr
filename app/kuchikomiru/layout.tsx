@@ -5,6 +5,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import MarqueeText from '@/components/MarqueeText'
 import { SERVICE_CODES } from '@/lib/constants/services'
+import { ServiceCodeProvider } from '@/contexts/ServiceCodeContext'
 
 export default function KuchikomiruLayout({
   children,
@@ -15,14 +16,13 @@ export default function KuchikomiruLayout({
   const isKuchikomiruTopPage = pathname === '/kuchikomiru'
 
   return (
-    <>
+    <ServiceCodeProvider serviceCode={SERVICE_CODES.KUCHIKOMIRU}>
       {isKuchikomiruTopPage && (
         <>
           <Header
             imagePath="/kuchikomiru/default/logo_header.png"
             lineColor="rgb(236, 106, 82)"
             color="rgb(236, 106, 82)"
-            serviceCode="kuchikomiru"
             serviceName="クチコミル"
           />
           <div className="mt-16 md:mt-0">
@@ -32,8 +32,8 @@ export default function KuchikomiruLayout({
       )}
       {children}
       {isKuchikomiruTopPage && (
-        <Footer serviceCode={SERVICE_CODES.KUCHIKOMIRU} />
+        <Footer />
       )}
-    </>
+    </ServiceCodeProvider>
   )
 }

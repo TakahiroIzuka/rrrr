@@ -53,7 +53,6 @@ export default async function FacilityDetailLayout({
         lineColor={genreColor}
         color={genreColor}
         labelText={genreName || ''}
-        serviceCode="house-builder"
         pageType="detail"
         serviceName="住宅会社"
       />
@@ -76,7 +75,7 @@ export default async function FacilityDetailLayout({
         </div>
       </div>
       {children}
-      <Footer serviceCode={SERVICE_CODES.HOUSE_BUILDER} />
+      <Footer />
     </>
   )
 }

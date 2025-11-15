@@ -24,7 +24,6 @@ export default function KuchikomiruListLayout({
         imagePath="/kuchikomiru/default/logo_header.png"
         lineColor="rgb(236, 106, 82)"
         color="rgb(236, 106, 82)"
-        serviceCode="kuchikomiru"
         pageType="list"
         serviceName="クチコミル"
       />
@@ -35,7 +34,7 @@ export default function KuchikomiruListLayout({
         ]}
       />
       {children}
-      <Footer serviceCode={SERVICE_CODES.KUCHIKOMIRU} />
+      <Footer />
     </>
   )
 }

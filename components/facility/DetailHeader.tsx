@@ -92,7 +92,7 @@ export default function DetailHeader({ genreName, genreCode, showNavButtons = fa
   return (
     <>
       {/* Genre Modal */}
-      <GenreModal isOpen={isGenreModalOpen} onClose={() => setIsGenreModalOpen(false)} genres={genres} serviceCode="medical" />
+      <GenreModal isOpen={isGenreModalOpen} onClose={() => setIsGenreModalOpen(false)} genres={genres} />
 
       {/* Mobile Menu */}
       <MobileMenu

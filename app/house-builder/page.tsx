@@ -10,5 +10,5 @@ export default async function HouseBuilderPage() {
     return <ErrorMessage message={error.message} />
   }
 
-  return <HomeClient facilities={facilities || []} serviceCode={SERVICE_CODES.HOUSE_BUILDER} />
+  return <HomeClient facilities={facilities || []} />
 }

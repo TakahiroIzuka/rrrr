@@ -33,7 +33,6 @@ export default async function GenrePage({ params }: GenrePageProps) {
       genreId={genre.id}
       genreName={genre.name}
       genreCode={genre.code}
-      serviceCode={SERVICE_CODES.MEDICAL}
     />
   )
 }

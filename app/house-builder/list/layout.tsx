@@ -24,7 +24,6 @@ export default function HouseBuilderListLayout({
         imagePath="/house-builder/default/logo_header.png"
         lineColor="rgb(248, 176, 66)"
         color="rgb(248, 176, 66)"
-        serviceCode="house-builder"
         pageType="list"
         serviceName="住宅会社"
       />
@@ -35,7 +34,7 @@ export default function HouseBuilderListLayout({
         ]}
       />
       {children}
-      <Footer serviceCode={SERVICE_CODES.HOUSE_BUILDER} />
+      <Footer />
     </>
   )
 }

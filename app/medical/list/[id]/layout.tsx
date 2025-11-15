@@ -49,7 +49,6 @@ export default async function ClinicDetailLayout({
         lineColor={genreColor}
         color={genreColor}
         labelText={genreName || ''}
-        serviceCode="medical"
         pageType="detail"
         serviceName="メディカル"
       />
@@ -72,7 +71,7 @@ export default async function ClinicDetailLayout({
         </div>
       </div>
       {children}
-      <Footer serviceCode={SERVICE_CODES.MEDICAL} />
+      <Footer />
     </>
   )
 }

@@ -6,6 +6,7 @@ import type { Facility } from '@/types/facility'
 import type { ServiceCode } from '@/lib/constants/services'
 import { getStarImage } from '@/lib/utils/starRating'
 import { IMAGE_COUNT, SWIPE_THRESHOLD } from '@/lib/constants'
+import { useServiceCode } from '@/contexts/ServiceCodeContext'
 
 interface FacilityImage {
   id: number
@@ -21,7 +22,6 @@ interface CardProps {
   isHovered: boolean
   onMouseEnter: () => void
   onMouseLeave: () => void
-  serviceCode: ServiceCode
   images?: FacilityImage[]
 }
 
@@ -32,7 +32,8 @@ const getGenreNoImage = (genreCode: string | undefined, serviceCode: ServiceCode
   return `/${serviceCode}/default/noimage.jpg`
 }
 
-export default function Card({ facility, isHovered, onMouseEnter, onMouseLeave, serviceCode, images = [] }: CardProps) {
+export default function Card({ facility, isHovered, onMouseEnter, onMouseLeave, images = [] }: CardProps) {
+  const serviceCode = useServiceCode()
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)

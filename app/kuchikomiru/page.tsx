@@ -10,5 +10,5 @@ export default async function KuchikomiruPage() {
     return <ErrorMessage message={error.message} />
   }
 
-  return <HomeClient facilities={facilities || []} serviceCode={SERVICE_CODES.KUCHIKOMIRU} />
+  return <HomeClient facilities={facilities || []} />
 }

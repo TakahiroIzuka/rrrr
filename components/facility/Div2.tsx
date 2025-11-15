@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { Facility } from '@/types/facility'
+import { useServiceCode } from '@/contexts/ServiceCodeContext'
 
 interface FacilityImage {
   id: number
@@ -14,7 +15,6 @@ interface FacilityImage {
 
 interface Div2Props {
   facility: Facility
-  serviceCode?: string
   images?: FacilityImage[]
 }
 
@@ -26,7 +26,8 @@ const getGenreNoImage = (genreCode?: string, serviceCode?: string): string => {
   return `/${basePath}/${genreCode}/noimage.jpg`
 }
 
-export default function Div2({ facility, serviceCode, images = [] }: Div2Props) {
+export default function Div2({ facility, images = [] }: Div2Props) {
+  const serviceCode = useServiceCode()
   const [selectedImage, setSelectedImage] = useState(0)
 
   // Create an array of 5 items (fill with images or default)

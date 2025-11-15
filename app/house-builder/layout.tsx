@@ -5,6 +5,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import MarqueeText from '@/components/MarqueeText'
 import { SERVICE_CODES } from '@/lib/constants/services'
+import { ServiceCodeProvider } from '@/contexts/ServiceCodeContext'
 
 export default function HouseBuilderLayout({
   children,
@@ -15,14 +16,13 @@ export default function HouseBuilderLayout({
   const isHouseBuilderTopPage = pathname === '/house-builder'
 
   return (
-    <>
+    <ServiceCodeProvider serviceCode={SERVICE_CODES.HOUSE_BUILDER}>
       {isHouseBuilderTopPage && (
         <>
           <Header
             imagePath="/house-builder/default/logo_header.png"
             lineColor="rgb(248, 176, 66)"
             color="rgb(248, 176, 66)"
-            serviceCode="house-builder"
             serviceName="住宅会社"
           />
           <div className="mt-16 md:mt-0">
@@ -32,8 +32,8 @@ export default function HouseBuilderLayout({
       )}
       {children}
       {isHouseBuilderTopPage && (
-        <Footer serviceCode={SERVICE_CODES.HOUSE_BUILDER} />
+        <Footer />
       )}
-    </>
+    </ServiceCodeProvider>
   )
 }

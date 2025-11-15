@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import type { Facility } from '@/types/facility'
-import type { ServiceCode } from '@/lib/constants/services'
 import Card from './Card'
+import { useServiceCode } from '@/contexts/ServiceCodeContext'
 
 interface FacilityImage {
   id: number
@@ -17,11 +17,11 @@ interface FacilityImage {
 
 interface ListPanelProps {
   facilities: Facility[]
-  serviceCode: ServiceCode
   imagesMap?: Record<number, FacilityImage[]>
 }
 
-export default function ListPanel({ facilities, serviceCode, imagesMap = {} }: ListPanelProps) {
+export default function ListPanel({ facilities, imagesMap = {} }: ListPanelProps) {
+  const serviceCode = useServiceCode()
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
   return (
@@ -43,7 +43,6 @@ export default function ListPanel({ facilities, serviceCode, imagesMap = {} }: L
               isHovered={hoveredCard === facility.id}
               onMouseEnter={() => setHoveredCard(facility.id)}
               onMouseLeave={() => setHoveredCard(null)}
-              serviceCode={serviceCode}
               images={imagesMap[facility.id] || []}
             />
           ))}

@@ -23,7 +23,6 @@ interface HomeClientProps {
   genreId?: number
   genreName?: string
   genreCode?: string
-  serviceCode: ServiceCode
   imagesMap?: Record<number, FacilityImage[]>
 }
 
@@ -32,7 +31,6 @@ export default function HomeClient({
   genreId,
   genreName,
   genreCode,
-  serviceCode,
   imagesMap = {},
 }: HomeClientProps) {
   // Normalize detail to handle both array and object formats
@@ -75,7 +73,6 @@ export default function HomeClient({
           <div className="w-full md:w-[430px] flex-shrink-0 h-1/2 md:h-full order-2 md:order-1 overflow-y-auto" style={{ backgroundColor: '#fff9f0'}}>
             <ListPanel
               facilities={selectedFacilityId ? filteredFacilities.filter(facility => facility.id === selectedFacilityId) : filteredFacilities}
-              serviceCode={serviceCode}
               imagesMap={imagesMap}
             />
           </div>
@@ -85,7 +82,6 @@ export default function HomeClient({
               allFacilities={normalizedFacilities}
               filteredFacilities={filteredFacilities}
               onFacilitySelect={handleFacilitySelect}
-              serviceCode={serviceCode}
             />
             {/* Filter Button Overlay on Map */}
             <FilterButton
@@ -116,7 +112,6 @@ export default function HomeClient({
           imagesMap={imagesMap}
           onFilterChange={handleFilterChange}
           hideGenreFilter={hideGenreFilter}
-          serviceCode={serviceCode}
         />
       </div>
     </>

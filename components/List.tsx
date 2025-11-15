@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import type { Facility } from '@/types/facility'
-import type { ServiceCode } from '@/lib/constants/services'
 import CardLite from './CardLite'
+import { useServiceCode } from '@/contexts/ServiceCodeContext'
 
 interface FacilityImage {
   id: number
@@ -21,7 +21,6 @@ interface ListProps {
   subtitle?: string
   width?: 'full' | '3/4'
   gridCols?: '2' | '5'
-  serviceCode: ServiceCode
   imagesMap?: Record<number, FacilityImage[]>
 }
 
@@ -31,9 +30,9 @@ export default function List({
   subtitle = 'List Search',
   width = '3/4',
   gridCols = '5',
-  serviceCode,
   imagesMap = {}
 }: ListProps) {
+  const serviceCode = useServiceCode()
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
   const widthClass = width === 'full' ? 'w-full' : 'w-full md:w-3/4'
@@ -61,7 +60,6 @@ export default function List({
             isHovered={hoveredCard === facility.id}
             onMouseEnter={() => setHoveredCard(facility.id)}
             onMouseLeave={() => setHoveredCard(null)}
-            serviceCode={serviceCode}
             images={imagesMap[facility.id] || []}
           />
         ))}

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useServiceCode } from '@/contexts/ServiceCodeContext'
 
 interface Genre {
   id: number
@@ -12,10 +13,10 @@ interface GenreModalProps {
   isOpen: boolean
   onClose: () => void
   genres: Genre[]
-  serviceCode: string
 }
 
-export default function GenreModal({ isOpen, onClose, genres, serviceCode }: GenreModalProps) {
+export default function GenreModal({ isOpen, onClose, genres }: GenreModalProps) {
+  const serviceCode = useServiceCode()
   if (!isOpen) return null
 
   // Ensure genres is an array

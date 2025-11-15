@@ -39,14 +39,13 @@ export default async function GenreLayout({
         lineColor={genreColor}
         color={genreColor}
         labelText={genre.name || ''}
-        serviceCode="house-builder"
         serviceName="住宅会社"
       />
       <div className="mt-16 md:mt-0">
         <MarqueeText />
       </div>
       {children}
-      <Footer serviceCode={SERVICE_CODES.HOUSE_BUILDER} />
+      <Footer />
     </>
   )
 }

@@ -1,14 +1,11 @@
 'use client'
 
-import { REVIEW_RANKING_CONFIG, type ServiceCode } from '@/lib/constants/services'
+import { REVIEW_RANKING_CONFIG } from '@/lib/constants/services'
+import { useServiceCode } from '@/contexts/ServiceCodeContext'
 
-interface FooterProps {
-  serviceCode: ServiceCode
-}
+export default function Footer() {
+  const serviceCode = useServiceCode()
 
-export default function Footer({
-  serviceCode
-}: FooterProps) {
   const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]
 
   if (!config) {

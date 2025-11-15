@@ -5,6 +5,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import MarqueeText from '@/components/MarqueeText'
 import { SERVICE_CODES } from '@/lib/constants/services'
+import { ServiceCodeProvider } from '@/contexts/ServiceCodeContext'
 
 export default function ClinicLayout({
   children,
@@ -15,14 +16,13 @@ export default function ClinicLayout({
   const isClinicTopPage = pathname === '/medical'
 
   return (
-    <>
+    <ServiceCodeProvider serviceCode={SERVICE_CODES.MEDICAL}>
       {isClinicTopPage && (
         <>
           <Header
             imagePath="/medical/default/logo_header.png"
             lineColor="#a69a7e"
             color="#acd1e6"
-            serviceCode="medical"
             serviceName="メディカル"
           />
           <div className="mt-16 md:mt-0">
@@ -32,8 +32,8 @@ export default function ClinicLayout({
       )}
       {children}
       {isClinicTopPage && (
-        <Footer serviceCode={SERVICE_CODES.MEDICAL} />
+        <Footer />
       )}
-    </>
+    </ServiceCodeProvider>
   )
 }

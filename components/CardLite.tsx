@@ -7,6 +7,7 @@ import type { ServiceCode } from '@/lib/constants/services'
 import { getStarImage } from '@/lib/utils/starRating'
 import { IMAGE_COUNT } from '@/lib/constants'
 import { useImageSlider } from '@/hooks/useImageSlider'
+import { useServiceCode } from '@/contexts/ServiceCodeContext'
 
 interface FacilityImage {
   id: number
@@ -22,7 +23,6 @@ interface CardLiteProps {
   isHovered: boolean
   onMouseEnter: () => void
   onMouseLeave: () => void
-  serviceCode: ServiceCode
   images?: FacilityImage[]
 }
 
@@ -33,7 +33,8 @@ const getGenreNoImage = (genreCode: string | undefined, serviceCode: ServiceCode
   return `/${serviceCode}/default/noimage.jpg`
 }
 
-export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLeave, serviceCode, images = [] }: CardLiteProps) {
+export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLeave, images = [] }: CardLiteProps) {
+  const serviceCode = useServiceCode()
   const dragRef = useRef<HTMLDivElement>(null)
   const {
     currentImageIndex,

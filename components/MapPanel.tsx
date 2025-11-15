@@ -3,17 +3,17 @@
 import React, { useEffect, useRef, useMemo, useState } from 'react'
 import { Loader } from '@googlemaps/js-api-loader'
 import type { Facility } from '@/types/facility'
-import type { ServiceCode } from '@/lib/constants/services'
 import { MAP_PIN_IMAGES } from '@/lib/constants'
+import { useServiceCode } from '@/contexts/ServiceCodeContext'
 
 interface MapPanelProps {
   allFacilities: Facility[]
   filteredFacilities: Facility[]
   onFacilitySelect?: (facilityId: number | null) => void
-  serviceCode: ServiceCode
 }
 
-const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilities, onFacilitySelect, serviceCode }: MapPanelProps) {
+const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilities, onFacilitySelect }: MapPanelProps) {
+  const serviceCode = useServiceCode()
   const mapRef = useRef<HTMLDivElement>(null)
   const googleMapRef = useRef<google.maps.Map | null>(null)
   const markersRef = useRef<google.maps.Marker[]>([])

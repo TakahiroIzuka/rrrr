@@ -15,5 +15,5 @@ export default async function HomePage() {
   const facilityIds = facilities?.map(f => f.id) || []
   const { imagesMap } = await fetchFacilitiesImages(facilityIds)
 
-  return <HomeClient facilities={facilities || []} serviceCode={SERVICE_CODES.MEDICAL} imagesMap={imagesMap} />
+  return <HomeClient facilities={facilities || []} imagesMap={imagesMap} />
 }

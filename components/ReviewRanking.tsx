@@ -1,16 +1,16 @@
 'use client'
 
-import { REVIEW_RANKING_CONFIG, type ServiceCode } from '@/lib/constants/services'
+import { REVIEW_RANKING_CONFIG } from '@/lib/constants/services'
+import { useServiceCode } from '@/contexts/ServiceCodeContext'
 
 interface ReviewRankingProps {
   variant?: 'mobile' | 'desktop'
-  serviceCode: ServiceCode
 }
 
 export default function ReviewRanking({
-  variant = 'desktop',
-  serviceCode
+  variant = 'desktop'
 }: ReviewRankingProps) {
+  const serviceCode = useServiceCode()
   const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]
 
   if (!config) {

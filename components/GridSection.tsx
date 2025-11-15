@@ -28,7 +28,6 @@ interface GridSectionProps {
   onRankingChange: (ranking: string) => void
   onFilterChange: (filteredFacilities: Facility[]) => void
   hideGenreFilter?: boolean
-  serviceCode: ServiceCode
   imagesMap?: Record<number, FacilityImage[]>
 }
 
@@ -43,7 +42,6 @@ export default function GridSection({
   onRankingChange,
   onFilterChange,
   hideGenreFilter = false,
-  serviceCode,
   imagesMap = {}
 }: GridSectionProps) {
   const { applyFilters } = useClinicFilter(allFacilities)
@@ -74,7 +72,7 @@ export default function GridSection({
     <section className="pt-5 pb-10 px-[5px] md:px-5" style={{ backgroundColor: '#F1F1F1', borderTop: '2px solid #d1cab7' }}>
       <div className="mx-auto space-y-6">
         {/* メディカルクチコミランキング（スマホで表示） */}
-        <ReviewRanking variant="mobile" serviceCode={serviceCode} />
+        <ReviewRanking variant="mobile" />
 
         {/* リストで絞り込み検索（スマホで表示） */}
         <div className="md:hidden w-full bg-white rounded-2xl md:rounded-lg px-[5px] py-5 shadow-none md:shadow-md">
@@ -115,14 +113,13 @@ export default function GridSection({
               subtitle="Recommended Clinic"
               width="full"
               gridCols="5"
-              serviceCode={serviceCode}
               imagesMap={imagesMap}
             />
           </div>
 
           {/* Right Box - 1/4 width */}
           <div className="w-1/4">
-            <ReviewRanking variant="desktop" serviceCode={serviceCode} />
+            <ReviewRanking variant="desktop" />
           </div>
         </div>
 
@@ -135,7 +132,6 @@ export default function GridSection({
             subtitle="List Search"
             width="3/4"
             gridCols="2"
-            serviceCode={serviceCode}
             imagesMap={imagesMap}
           />
 

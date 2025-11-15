@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import GenreModal from './GenreModal'
 import MobileMenu from './MobileMenu'
+import { useServiceCode } from '@/contexts/ServiceCodeContext'
 
 interface Genre {
   id: number
@@ -14,7 +15,6 @@ interface Genre {
 
 interface HeaderProps {
   serviceName?: string
-  serviceCode?: string
   imagePath?: string
   lineColor?: string
   color?: string
@@ -24,13 +24,14 @@ interface HeaderProps {
 
 export default function Header({
   serviceName = '住宅会社',
-  serviceCode = 'house-builder',
   imagePath = '/house-builder/default/logo_header.png',
   lineColor = "rgb(248, 176, 66)",
   color = "rgb(248, 176, 66)",
   pageType = 'top',
   labelText,
 }: HeaderProps) {
+  const serviceCode = useServiceCode()
+
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
@@ -229,7 +230,7 @@ export default function Header({
     </header>
 
       {/* Genre Modal */}
-      <GenreModal isOpen={isGenreModalOpen} onClose={() => setIsGenreModalOpen(false)} genres={genres} serviceCode={serviceCode} />
+      <GenreModal isOpen={isGenreModalOpen} onClose={() => setIsGenreModalOpen(false)} genres={genres} />
 
       {/* Mobile Menu */}
       <MobileMenu
