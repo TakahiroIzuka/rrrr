@@ -50,11 +50,10 @@ export default async function FacilityDetailLayout({
     <>
       <Header
         headerImagePath={headerImagePath}
-        lineColor={genreColor}
-        color={genreColor}
         labelText={genreName || ''}
         pageType="detail"
         serviceName="クチコミル"
+        genreCode={genreCode}
       />
       {/* Breadcrumb */}
       <div className="block py-1" style={{ backgroundColor: '#fff9f0' }}>

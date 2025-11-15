@@ -36,10 +36,10 @@ export default async function GenreLayout({
     <>
       <Header
         headerImagePath={headerImagePath}
-        lineColor={genreColor}
-        color={genreColor}
         labelText={genre.name || ''}
         serviceName="クチコミル"
+        pageType="genre-top"
+        genreCode={genre.code}
       />
       <div className="mt-16 md:mt-0">
         <MarqueeText />

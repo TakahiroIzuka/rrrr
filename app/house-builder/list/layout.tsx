@@ -22,8 +22,6 @@ export default function HouseBuilderListLayout({
     <>
       <Header
         headerImagePath="/house-builder/default/logo_header.png"
-        lineColor="rgb(248, 176, 66)"
-        color="rgb(248, 176, 66)"
         pageType="list"
         serviceName="住宅会社"
       />

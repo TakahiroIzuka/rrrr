@@ -22,8 +22,6 @@ export default function KuchikomiruListLayout({
     <>
       <Header
         headerImagePath="/kuchikomiru/default/logo_header.png"
-        lineColor="rgb(236, 106, 82)"
-        color="rgb(236, 106, 82)"
         pageType="list"
         serviceName="クチコミル"
       />

@@ -21,6 +21,8 @@ export const REVIEW_RANKING_CONFIG = {
     headerImagePath: '/medical/default/logo_header.png',
     buttonText: 'クリニック・施設の掲載リクエストはこちら',
     serviceName: 'メディカル',
+    lineColor: "#a69a7e",
+    color: "#acd1e6",
     genres: {
       'pilates': {
         lineColor: 'rgb(238, 154, 162)',
@@ -51,6 +53,8 @@ export const REVIEW_RANKING_CONFIG = {
     headerImagePath: '/kuchikomiru/default/logo_header.png',
     buttonText: '地域密着店舗・施設の掲載リクエストはこちら',
     serviceName: 'クチコミル',
+    lineColor: "rgb(236, 106, 82)",
+    color: "rgb(236, 106, 82)",
     genres: {
       'cosmetic-dermatology': {
         lineColor: 'rgb(220, 194, 219)',
@@ -81,6 +85,8 @@ export const REVIEW_RANKING_CONFIG = {
     headerImagePath: '/house-builder/default/logo_header.png',
     buttonText: '住宅会社の掲載リクエストはこちら',
     serviceName: '住宅会社',
+    lineColor: 'rgb(248, 176, 66)',
+    color: 'rgb(248, 176, 66)',
     genres: {
       'house-maker-term': {
         lineColor: 'rgb(248, 176, 66)',

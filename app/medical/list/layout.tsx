@@ -22,8 +22,6 @@ export default function ClinicListLayout({
     <>
       <Header
         headerImagePath="/medical/default/logo_header.png"
-        lineColor="#a69a7e"
-        color="#acd1e6"
         pageType="list"
         serviceName="メディカル"
       />

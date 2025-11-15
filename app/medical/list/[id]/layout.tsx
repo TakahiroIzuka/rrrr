@@ -46,11 +46,10 @@ export default async function ClinicDetailLayout({
     <>
       <Header
         headerImagePath="/medical/default/logo_header.png"
-        lineColor={genreColor}
-        color={genreColor}
         labelText={genreName || ''}
         pageType="detail"
         serviceName="メディカル"
+        genreCode={genreCode}
       />
       {/* Breadcrumb */}
       <div className="block py-1" style={{ backgroundColor: '#fff9f0' }}>

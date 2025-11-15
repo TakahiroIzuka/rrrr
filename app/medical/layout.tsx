@@ -21,8 +21,6 @@ export default function ClinicLayout({
         <>
           <Header
             headerImagePath="/medical/default/logo_header.png"
-            lineColor="#a69a7e"
-            color="#acd1e6"
             serviceName="メディカル"
           />
           <div className="mt-16 md:mt-0">

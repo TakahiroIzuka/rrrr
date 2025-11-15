@@ -21,8 +21,6 @@ export default function KuchikomiruLayout({
         <>
           <Header
             headerImagePath="/kuchikomiru/default/logo_header.png"
-            lineColor="rgb(236, 106, 82)"
-            color="rgb(236, 106, 82)"
             serviceName="クチコミル"
           />
           <div className="mt-16 md:mt-0">

@@ -21,8 +21,6 @@ export default function HouseBuilderLayout({
         <>
           <Header
             headerImagePath="/house-builder/default/logo_header.png"
-            lineColor="rgb(248, 176, 66)"
-            color="rgb(248, 176, 66)"
             serviceName="住宅会社"
           />
           <div className="mt-16 md:mt-0">

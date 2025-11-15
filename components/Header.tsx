@@ -6,6 +6,7 @@ import Image from 'next/image'
 import GenreModal from './GenreModal'
 import MobileMenu from './MobileMenu'
 import { useServiceCode } from '@/contexts/ServiceCodeContext'
+import { REVIEW_RANKING_CONFIG } from '@/lib/constants/services'
 
 interface Genre {
   id: number
@@ -18,20 +19,34 @@ interface HeaderProps {
   headerImagePath?: string
   lineColor?: string
   color?: string
-  pageType?: 'top' | 'list' | 'detail'
+  pageType?: 'top' | 'list' | 'detail' | 'genre-top'
   labelText?: string
+  genreCode?: string
 }
 
 export default function Header({
   serviceName = '住宅会社',
   headerImagePath = '/house-builder/default/logo_header.png',
-  lineColor = "rgb(248, 176, 66)",
-  color = "rgb(248, 176, 66)",
+  lineColor: lineColorProp = "rgb(248, 176, 66)",
+  color: colorProp = "rgb(248, 176, 66)",
   pageType = 'top',
   labelText,
+  genreCode,
 }: HeaderProps) {
   const serviceCode = useServiceCode()
 
+  const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]
+  // pageTypeがdetailまたはgenre-topの場合、REVIEW_RANKING_CONFIGからlineColorとcolorを取得
+  let lineColor = config.lineColor ?? lineColorProp
+  let color = config.color ?? colorProp
+
+  if ((pageType === 'detail' || pageType === 'genre-top') && genreCode && config?.genres) {
+    const genreConfig = (config.genres as Record<string, any>)[genreCode]
+    if (genreConfig) {
+      lineColor = genreConfig.lineColor ?? lineColor
+      color = genreConfig.color ?? color
+    }
+  }
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
