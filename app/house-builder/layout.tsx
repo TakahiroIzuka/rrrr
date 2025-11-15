@@ -20,7 +20,7 @@ export default function HouseBuilderLayout({
       {isHouseBuilderTopPage && (
         <>
           <Header
-            imagePath="/house-builder/default/logo_header.png"
+            headerImagePath="/house-builder/default/logo_header.png"
             lineColor="rgb(248, 176, 66)"
             color="rgb(248, 176, 66)"
             serviceName="住宅会社"

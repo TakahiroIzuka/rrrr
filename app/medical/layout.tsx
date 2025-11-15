@@ -20,7 +20,7 @@ export default function ClinicLayout({
       {isClinicTopPage && (
         <>
           <Header
-            imagePath="/medical/default/logo_header.png"
+            headerImagePath="/medical/default/logo_header.png"
             lineColor="#a69a7e"
             color="#acd1e6"
             serviceName="メディカル"

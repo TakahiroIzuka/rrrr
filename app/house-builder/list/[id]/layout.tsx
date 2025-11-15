@@ -49,7 +49,7 @@ export default async function FacilityDetailLayout({
   return (
     <>
       <Header
-        imagePath={headerImagePath}
+        headerImagePath={headerImagePath}
         lineColor={genreColor}
         color={genreColor}
         labelText={genreName || ''}

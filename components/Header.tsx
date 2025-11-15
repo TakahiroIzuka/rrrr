@@ -15,7 +15,7 @@ interface Genre {
 
 interface HeaderProps {
   serviceName?: string
-  imagePath?: string
+  headerImagePath?: string
   lineColor?: string
   color?: string
   pageType?: 'top' | 'list' | 'detail'
@@ -24,7 +24,7 @@ interface HeaderProps {
 
 export default function Header({
   serviceName = '住宅会社',
-  imagePath = '/house-builder/default/logo_header.png',
+  headerImagePath = '/house-builder/default/logo_header.png',
   lineColor = "rgb(248, 176, 66)",
   color = "rgb(248, 176, 66)",
   pageType = 'top',
@@ -147,7 +147,7 @@ export default function Header({
         <div className="flex items-center gap-10">
           <Link href={logoLink} className="md:hidden">
             <Image
-              src={imagePath}
+              src={headerImagePath}
               alt={`${serviceName}クチコミランキング`}
               width={200}
               height={45}
@@ -156,7 +156,7 @@ export default function Header({
           </Link>
           <Link href={logoLink} className="hidden md:block">
             <Image
-              src={imagePath}
+              src={headerImagePath}
               alt={`${serviceName}クチコミランキング`}
               width={320}
               height={72}
@@ -236,7 +236,7 @@ export default function Header({
       <MobileMenu
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
-        logoPath={imagePath}
+        logoPath={headerImagePath}
         onMapClick={() => scrollToSection('map-section')}
         onListClick={() => scrollToSection('list-section')}
         onGenreClick={() => setIsGenreModalOpen(true)}
@@ -254,7 +254,7 @@ export default function Header({
             <div className="flex items-center gap-10">
               <Link href={logoLink} className="md:hidden">
                 <Image
-                  src={imagePath}
+                  src={headerImagePath}
                   alt={`${serviceName}クチコミランキング`}
                   width={180}
                   height={40}
@@ -263,7 +263,7 @@ export default function Header({
               </Link>
               <Link href={logoLink} className="hidden md:block">
                 <Image
-                  src={imagePath}
+                  src={headerImagePath}
                   alt={`${serviceName}クチコミランキング`}
                   width={320}
                   height={72}

@@ -20,7 +20,7 @@ export default function KuchikomiruLayout({
       {isKuchikomiruTopPage && (
         <>
           <Header
-            imagePath="/kuchikomiru/default/logo_header.png"
+            headerImagePath="/kuchikomiru/default/logo_header.png"
             lineColor="rgb(236, 106, 82)"
             color="rgb(236, 106, 82)"
             serviceName="クチコミル"

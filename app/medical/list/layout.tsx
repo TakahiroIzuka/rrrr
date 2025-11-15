@@ -21,7 +21,7 @@ export default function ClinicListLayout({
   return (
     <>
       <Header
-        imagePath="/medical/default/logo_header.png"
+        headerImagePath="/medical/default/logo_header.png"
         lineColor="#a69a7e"
         color="#acd1e6"
         pageType="list"

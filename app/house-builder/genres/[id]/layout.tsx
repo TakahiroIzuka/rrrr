@@ -35,7 +35,7 @@ export default async function GenreLayout({
   return (
     <>
       <Header
-        imagePath={headerImagePath}
+        headerImagePath={headerImagePath}
         lineColor={genreColor}
         color={genreColor}
         labelText={genre.name || ''}

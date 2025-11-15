@@ -21,7 +21,7 @@ export default function KuchikomiruListLayout({
   return (
     <>
       <Header
-        imagePath="/kuchikomiru/default/logo_header.png"
+        headerImagePath="/kuchikomiru/default/logo_header.png"
         lineColor="rgb(236, 106, 82)"
         color="rgb(236, 106, 82)"
         pageType="list"

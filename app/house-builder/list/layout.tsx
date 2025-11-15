@@ -21,7 +21,7 @@ export default function HouseBuilderListLayout({
   return (
     <>
       <Header
-        imagePath="/house-builder/default/logo_header.png"
+        headerImagePath="/house-builder/default/logo_header.png"
         lineColor="rgb(248, 176, 66)"
         color="rgb(248, 176, 66)"
         pageType="list"

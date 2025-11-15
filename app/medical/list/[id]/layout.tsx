@@ -45,7 +45,7 @@ export default async function ClinicDetailLayout({
   return (
     <>
       <Header
-        imagePath="/medical/default/logo_header.png"
+        headerImagePath="/medical/default/logo_header.png"
         lineColor={genreColor}
         color={genreColor}
         labelText={genreName || ''}
