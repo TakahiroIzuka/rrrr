@@ -2,7 +2,7 @@
 INSERT INTO services (id, code, name) VALUES
   (1, 'medical', 'メディカル'),
   (2, 'kuchikomiru', 'クチコミル'),
-  (3, 'house-builder', '工務店'),
+  (3, 'house-builder', '住宅会社'),
   (4, 'vacation-stay', '宿泊施設');
 
 -- Seed genres table
