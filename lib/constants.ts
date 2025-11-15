@@ -22,7 +22,7 @@ export const SWIPE_THRESHOLD = 50
 
 // Map pin images based on genre
 export const MAP_PIN_IMAGES = {
-  unfocus: '/medical/pin_unfocus.png',
+  unfocus: '/common/pin_unfocus.png',
   pilates: '/medical/pin_pilates.png',
   medical: '/medical/pin_medical.png',
   purple: '/medical/pin_purple.png'
