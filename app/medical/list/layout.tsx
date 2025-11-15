@@ -22,7 +22,6 @@ export default function ClinicListLayout({
     <>
       <Header
         pageType="list"
-        serviceName="メディカル"
       />
       <Breadcrumb
         items={[

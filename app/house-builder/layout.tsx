@@ -1,36 +1,27 @@
-'use client'
-
-import { usePathname } from 'next/navigation'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
-import MarqueeText from '@/components/MarqueeText'
+import { createClient } from '@/utils/supabase/server'
 import { SERVICE_CODES } from '@/lib/constants/services'
-import { ServiceCodeProvider } from '@/contexts/ServiceCodeContext'
+import HouseBuilderClientLayout from './client-layout'
 
-export default function HouseBuilderLayout({
+export default async function HouseBuilderLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const pathname = usePathname()
-  const isHouseBuilderTopPage = pathname === '/house-builder'
+  const supabase = await createClient()
+
+  const { data: service } = await supabase
+    .from('services')
+    .select('code, name')
+    .eq('code', SERVICE_CODES.HOUSE_BUILDER)
+    .single()
+
+  if (!service) {
+    throw new Error('House builder service not found')
+  }
 
   return (
-    <ServiceCodeProvider serviceCode={SERVICE_CODES.HOUSE_BUILDER}>
-      {isHouseBuilderTopPage && (
-        <>
-          <Header
-            serviceName="住宅会社"
-          />
-          <div className="mt-16 md:mt-0">
-            <MarqueeText />
-          </div>
-        </>
-      )}
+    <HouseBuilderClientLayout service={service}>
       {children}
-      {isHouseBuilderTopPage && (
-        <Footer />
-      )}
-    </ServiceCodeProvider>
+    </HouseBuilderClientLayout>
   )
 }

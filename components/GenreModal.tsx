@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useServiceCode } from '@/contexts/ServiceCodeContext'
+import { useServiceCode } from '@/contexts/ServiceContext'
 
 interface Genre {
   id: number

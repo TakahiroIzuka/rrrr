@@ -7,7 +7,7 @@ import type { ServiceCode } from '@/lib/constants/services'
 import { getStarImage } from '@/lib/utils/starRating'
 import { IMAGE_COUNT } from '@/lib/constants'
 import { useImageSlider } from '@/hooks/useImageSlider'
-import { useServiceCode } from '@/contexts/ServiceCodeContext'
+import { useServiceCode } from '@/contexts/ServiceContext'
 
 interface FacilityImage {
   id: number

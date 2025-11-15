@@ -1,7 +1,7 @@
 'use client'
 
 import { REVIEW_RANKING_CONFIG } from '@/lib/constants/services'
-import { useServiceCode } from '@/contexts/ServiceCodeContext'
+import { useServiceCode } from '@/contexts/ServiceContext'
 
 interface ReviewRankingProps {
   variant?: 'mobile' | 'desktop'

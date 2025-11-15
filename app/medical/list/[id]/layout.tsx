@@ -47,7 +47,6 @@ export default async function ClinicDetailLayout({
       <Header
         labelText={genreName || ''}
         pageType="detail"
-        serviceName="メディカル"
         genreCode={genreCode}
       />
       {/* Breadcrumb */}

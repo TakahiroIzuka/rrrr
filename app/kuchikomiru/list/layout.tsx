@@ -22,7 +22,6 @@ export default function KuchikomiruListLayout({
     <>
       <Header
         pageType="list"
-        serviceName="クチコミル"
       />
       <Breadcrumb
         items={[

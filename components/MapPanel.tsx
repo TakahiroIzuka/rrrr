@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useMemo, useState } from 'react'
 import { Loader } from '@googlemaps/js-api-loader'
 import type { Facility } from '@/types/facility'
 import { MAP_PIN_IMAGES } from '@/lib/constants'
-import { useServiceCode } from '@/contexts/ServiceCodeContext'
+import { useServiceCode } from '@/contexts/ServiceContext'
 
 interface MapPanelProps {
   allFacilities: Facility[]

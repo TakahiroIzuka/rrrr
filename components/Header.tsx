@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import GenreModal from './GenreModal'
 import MobileMenu from './MobileMenu'
-import { useServiceCode } from '@/contexts/ServiceCodeContext'
+import { useServiceCode, useServiceName } from '@/contexts/ServiceContext'
 import { REVIEW_RANKING_CONFIG } from '@/lib/constants/services'
 
 interface Genre {
@@ -15,7 +15,6 @@ interface Genre {
 }
 
 interface HeaderProps {
-  serviceName?: string
   lineColor?: string
   color?: string
   pageType?: 'top' | 'list' | 'detail' | 'genre-top'
@@ -24,7 +23,6 @@ interface HeaderProps {
 }
 
 export default function Header({
-  serviceName = '住宅会社',
   lineColor: lineColorProp = "rgb(248, 176, 66)",
   color: colorProp = "rgb(248, 176, 66)",
   pageType = 'top',
@@ -32,6 +30,7 @@ export default function Header({
   genreCode,
 }: HeaderProps) {
   const serviceCode = useServiceCode()
+  const serviceName = useServiceName()
   const [headerImagePath, setHeaderImagePath] = useState<string>(`/${serviceCode}/default/logo_header.png`)
 
   const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]

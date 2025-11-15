@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { REVIEW_RANKING_CONFIG } from '@/lib/constants/services'
-import { useServiceCode } from '@/contexts/ServiceCodeContext'
+import { useServiceCode } from '@/contexts/ServiceContext'
 
 interface FooterProps {
   pageType?: 'top' | 'list' | 'detail' | 'genre-top'

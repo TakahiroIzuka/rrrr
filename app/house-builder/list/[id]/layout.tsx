@@ -49,7 +49,6 @@ export default async function FacilityDetailLayout({
       <Header
         labelText={genreName || ''}
         pageType="detail"
-        serviceName="住宅会社"
         genreCode={genreCode}
       />
       {/* Breadcrumb */}

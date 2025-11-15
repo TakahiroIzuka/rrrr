@@ -22,7 +22,6 @@ export default function HouseBuilderListLayout({
     <>
       <Header
         pageType="list"
-        serviceName="住宅会社"
       />
       <Breadcrumb
         items={[

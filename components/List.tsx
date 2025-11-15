@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import type { Facility } from '@/types/facility'
 import CardLite from './CardLite'
-import { useServiceCode } from '@/contexts/ServiceCodeContext'
+import { useServiceCode } from '@/contexts/ServiceContext'
 
 interface FacilityImage {
   id: number

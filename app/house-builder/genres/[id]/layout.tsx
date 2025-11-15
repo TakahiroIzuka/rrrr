@@ -34,7 +34,6 @@ export default async function GenreLayout({
     <>
       <Header
         labelText={genre.name || ''}
-        serviceName="住宅会社"
         pageType="genre-top"
         genreCode={genre.code}
       />

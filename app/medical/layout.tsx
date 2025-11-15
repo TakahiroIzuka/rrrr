@@ -1,36 +1,27 @@
-'use client'
-
-import { usePathname } from 'next/navigation'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
-import MarqueeText from '@/components/MarqueeText'
+import { createClient } from '@/utils/supabase/server'
 import { SERVICE_CODES } from '@/lib/constants/services'
-import { ServiceCodeProvider } from '@/contexts/ServiceCodeContext'
+import MedicalClientLayout from './client-layout'
 
-export default function ClinicLayout({
+export default async function MedicalLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const pathname = usePathname()
-  const isClinicTopPage = pathname === '/medical'
+  const supabase = await createClient()
+
+  const { data: service } = await supabase
+    .from('services')
+    .select('code, name')
+    .eq('code', SERVICE_CODES.MEDICAL)
+    .single()
+
+  if (!service) {
+    throw new Error('Medical service not found')
+  }
 
   return (
-    <ServiceCodeProvider serviceCode={SERVICE_CODES.MEDICAL}>
-      {isClinicTopPage && (
-        <>
-          <Header
-            serviceName="メディカル"
-          />
-          <div className="mt-16 md:mt-0">
-            <MarqueeText />
-          </div>
-        </>
-      )}
+    <MedicalClientLayout service={service}>
       {children}
-      {isClinicTopPage && (
-        <Footer />
-      )}
-    </ServiceCodeProvider>
+    </MedicalClientLayout>
   )
 }

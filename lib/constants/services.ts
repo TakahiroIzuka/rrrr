@@ -18,7 +18,7 @@ export const REVIEW_RANKING_CONFIG = {
     title: 'メディカルクチコミランキング',
     iconImagePath: '/medical/icon.png',
     buttonText: 'クリニック・施設の掲載リクエストはこちら',
-    serviceName: 'メディカル',
+    serviceName: 'Medical Review Ranking.',
     lineColor: "#a69a7e",
     color: "#acd1e6",
     genres: {
@@ -48,7 +48,7 @@ export const REVIEW_RANKING_CONFIG = {
     title: 'クチコミルランキング',
     iconImagePath: '/kuchikomiru/icon.png',
     buttonText: '地域密着店舗・施設の掲載リクエストはこちら',
-    serviceName: 'クチコミル',
+    serviceName: 'Mr.Review Ranking.',
     lineColor: "rgb(236, 106, 82)",
     color: "rgb(236, 106, 82)",
     genres: {
@@ -78,7 +78,7 @@ export const REVIEW_RANKING_CONFIG = {
     title: '住宅会社ランキング',
     iconImagePath: '/house-builder/icon.png',
     buttonText: '住宅会社の掲載リクエストはこちら',
-    serviceName: '住宅会社',
+    serviceName: 'House Builder Review Ranking.',
     lineColor: 'rgb(248, 176, 66)',
     color: 'rgb(248, 176, 66)',
     genres: {
