@@ -39,6 +39,8 @@ export default async function GenreLayout({
         lineColor={genreColor}
         color={genreColor}
         labelText={genre.name || ''}
+        serviceCode="house-builder"
+        serviceName="住宅会社"
       />
       <div className="mt-16 md:mt-0">
         <MarqueeText />
@@ -47,7 +49,7 @@ export default async function GenreLayout({
       <Footer
         imagePath={footerImagePath}
         buttonText="住宅会社の掲載リクエストはこちら"
-        serviceName="House Builder Review Ranking."
+        serviceName="住宅会社"
       />
     </>
   )

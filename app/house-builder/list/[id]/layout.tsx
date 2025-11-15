@@ -53,6 +53,9 @@ export default async function FacilityDetailLayout({
         lineColor={genreColor}
         color={genreColor}
         labelText={genreName || ''}
+        serviceCode="house-builder"
+        pageType="detail"
+        serviceName="住宅会社"
       />
       {/* Breadcrumb */}
       <div className="block py-1" style={{ backgroundColor: '#fff9f0' }}>
@@ -76,7 +79,7 @@ export default async function FacilityDetailLayout({
       <Footer
         imagePath={footerImagePath}
         buttonText="住宅会社の掲載リクエストはこちら"
-        serviceName="House Builder Review Ranking."
+        serviceName="住宅会社"
       />
     </>
   )

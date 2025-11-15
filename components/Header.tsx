@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import GenreModal from './GenreModal'
@@ -14,17 +13,23 @@ interface Genre {
 }
 
 interface HeaderProps {
+  serviceName?: string
+  serviceCode?: string
   imagePath?: string
   lineColor?: string
   color?: string
+  pageType?: 'top' | 'list' | 'detail'
   labelText?: string
 }
 
 export default function Header({
-  imagePath = '/medical/default/logo_header.png',
-  lineColor = '#a69a7e',
-  color = '#acd1e6',
-  labelText
+  serviceName = '住宅会社',
+  serviceCode = 'house-builder',
+  imagePath = '/house-builder/default/logo_header.png',
+  lineColor = "rgb(248, 176, 66)",
+  color = "rgb(248, 176, 66)",
+  pageType = 'top',
+  labelText,
 }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
@@ -32,7 +37,6 @@ export default function Header({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isGenreModalOpen, setIsGenreModalOpen] = useState(false)
   const [genres, setGenres] = useState<Genre[]>([])
-  const pathname = usePathname()
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -40,13 +44,6 @@ export default function Header({
       element.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }
-
-  // serviceCodeを判定
-  const currentServiceCode = pathname?.startsWith('/kuchikomiru')
-    ? 'kuchikomiru'
-    : pathname?.startsWith('/house-builder')
-    ? 'house-builder'
-    : 'medical'
 
   // Fetch genres on mount and when serviceCode changes
   useEffect(() => {
@@ -59,7 +56,7 @@ export default function Header({
     }
 
     // First, get the service ID for the current service code
-    const serviceUrl = `${supabaseUrl}/rest/v1/services?code=eq.${currentServiceCode}`
+    const serviceUrl = `${supabaseUrl}/rest/v1/services?code=eq.${serviceCode}`
 
     fetch(serviceUrl, {
       headers: {
@@ -84,7 +81,7 @@ export default function Header({
             }
           })
         }
-        throw new Error(`Service not found for code: ${currentServiceCode}`)
+        throw new Error(`Service not found for code: ${serviceCode}`)
       })
       .then(res => {
         if (!res.ok) {
@@ -101,22 +98,13 @@ export default function Header({
         console.error('Failed to fetch genres:', err)
         setGenres([])
       })
-  }, [currentServiceCode])
+  }, [serviceCode])
 
-  // 詳細ページかどうかを判定
-  const isDetailPage = (pathname?.startsWith('/medical/list/') && pathname !== '/medical/list') ||
-                       (pathname?.startsWith('/kuchikomiru/list/') && pathname !== '/kuchikomiru/list') ||
-                       (pathname?.startsWith('/house-builder/list/') && pathname !== '/house-builder/list')
+  // ロゴのリンク先をserviceCodeから判定
+  const logoLink = `/${serviceCode}`
 
-  // 一覧ページかどうかを判定
-  const isListPage = pathname === '/medical/list' || pathname === '/kuchikomiru/list' || pathname === '/house-builder/list'
-
-  // ロゴのリンク先を判定
-  const logoLink = pathname?.startsWith('/kuchikomiru')
-    ? '/kuchikomiru'
-    : pathname?.startsWith('/house-builder')
-    ? '/house-builder'
-    : '/medical'
+  // ナビゲーションボタンを表示するかどうか
+  const showNavButtons = pageType === 'top'
 
   useEffect(() => {
     const handleScroll = () => {
@@ -159,7 +147,7 @@ export default function Header({
           <Link href={logoLink} className="md:hidden">
             <Image
               src={imagePath}
-              alt="メディカルクチコミランキング"
+              alt={`${serviceName}クチコミランキング`}
               width={200}
               height={45}
               className="h-12"
@@ -168,7 +156,7 @@ export default function Header({
           <Link href={logoLink} className="hidden md:block">
             <Image
               src={imagePath}
-              alt="メディカルクチコミランキング"
+              alt={`${serviceName}クチコミランキング`}
               width={320}
               height={72}
               className="h-18"
@@ -216,7 +204,7 @@ export default function Header({
           )}
         </button>
 
-        {!isDetailPage && !isListPage && (
+        {showNavButtons && (
           <nav className="hidden md:flex gap-4 items-end">
             <button onClick={() => scrollToSection('map-section')} className="bg-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-0" style={{ fontSize: '14px', color }}>
               <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
@@ -241,7 +229,7 @@ export default function Header({
     </header>
 
       {/* Genre Modal */}
-      <GenreModal isOpen={isGenreModalOpen} onClose={() => setIsGenreModalOpen(false)} genres={genres} serviceCode={currentServiceCode} />
+      <GenreModal isOpen={isGenreModalOpen} onClose={() => setIsGenreModalOpen(false)} genres={genres} serviceCode={serviceCode} />
 
       {/* Mobile Menu */}
       <MobileMenu
@@ -266,7 +254,7 @@ export default function Header({
               <Link href={logoLink} className="md:hidden">
                 <Image
                   src={imagePath}
-                  alt="メディカルクチコミランキング"
+                  alt={`${serviceName}クチコミランキング`}
                   width={180}
                   height={40}
                   className="h-10"
@@ -275,7 +263,7 @@ export default function Header({
               <Link href={logoLink} className="hidden md:block">
                 <Image
                   src={imagePath}
-                  alt="メディカルクチコミランキング"
+                  alt={`${serviceName}クチコミランキング`}
                   width={320}
                   height={72}
                   className="h-18"
@@ -290,7 +278,7 @@ export default function Header({
             </div>
 
             {/* PC用のナビゲーション */}
-            {!isDetailPage && !isListPage && (
+            {showNavButtons && (
               <nav className="hidden md:flex gap-4 items-end">
                 <button onClick={() => scrollToSection('map-section')} className="bg-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-0" style={{ fontSize: '14px', color }}>
                   <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>

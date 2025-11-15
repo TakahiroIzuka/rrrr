@@ -23,6 +23,9 @@ export default function ClinicListLayout({
         imagePath="/medical/default/logo_header.png"
         lineColor="#a69a7e"
         color="#acd1e6"
+        serviceCode="medical"
+        pageType="list"
+        serviceName="メディカル"
       />
       <Breadcrumb
         items={[
@@ -34,7 +37,7 @@ export default function ClinicListLayout({
       <Footer
         imagePath="/medical/default/logo_footer.png"
         buttonText="クリニック・施設の掲載リクエストはこちら"
-        serviceName="Medical Review Ranking."
+        serviceName="メディカル"
       />
     </>
   )

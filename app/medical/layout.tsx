@@ -21,6 +21,8 @@ export default function ClinicLayout({
             imagePath="/medical/default/logo_header.png"
             lineColor="#a69a7e"
             color="#acd1e6"
+            serviceCode="medical"
+            serviceName="メディカル"
           />
           <div className="mt-16 md:mt-0">
             <MarqueeText />
@@ -32,7 +34,7 @@ export default function ClinicLayout({
         <Footer
           imagePath="/medical/default/logo_footer.png"
           buttonText="クリニック・施設の掲載リクエストはこちら"
-          serviceName="Medical Review Ranking."
+          serviceName="メディカル"
         />
       )}
     </>

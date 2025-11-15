@@ -23,6 +23,9 @@ export default function KuchikomiruListLayout({
         imagePath="/kuchikomiru/default/logo_header.png"
         lineColor="rgb(236, 106, 82)"
         color="rgb(236, 106, 82)"
+        serviceCode="kuchikomiru"
+        pageType="list"
+        serviceName="クチコミル"
       />
       <Breadcrumb
         items={[
@@ -34,7 +37,7 @@ export default function KuchikomiruListLayout({
       <Footer
         imagePath="/kuchikomiru/default/logo_footer.png"
         buttonText="地域密着店舗・施設の掲載リクエストはこちら"
-        serviceName="Mr.Review Ranking."
+        serviceName="クチコミル"
       />
     </>
   )

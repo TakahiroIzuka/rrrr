@@ -21,6 +21,8 @@ export default function HouseBuilderLayout({
             imagePath="/house-builder/default/logo_header.png"
             lineColor="rgb(248, 176, 66)"
             color="rgb(248, 176, 66)"
+            serviceCode="house-builder"
+            serviceName="住宅会社"
           />
           <div className="mt-16 md:mt-0">
             <MarqueeText />
@@ -32,7 +34,7 @@ export default function HouseBuilderLayout({
         <Footer
           imagePath="/house-builder/default/logo_footer.png"
           buttonText="住宅会社の掲載リクエストはこちら"
-          serviceName="House Builder Review Ranking."
+          serviceName="住宅会社"
         />
       )}
     </>

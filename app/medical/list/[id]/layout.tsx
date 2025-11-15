@@ -48,6 +48,9 @@ export default async function ClinicDetailLayout({
         lineColor={genreColor}
         color={genreColor}
         labelText={genreName || ''}
+        serviceCode="medical"
+        pageType="detail"
+        serviceName="メディカル"
       />
       {/* Breadcrumb */}
       <div className="block py-1" style={{ backgroundColor: '#fff9f0' }}>
@@ -71,7 +74,7 @@ export default async function ClinicDetailLayout({
       <Footer
         imagePath="/medical/default/logo_footer.png"
         buttonText="クリニック・施設の掲載リクエストはこちら"
-        serviceName="Medical Review Ranking."
+        serviceName="メディカル"
       />
     </>
   )

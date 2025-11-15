@@ -21,6 +21,8 @@ export default function KuchikomiruLayout({
             imagePath="/kuchikomiru/default/logo_header.png"
             lineColor="rgb(236, 106, 82)"
             color="rgb(236, 106, 82)"
+            serviceCode="kuchikomiru"
+            serviceName="クチコミル"
           />
           <div className="mt-16 md:mt-0">
             <MarqueeText />
@@ -32,7 +34,7 @@ export default function KuchikomiruLayout({
         <Footer
           imagePath="/kuchikomiru/default/logo_footer.png"
           buttonText="地域密着店舗・施設の掲載リクエストはこちら"
-          serviceName="Mr.Review Ranking."
+          serviceName="クチコミル"
         />
       )}
     </>

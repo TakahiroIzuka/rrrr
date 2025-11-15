@@ -10,7 +10,7 @@ export default function Footer({
   // Default props
   imagePath = '/house-builder/default/logo_footer.png',
   buttonText = '施設の掲載リクエストはこちら',
-  serviceName = 'Rainmans Review Ranking.'
+  serviceName = 'Rainmans'
 }: FooterProps) {
 
   return (

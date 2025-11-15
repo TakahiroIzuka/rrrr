@@ -23,6 +23,9 @@ export default function HouseBuilderListLayout({
         imagePath="/house-builder/default/logo_header.png"
         lineColor="rgb(248, 176, 66)"
         color="rgb(248, 176, 66)"
+        serviceCode="house-builder"
+        pageType="list"
+        serviceName="住宅会社"
       />
       <Breadcrumb
         items={[
@@ -34,7 +37,7 @@ export default function HouseBuilderListLayout({
       <Footer
         imagePath="/house-builder/default/logo_footer.png"
         buttonText="住宅会社の掲載リクエストはこちら"
-        serviceName="House Builder Review Ranking."
+        serviceName="住宅会社"
       />
     </>
   )
