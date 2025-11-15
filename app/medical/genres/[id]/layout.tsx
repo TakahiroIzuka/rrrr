@@ -45,7 +45,7 @@ export default async function GenreLayout({
         <MarqueeText />
       </div>
       {children}
-      <Footer pageType="genre-top" />
+      <Footer pageType="genre-top" genreCode={genre.code} />
     </>
   )
 }

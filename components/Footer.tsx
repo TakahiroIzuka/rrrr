@@ -1,23 +1,44 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { REVIEW_RANKING_CONFIG } from '@/lib/constants/services'
 import { useServiceCode } from '@/contexts/ServiceCodeContext'
 
 interface FooterProps {
   pageType?: 'top' | 'list' | 'detail' | 'genre-top'
+  genreCode?: string
 }
 
-export default function Footer({ pageType = 'top' }: FooterProps) {
+export default function Footer({ pageType = 'top', genreCode }: FooterProps) {
   const serviceCode = useServiceCode()
+  const [footerImagePath, setFooterImagePath] = useState<string>(`/${serviceCode}/default/logo_footer.png`)
 
   const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]
+  const { buttonText, serviceName } = config
 
-  if (!config) {
-    console.error(`No config found for service code: ${serviceCode}`)
-    return null
-  }
+  // 画像の存在チェック
+  useEffect(() => {
+    // pageTypeがdetailまたはgenre-topで、genreCodeがある場合のみチェック
+    if ((pageType === 'detail' || pageType === 'genre-top') && genreCode) {
+      // REVIEW_RANKING_CONFIGのgenresにgenreCodeが定義されているかチェック
+      const genreConfig = config.genres?.[genreCode as keyof typeof config.genres]
+      if (genreConfig) {
+        const genreSpecificPath = `/${serviceCode}/${genreCode}/logo_footer.png`
 
-  const { footerImagePath, buttonText, serviceName } = config
+        // 画像の存在を確認
+        const img = new Image()
+        img.onload = () => {
+          // 画像が存在する場合、ジャンル固有のパスを使用
+          setFooterImagePath(genreSpecificPath)
+        }
+        img.onerror = () => {
+          // 画像が存在しない場合、デフォルトのパスを使用（初期値と同じ）
+          setFooterImagePath(`/${serviceCode}/default/logo_footer.png`)
+        }
+        img.src = genreSpecificPath
+      }
+    }
+  }, [serviceCode, pageType, genreCode, config])
 
   return (
     <div className="bg-white">

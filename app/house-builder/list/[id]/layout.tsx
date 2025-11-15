@@ -74,7 +74,7 @@ export default async function FacilityDetailLayout({
         </div>
       </div>
       {children}
-      <Footer pageType="detail" />
+      <Footer pageType="detail" genreCode={genreCode} />
     </>
   )
 }
