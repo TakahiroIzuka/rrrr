@@ -31,6 +31,7 @@ export default function HomeClient({
   facilities,
   genreId,
   genreName,
+  genreCode,
   serviceCode,
   imagesMap = {},
 }: HomeClientProps) {
@@ -84,6 +85,7 @@ export default function HomeClient({
               allFacilities={normalizedFacilities}
               filteredFacilities={filteredFacilities}
               onFacilitySelect={handleFacilitySelect}
+              serviceCode={serviceCode}
             />
             {/* Filter Button Overlay on Map */}
             <FilterButton
@@ -115,6 +117,7 @@ export default function HomeClient({
           onFilterChange={handleFilterChange}
           hideGenreFilter={hideGenreFilter}
           serviceCode={serviceCode}
+          genreCode={genreCode}
         />
       </div>
     </>

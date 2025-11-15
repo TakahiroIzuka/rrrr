@@ -3,15 +3,17 @@
 import React, { useEffect, useRef, useMemo, useState } from 'react'
 import { Loader } from '@googlemaps/js-api-loader'
 import type { Facility } from '@/types/facility'
+import type { ServiceCode } from '@/lib/constants/services'
 import { MAP_PIN_IMAGES } from '@/lib/constants'
 
 interface MapPanelProps {
   allFacilities: Facility[]
   filteredFacilities: Facility[]
   onFacilitySelect?: (facilityId: number | null) => void
+  serviceCode: ServiceCode
 }
 
-const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilities, onFacilitySelect }: MapPanelProps) {
+const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilities, onFacilitySelect, serviceCode }: MapPanelProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const googleMapRef = useRef<google.maps.Map | null>(null)
   const markersRef = useRef<google.maps.Marker[]>([])
@@ -112,16 +114,14 @@ const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilitie
           // Skip if marker already exists
           if (markersMapRef.current.has(facility.id)) return
 
-          // Select pin image based on genre_id and focus state
-          const getPinImage = (genre_id: number, isFocused: boolean): string => {
+          // Select pin image based on genre code and focus state
+          const getPinImage = (genreCode: string | undefined, isFocused: boolean): string => {
             if (!isFocused) return MAP_PIN_IMAGES.unfocus
 
-            switch (genre_id) {
-              case 1: return MAP_PIN_IMAGES.pilates
-              case 2: return MAP_PIN_IMAGES.medical
-              case 5: return MAP_PIN_IMAGES.purple
-              default: return MAP_PIN_IMAGES.medical
+            if (genreCode) {
+              return `/${serviceCode}/${genreCode}/pin.png`
             }
+            return `/${serviceCode}/default/pin.png`
           }
 
           // Create custom HTML marker element
@@ -138,7 +138,12 @@ const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilitie
             width: 42px;
             display: block;
           `
-          imgElement.src = getPinImage(facility.genre_id, true)
+          imgElement.src = getPinImage(facility.genre?.code, true)
+
+          // Fallback to default pin if image fails to load
+          imgElement.onerror = () => {
+            imgElement.src = `/${serviceCode}/default/pin.png`
+          }
 
           const starElement = document.createElement('p')
           starElement.style.cssText = `
@@ -176,7 +181,7 @@ const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilitie
 
           const updateMarkerContent = (isFocused: boolean = true) => {
             // Only update the image source, don't recreate elements
-            imgElement.src = getPinImage(facility.genre_id, isFocused)
+            imgElement.src = getPinImage(facility.genre?.code, isFocused)
           }
 
           // Initial marker content

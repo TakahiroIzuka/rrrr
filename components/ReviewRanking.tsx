@@ -1,13 +1,18 @@
+'use client'
+
+import { useState } from 'react'
 import { REVIEW_RANKING_CONFIG, SERVICE_CODES, type ServiceCode } from '@/lib/constants/services'
 
 interface ReviewRankingProps {
   variant?: 'mobile' | 'desktop'
   serviceCode: ServiceCode
+  genreCode?: string
 }
 
 export default function ReviewRanking({
   variant = 'desktop',
-  serviceCode
+  serviceCode,
+  genreCode
 }: ReviewRankingProps) {
   const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]
 
@@ -16,8 +21,23 @@ export default function ReviewRanking({
     return null
   }
 
-  const { title, imagePath, buttonText } = config
+  const { title, buttonText } = config
   const isMobile = variant === 'mobile'
+
+  // Determine pin image path based on genreCode
+  const getPinImagePath = () => {
+    if (genreCode) {
+      return `/${serviceCode}/${genreCode}/pin.png`
+    }
+    return `/${serviceCode}/default/pin.png`
+  }
+
+  const [imagePath, setImagePath] = useState(getPinImagePath())
+
+  const handleImageError = () => {
+    // Fallback to default if image not found
+    setImagePath(`/${serviceCode}/default/pin.png`)
+  }
 
   const containerClass = isMobile
     ? 'md:hidden w-full bg-white rounded-2xl md:rounded-lg px-[5px] py-5 shadow-none md:shadow-md relative overflow-hidden'
@@ -38,7 +58,12 @@ export default function ReviewRanking({
         <img src="/common/icon-background.png" alt="" className="w-full h-full object-cover object-top" />
       </div>
 
-      <img src={imagePath} alt="プロフィール" className="w-[95px] h-[95px] object-contain relative z-10 mx-auto mb-3" />
+      <img
+        src={imagePath}
+        alt="プロフィール"
+        className="w-[95px] h-[95px] object-contain relative z-10 mx-auto mb-3"
+        onError={handleImageError}
+      />
 
       {/* Title */}
       <h3 className="text-base font-bold text-gray-700 mb-3 text-center">
