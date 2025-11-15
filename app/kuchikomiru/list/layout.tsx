@@ -34,7 +34,7 @@ export default function KuchikomiruListLayout({
         ]}
       />
       {children}
-      <Footer />
+      <Footer pageType="list" />
     </>
   )
 }

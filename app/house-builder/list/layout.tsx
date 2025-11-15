@@ -34,7 +34,7 @@ export default function HouseBuilderListLayout({
         ]}
       />
       {children}
-      <Footer />
+      <Footer pageType="list" />
     </>
   )
 }

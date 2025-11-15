@@ -71,7 +71,7 @@ export default async function ClinicDetailLayout({
         </div>
       </div>
       {children}
-      <Footer />
+      <Footer pageType="detail" />
     </>
   )
 }

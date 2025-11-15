@@ -75,7 +75,7 @@ export default async function FacilityDetailLayout({
         </div>
       </div>
       {children}
-      <Footer />
+      <Footer pageType="detail" />
     </>
   )
 }

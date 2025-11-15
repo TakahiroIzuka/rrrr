@@ -3,7 +3,11 @@
 import { REVIEW_RANKING_CONFIG } from '@/lib/constants/services'
 import { useServiceCode } from '@/contexts/ServiceCodeContext'
 
-export default function Footer() {
+interface FooterProps {
+  pageType?: 'top' | 'list' | 'detail' | 'genre-top'
+}
+
+export default function Footer({ pageType = 'top' }: FooterProps) {
   const serviceCode = useServiceCode()
 
   const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]
