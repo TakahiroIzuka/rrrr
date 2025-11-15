@@ -117,7 +117,6 @@ export default function HomeClient({
           onFilterChange={handleFilterChange}
           hideGenreFilter={hideGenreFilter}
           serviceCode={serviceCode}
-          genreCode={genreCode}
         />
       </div>
     </>
