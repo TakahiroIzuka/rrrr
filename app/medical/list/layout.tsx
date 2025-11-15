@@ -34,7 +34,7 @@ export default function ClinicListLayout({
       <Footer
         imagePath="/medical/default/logo_footer.png"
         buttonText="クリニック・施設の掲載リクエストはこちら"
-        type="clinic"
+        serviceName="Medical Review Ranking."
       />
     </>
   )

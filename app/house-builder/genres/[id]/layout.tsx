@@ -47,7 +47,7 @@ export default async function GenreLayout({
       <Footer
         imagePath={footerImagePath}
         buttonText="住宅会社の掲載リクエストはこちら"
-        type="house-builder"
+        serviceName="House Builder Review Ranking."
       />
     </>
   )

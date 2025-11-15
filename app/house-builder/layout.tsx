@@ -32,7 +32,7 @@ export default function HouseBuilderLayout({
         <Footer
           imagePath="/house-builder/default/logo_footer.png"
           buttonText="住宅会社の掲載リクエストはこちら"
-          type="house-builder"
+          serviceName="House Builder Review Ranking."
         />
       )}
     </>

@@ -47,7 +47,7 @@ export default async function GenreLayout({
       <Footer
         imagePath={footerImagePath}
         buttonText="地域密着店舗・施設の掲載リクエストはこちら"
-        type="accomodation"
+        serviceName="Mr.Review Ranking."
       />
     </>
   )

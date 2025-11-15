@@ -34,7 +34,7 @@ export default function KuchikomiruListLayout({
       <Footer
         imagePath="/kuchikomiru/default/logo_footer.png"
         buttonText="地域密着店舗・施設の掲載リクエストはこちら"
-        type="accomodation"
+        serviceName="Mr.Review Ranking."
       />
     </>
   )

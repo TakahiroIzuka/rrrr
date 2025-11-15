@@ -1,25 +1,17 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
-
 interface FooterProps {
   imagePath: string
   buttonText: string
-  type: string
+  serviceName?: string
 }
 
 export default function Footer({
-  imagePath = '/medical/default/logo_footer.png',
-  buttonText = 'クリニック・施設の掲載リクエストはこちら',
-  type = 'clinic'
+  // Default props
+  imagePath = '/house-builder/default/logo_footer.png',
+  buttonText = '施設の掲載リクエストはこちら',
+  serviceName = 'Rainmans Review Ranking.'
 }: FooterProps) {
-  const pathname = usePathname()
-
-  // typeに応じてサービス名を設定
-  const serviceName =
-    type === 'accomodation' ? 'Kuchikomiru.' :
-    type === 'clinic' ? 'Medical Review Ranking' :
-    'Rainmans'
 
   return (
     <div className="bg-white">
