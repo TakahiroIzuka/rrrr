@@ -161,7 +161,7 @@ export default function CardLite({ facility, isHovered, onMouseEnter, onMouseLea
         <div className="mb-2">
           <div className="flex items-center gap-1 mb-0.5">
             <img
-              src="/common/ranking-icon.png"
+              src="/common/king-crown-icon.png"
               alt="ランキング"
               className="w-[14px] h-[14px]"
             />

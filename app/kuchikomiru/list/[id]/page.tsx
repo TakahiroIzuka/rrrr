@@ -51,7 +51,7 @@ export default async function FacilityDetailPage({ params }: FacilityDetailPageP
               <div className="mb-0 md:mb-3 pb-2 border-b border-[#a59878]">
                 <div className="flex items-center gap-1.5 mb-1">
                   <img
-                    src="/common/ranking-icon.png"
+                    src="/common/king-crown-icon.png"
                     alt="ランキング"
                     className="w-[18px] h-[18px]"
                   />

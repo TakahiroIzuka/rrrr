@@ -192,7 +192,7 @@ export default function Card({ facility, isHovered, onMouseEnter, onMouseLeave, 
         <div className="mb-3">
           <div className="flex items-center gap-1.5 mb-1">
             <img
-              src="/common/ranking-icon.png"
+              src="/common/king-crown-icon.png"
               alt="ランキング"
               className="w-[18px] h-[18px]"
             />
