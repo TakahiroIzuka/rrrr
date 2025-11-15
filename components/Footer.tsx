@@ -1,24 +1,29 @@
 'use client'
 
+import { REVIEW_RANKING_CONFIG, type ServiceCode } from '@/lib/constants/services'
+
 interface FooterProps {
-  imagePath: string
-  buttonText: string
-  serviceName?: string
+  serviceCode: ServiceCode
 }
 
 export default function Footer({
-  // Default props
-  imagePath = '/house-builder/default/logo_footer.png',
-  buttonText = '施設の掲載リクエストはこちら',
-  serviceName = 'Rainmans'
+  serviceCode
 }: FooterProps) {
+  const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]
+
+  if (!config) {
+    console.error(`No config found for service code: ${serviceCode}`)
+    return null
+  }
+
+  const { footerImagePath, buttonText, serviceName } = config
 
   return (
     <div className="bg-white">
       <footer className="bg-[#eae3db] mx-0 md:mx-[15px] mb-0 md:mb-[15px] mt-0 md:mt-[15px] pt-[30px] pb-6 text-center md:rounded-lg">
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <img src={imagePath} alt="Medical Review Ranking" className="h-28 md:h-36" />
+          <img src={footerImagePath} alt="Medical Review Ranking" className="h-28 md:h-36" />
         </div>
 
         {/* Request Button */}

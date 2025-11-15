@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import MarqueeText from '@/components/MarqueeText'
+import { SERVICE_CODES } from '@/lib/constants/services'
 
 export default function HouseBuilderLayout({
   children,
@@ -31,11 +32,7 @@ export default function HouseBuilderLayout({
       )}
       {children}
       {isHouseBuilderTopPage && (
-        <Footer
-          imagePath="/house-builder/default/logo_footer.png"
-          buttonText="住宅会社の掲載リクエストはこちら"
-          serviceName="住宅会社"
-        />
+        <Footer serviceCode={SERVICE_CODES.HOUSE_BUILDER} />
       )}
     </>
   )

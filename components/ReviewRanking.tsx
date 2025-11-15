@@ -18,7 +18,7 @@ export default function ReviewRanking({
     return null
   }
 
-  const { title, buttonText, imagePath } = config
+  const { title, buttonText, iconImagePath } = config
   const isMobile = variant === 'mobile'
 
   const containerClass = isMobile
@@ -41,7 +41,7 @@ export default function ReviewRanking({
       </div>
 
       <img
-        src={imagePath}
+        src={iconImagePath}
         alt="プロフィール"
         className="w-[95px] h-[95px] object-contain relative z-10 mx-auto mb-3"
       />

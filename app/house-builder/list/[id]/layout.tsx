@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { getGenreColor } from '@/lib/utils/genreColors'
 import { getGenreImagePath } from '@/lib/utils/imagePath'
+import { SERVICE_CODES } from '@/lib/constants/services'
 
 interface FacilityDetailLayoutProps {
   children: React.ReactNode
@@ -44,7 +45,6 @@ export default async function FacilityDetailLayout({
 
   const genreColor = getGenreColor(genreCode)
   const headerImagePath = getGenreImagePath('house-builder', genreCode, 'logo_header.png')
-  const footerImagePath = getGenreImagePath('house-builder', genreCode, 'logo_footer.png')
 
   return (
     <>
@@ -76,11 +76,7 @@ export default async function FacilityDetailLayout({
         </div>
       </div>
       {children}
-      <Footer
-        imagePath={footerImagePath}
-        buttonText="住宅会社の掲載リクエストはこちら"
-        serviceName="住宅会社"
-      />
+      <Footer serviceCode={SERVICE_CODES.HOUSE_BUILDER} />
     </>
   )
 }

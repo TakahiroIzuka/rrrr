@@ -5,6 +5,7 @@ import MarqueeText from '@/components/MarqueeText'
 import Footer from '@/components/Footer'
 import { getGenreImagePath } from '@/lib/utils/imagePath'
 import { getGenreColor } from '@/lib/utils/genreColors'
+import { SERVICE_CODES } from '@/lib/constants/services'
 
 interface GenreLayoutProps {
   children: React.ReactNode
@@ -29,7 +30,6 @@ export default async function GenreLayout({
   }
 
   const headerImagePath = getGenreImagePath('kuchikomiru', genre.code, 'logo_header.png')
-  const footerImagePath = getGenreImagePath('kuchikomiru', genre.code, 'logo_footer.png')
   const genreColor = getGenreColor(genre.code)
 
   return (
@@ -46,11 +46,7 @@ export default async function GenreLayout({
         <MarqueeText />
       </div>
       {children}
-      <Footer
-        imagePath={footerImagePath}
-        buttonText="地域密着店舗・施設の掲載リクエストはこちら"
-        serviceName="クチコミル"
-      />
+      <Footer serviceCode={SERVICE_CODES.KUCHIKOMIRU} />
     </>
   )
 }

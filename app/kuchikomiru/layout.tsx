@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import MarqueeText from '@/components/MarqueeText'
+import { SERVICE_CODES } from '@/lib/constants/services'
 
 export default function KuchikomiruLayout({
   children,
@@ -31,11 +32,7 @@ export default function KuchikomiruLayout({
       )}
       {children}
       {isKuchikomiruTopPage && (
-        <Footer
-          imagePath="/kuchikomiru/default/logo_footer.png"
-          buttonText="地域密着店舗・施設の掲載リクエストはこちら"
-          serviceName="クチコミル"
-        />
+        <Footer serviceCode={SERVICE_CODES.KUCHIKOMIRU} />
       )}
     </>
   )

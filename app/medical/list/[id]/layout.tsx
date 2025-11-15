@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { getGenreColor } from '@/lib/utils/genreColors'
+import { SERVICE_CODES } from '@/lib/constants/services'
 
 interface ClinicDetailLayoutProps {
   children: React.ReactNode
@@ -71,11 +72,7 @@ export default async function ClinicDetailLayout({
         </div>
       </div>
       {children}
-      <Footer
-        imagePath="/medical/default/logo_footer.png"
-        buttonText="クリニック・施設の掲載リクエストはこちら"
-        serviceName="メディカル"
-      />
+      <Footer serviceCode={SERVICE_CODES.MEDICAL} />
     </>
   )
 }

@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import MarqueeText from '@/components/MarqueeText'
+import { SERVICE_CODES } from '@/lib/constants/services'
 
 export default function ClinicLayout({
   children,
@@ -31,11 +32,7 @@ export default function ClinicLayout({
       )}
       {children}
       {isClinicTopPage && (
-        <Footer
-          imagePath="/medical/default/logo_footer.png"
-          buttonText="クリニック・施設の掲載リクエストはこちら"
-          serviceName="メディカル"
-        />
+        <Footer serviceCode={SERVICE_CODES.MEDICAL} />
       )}
     </>
   )

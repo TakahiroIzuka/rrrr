@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { getGenreColor } from '@/lib/utils/genreColors'
 import { getGenreImagePath } from '@/lib/utils/imagePath'
+import { SERVICE_CODES } from '@/lib/constants/services'
 
 interface FacilityDetailLayoutProps {
   children: React.ReactNode
@@ -44,7 +45,6 @@ export default async function FacilityDetailLayout({
 
   const genreColor = getGenreColor(genreCode)
   const headerImagePath = getGenreImagePath('kuchikomiru', genreCode, 'logo_header.png')
-  const footerImagePath = getGenreImagePath('kuchikomiru', genreCode, 'logo_footer.png')
 
   return (
     <>
@@ -76,11 +76,7 @@ export default async function FacilityDetailLayout({
         </div>
       </div>
       {children}
-      <Footer
-        imagePath={footerImagePath}
-        buttonText="地域密着店舗・施設の掲載リクエストはこちら"
-        serviceName="クチコミル"
-      />
+      <Footer serviceCode={SERVICE_CODES.KUCHIKOMIRU} />
     </>
   )
 }

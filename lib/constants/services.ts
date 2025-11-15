@@ -16,17 +16,23 @@ export type ServiceCode = typeof SERVICE_CODES[keyof typeof SERVICE_CODES]
 export const REVIEW_RANKING_CONFIG = {
   [SERVICE_CODES.MEDICAL]: {
     title: 'メディカルクチコミランキング',
-    imagePath: '/medical/icon.png',
-    buttonText: 'クリニックの掲載リクエストはこちら',
+    iconImagePath: '/medical/icon.png',
+    footerImagePath: '/medical/default/logo_footer.png',
+    buttonText: 'クリニック・施設の掲載リクエストはこちら',
+    serviceName: 'メディカル',
   },
   [SERVICE_CODES.KUCHIKOMIRU]: {
     title: 'クチコミルランキング',
-    imagePath: '/kuchikomiru/icon.png',
-    buttonText: '施設の掲載リクエストはこちら',
+    iconImagePath: '/kuchikomiru/icon.png',
+    footerImagePath: '/kuchikomiru/default/logo_footer.png',
+    buttonText: '地域密着店舗・施設の掲載リクエストはこちら',
+    serviceName: 'クチコミル',
   },
   [SERVICE_CODES.HOUSE_BUILDER]: {
     title: '住宅会社ランキング',
-    imagePath: '/house-builder/icon.png',
+    iconImagePath: '/house-builder/icon.png',
+    footerImagePath: '/house-builder/default/logo_footer.png',
     buttonText: '住宅会社の掲載リクエストはこちら',
+    serviceName: '住宅会社',
   },
 } as const
