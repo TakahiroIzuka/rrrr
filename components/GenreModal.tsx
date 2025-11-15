@@ -12,10 +12,14 @@ interface GenreModalProps {
   isOpen: boolean
   onClose: () => void
   genres: Genre[]
+  serviceCode: string
 }
 
-export default function GenreModal({ isOpen, onClose, genres }: GenreModalProps) {
+export default function GenreModal({ isOpen, onClose, genres, serviceCode }: GenreModalProps) {
   if (!isOpen) return null
+
+  // Ensure genres is an array
+  const genreArray = Array.isArray(genres) ? genres : []
 
   return (
     <div
@@ -49,10 +53,10 @@ export default function GenreModal({ isOpen, onClose, genres }: GenreModalProps)
         {/* Genre List Section */}
         <div className="px-4 py-3 md:px-6 md:py-4">
           <div className="flex flex-wrap gap-2 md:gap-3">
-            {genres.map((genre) => (
+            {genreArray.map((genre) => (
               <Link
                 key={genre.id}
-                href={`/medical/genres/${genre.id}`}
+                href={`/${serviceCode}/genres/${genre.id}`}
                 className="block px-3 py-2.5 md:px-4 md:py-3 border rounded-lg transition-colors hover:bg-gray-50 w-[calc(50%-4px)] md:w-[calc(33.333%-8px)]"
                 style={{
                   borderColor: 'rgb(165, 153, 126)',

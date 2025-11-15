@@ -41,30 +41,82 @@ export default function Header({
     }
   }
 
-  // Fetch genres on mount
+  // serviceCodeを判定
+  const currentServiceCode = pathname?.startsWith('/kuchikomiru')
+    ? 'kuchikomiru'
+    : pathname?.startsWith('/house-builder')
+    ? 'house-builder'
+    : 'medical'
+
+  // Fetch genres on mount and when serviceCode changes
   useEffect(() => {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-    fetch(`${supabaseUrl}/rest/v1/genres?order=id.asc`, {
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Supabase environment variables not configured')
+      return
+    }
+
+    // First, get the service ID for the current service code
+    const serviceUrl = `${supabaseUrl}/rest/v1/services?code=eq.${currentServiceCode}`
+
+    fetch(serviceUrl, {
       headers: {
-        'apikey': supabaseKey || ''
+        'apikey': supabaseKey,
+        'Content-Type': 'application/json'
       }
     })
-      .then(res => res.json())
-      .then(data => setGenres(data))
-      .catch(err => console.error('Failed to fetch genres:', err))
-  }, [])
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`)
+        }
+        return res.json()
+      })
+      .then(serviceData => {
+        if (serviceData && Array.isArray(serviceData) && serviceData.length > 0) {
+          const serviceId = serviceData[0].id
+          // Then fetch genres for this service
+          return fetch(`${supabaseUrl}/rest/v1/genres?service_id=eq.${serviceId}&order=id.asc`, {
+            headers: {
+              'apikey': supabaseKey,
+              'Content-Type': 'application/json'
+            }
+          })
+        }
+        throw new Error(`Service not found for code: ${currentServiceCode}`)
+      })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`)
+        }
+        return res.json()
+      })
+      .then(data => {
+        if (Array.isArray(data)) {
+          setGenres(data)
+        }
+      })
+      .catch(err => {
+        console.error('Failed to fetch genres:', err)
+        setGenres([])
+      })
+  }, [currentServiceCode])
 
   // 詳細ページかどうかを判定
   const isDetailPage = (pathname?.startsWith('/medical/list/') && pathname !== '/medical/list') ||
-                       (pathname?.startsWith('/kuchikomiru/list/') && pathname !== '/kuchikomiru/list')
+                       (pathname?.startsWith('/kuchikomiru/list/') && pathname !== '/kuchikomiru/list') ||
+                       (pathname?.startsWith('/house-builder/list/') && pathname !== '/house-builder/list')
 
   // 一覧ページかどうかを判定
-  const isListPage = pathname === '/medical/list' || pathname === '/kuchikomiru/list'
+  const isListPage = pathname === '/medical/list' || pathname === '/kuchikomiru/list' || pathname === '/house-builder/list'
 
   // ロゴのリンク先を判定
-  const logoLink = pathname?.startsWith('/kuchikomiru') ? '/kuchikomiru' : '/medical'
+  const logoLink = pathname?.startsWith('/kuchikomiru')
+    ? '/kuchikomiru'
+    : pathname?.startsWith('/house-builder')
+    ? '/house-builder'
+    : '/medical'
 
   useEffect(() => {
     const handleScroll = () => {
@@ -189,7 +241,7 @@ export default function Header({
     </header>
 
       {/* Genre Modal */}
-      <GenreModal isOpen={isGenreModalOpen} onClose={() => setIsGenreModalOpen(false)} genres={genres} />
+      <GenreModal isOpen={isGenreModalOpen} onClose={() => setIsGenreModalOpen(false)} genres={genres} serviceCode={currentServiceCode} />
 
       {/* Mobile Menu */}
       <MobileMenu

@@ -45,7 +45,7 @@ export default function DetailHeader({ genreName, genreCode, showNavButtons = fa
   // Fetch genres on mount
   useEffect(() => {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
     fetch(`${supabaseUrl}/rest/v1/genres?order=id.asc`, {
       headers: {
@@ -92,7 +92,7 @@ export default function DetailHeader({ genreName, genreCode, showNavButtons = fa
   return (
     <>
       {/* Genre Modal */}
-      <GenreModal isOpen={isGenreModalOpen} onClose={() => setIsGenreModalOpen(false)} genres={genres} />
+      <GenreModal isOpen={isGenreModalOpen} onClose={() => setIsGenreModalOpen(false)} genres={genres} serviceCode="medical" />
 
       {/* Mobile Menu */}
       <MobileMenu
