@@ -20,8 +20,8 @@ export default function ReviewRanking({
   const isMobile = variant === 'mobile'
 
   const containerClass = isMobile
-    ? 'md:hidden w-full bg-white rounded-2xl md:rounded-lg px-[5px] py-5 shadow-none md:shadow-md'
-    : 'bg-white rounded-lg p-5 shadow-md'
+    ? 'md:hidden w-full bg-white rounded-2xl md:rounded-lg px-[5px] py-5 shadow-none md:shadow-md relative overflow-hidden'
+    : 'bg-white rounded-lg pt-12 px-5 pb-5 shadow-md relative overflow-hidden'
 
   const buttonHoverClass = isMobile
     ? 'hover:bg-[#666]'
@@ -33,10 +33,12 @@ export default function ReviewRanking({
 
   return (
     <div className={containerClass}>
-      {/* Image Space */}
-      <div className="w-full h-24 bg-white rounded-lg mb-3 flex items-center justify-center">
-        <img src={imagePath} alt="プロフィール" className="w-[95px] h-[95px] object-contain" />
+      {/* Background Image */}
+      <div className="absolute top-0 left-0 w-full h-[33%] overflow-hidden rounded-t-lg">
+        <img src="/common/icon-background.png" alt="" className="w-full h-full object-cover object-top" />
       </div>
+
+      <img src={imagePath} alt="プロフィール" className="w-[95px] h-[95px] object-contain relative z-10 mx-auto mb-3" />
 
       {/* Title */}
       <h3 className="text-base font-bold text-gray-700 mb-3 text-center">
