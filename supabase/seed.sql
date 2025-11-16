@@ -6,70 +6,70 @@ INSERT INTO services (id, code, name) VALUES
   (4, 'vacation-stay', '宿泊施設');
 
 -- Seed genres table
-INSERT INTO genres (code, name, service_id) VALUES
-  ('pilates', 'ピラティス', 1),
-  ('medical', '内科系', 1),
-  ('surgery', '外科系', 1),
-  ('dental', '歯科系', 1),
-  ('dermatology', '皮膚科系', 1),
-  ('cosmetic-dermatology', '美容皮膚科', 2),
-  ('wedding-venue', 'ウェディング', 2),
-  ('house-builder', '住宅会社', 2),
-  ('vacation-stay', '宿泊施設', 2),
-  ('restaurant', '飲食店', 2),
-  ('house-maker-term', 'ハウスメーカー', 3),
-  ('house-builder-term', 'ビルダー', 3),
-  ('first-class-architect-office-term', '一級建築士事務所', 3),
-  ('real-estate-company-term', '不動産会社', 3),
-  ('koumuten-term', '工務店', 3),
-  ('construction-company-term', '建設会社', 3);
+INSERT INTO genres (id, code, name, service_id) VALUES
+  (1, 'pilates', 'ピラティス', 1),
+  (2, 'medical', '内科系', 1),
+  (3, 'surgery', '外科系', 1),
+  (4, 'dental', '歯科系', 1),
+  (5, 'dermatology', '皮膚科系', 1),
+  (6, 'cosmetic-dermatology', '美容皮膚科', 2),
+  (7, 'wedding-venue', 'ウェディング', 2),
+  (8, 'house-builder', '住宅会社', 2),
+  (9, 'vacation-stay', '宿泊施設', 2),
+  (10, 'restaurant', '飲食店', 2),
+  (11, 'house-maker-term', 'ハウスメーカー', 3),
+  (12, 'house-builder-term', 'ビルダー', 3),
+  (13, 'first-class-architect-office-term', '一級建築士事務所', 3),
+  (14, 'real-estate-company-term', '不動産会社', 3),
+  (15, 'koumuten-term', '工務店', 3),
+  (16, 'construction-company-term', '建設会社', 3);
 
 -- Seed prefectures table
-INSERT INTO prefectures (name) VALUES
-  ('京都府'),
-  ('兵庫県'),
-  ('千葉県'),
-  ('埼玉県'),
-  ('大阪府'),
-  ('宮崎県'),
-  ('広島県'),
-  ('愛知県'),
-  ('東京都'),
-  ('熊本県'),
-  ('神奈川県');
+INSERT INTO prefectures (id, name) VALUES
+  (1, '京都府'),
+  (2, '兵庫県'),
+  (3, '千葉県'),
+  (4, '埼玉県'),
+  (5, '大阪府'),
+  (6, '宮崎県'),
+  (7, '広島県'),
+  (8, '愛知県'),
+  (9, '東京都'),
+  (10, '熊本県'),
+  (11, '神奈川県');
 
 -- Seed areas table
-INSERT INTO areas (prefecture_id, name) VALUES
-  (5, '大阪市'),
-  (8, '名古屋'),
-  (9, '世田谷区'),
-  (9, '中野区'),
-  (9, '千代田区'),
-  (9, '新宿区'),
-  (9, '杉並区'),
-  (9, '渋谷区'),
-  (9, '港区');
+INSERT INTO areas (id, prefecture_id, name) VALUES
+  (1, 5, '大阪市'),
+  (2, 8, '名古屋'),
+  (3, 9, '世田谷区'),
+  (4, 9, '中野区'),
+  (5, 9, '千代田区'),
+  (6, 9, '新宿区'),
+  (7, 9, '杉並区'),
+  (8, 9, '渋谷区'),
+  (9, 9, '港区');
 
 -- Seed companies table
-INSERT INTO companies (code, name) VALUES
-  ('dairy_skin_clinic', 'DAILY SKIN CLINIC'),
-  ('studio_ivy', 'STUDIO IVY'),
-  ('umeda_clinic', '西梅田シティクリニック'),
-  ('ito_construction', '株式会社伊藤建設'),
-  ('seiei_corporation', '株式会社清栄コーポレーション');
+INSERT INTO companies (id, code, name) VALUES
+  (1, 'dairy_skin_clinic', 'DAILY SKIN CLINIC'),
+  (2, 'studio_ivy', 'STUDIO IVY'),
+  (3, 'umeda_clinic', '西梅田シティクリニック'),
+  (4, 'ito_construction', '株式会社伊藤建設'),
+  (5, 'seiei_corporation', '株式会社清栄コーポレーション');
 
 -- Seed facilities table
-INSERT INTO facilities (genre_id, prefecture_id, area_id, company_id, uuid, service_id) VALUES
-  (5, 8, 2, 1, '251dbcf3-1f07-3b9a-f66c-54f339f41f62', 1),
-  (5, 5, 1, 1, '97ad8f2a-f580-3426-6edf-5c4b2d630aa8', 1),
-  (5, 9, 6, 1, '2341607c-6889-170b-ba19-a9453d753dd9', 1),
-  (1, 9, 8, 2, '3462159b-aabf-edb1-a2b2-44366d637f5c', 1),
-  (1, 9, 8, 2, '0fa9580f-c2b5-1ba6-f859-893fbee8633a', 1),
-  (1, 9, 9, 2, '978813da-874b-8a97-9ed1-527bde7359d1', 1),
-  (2, 5, 1, 3, '0511baf3-69d4-5719-ddb4-7ddacd3d2676', 1),
-  (6, 5, 1, 1, 'd4e5f6a7-b8c9-0123-4567-890abcdef123', 2),
-  (15, 11, NULL, 4, '03132990-a519-4774-a8d3-bb844a04057e', 3),
-  (11, 1, NULL, 5, '39273fe5-5908-49a3-9d68-e1a0d3418771', 3);
+INSERT INTO facilities (id, genre_id, prefecture_id, area_id, company_id, uuid, service_id) VALUES
+  (1, 5, 8, 2, 1, '251dbcf3-1f07-3b9a-f66c-54f339f41f62', 1),
+  (2, 5, 5, 1, 1, '97ad8f2a-f580-3426-6edf-5c4b2d630aa8', 1),
+  (3, 5, 9, 6, 1, '2341607c-6889-170b-ba19-a9453d753dd9', 1),
+  (4, 1, 9, 8, 2, '3462159b-aabf-edb1-a2b2-44366d637f5c', 1),
+  (5, 1, 9, 8, 2, '0fa9580f-c2b5-1ba6-f859-893fbee8633a', 1),
+  (6, 1, 9, 9, 2, '978813da-874b-8a97-9ed1-527bde7359d1', 1),
+  (7, 2, 5, 1, 3, '0511baf3-69d4-5719-ddb4-7ddacd3d2676', 1),
+  (8, 6, 5, 1, 1, 'd4e5f6a7-b8c9-0123-4567-890abcdef123', 2),
+  (9, 15, 11, NULL, 4, '03132990-a519-4774-a8d3-bb844a04057e', 3),
+  (10, 11, 1, NULL, 5, '39273fe5-5908-49a3-9d68-e1a0d3418771', 3);
 
 -- Seed facility_details table
 INSERT INTO facility_details (facility_id, name, star, user_review_count, lat, lng, site_url, postal_code, address, tel) VALUES
