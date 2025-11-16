@@ -15,12 +15,11 @@ export default async function Layout({
     .eq('code', SERVICE_CODE)
     .single()
 
-  if (!service) {
-    throw new Error(`${SERVICE_CODE} service not found`)
-  }
+  // Use default name if service not found (e.g., during build)
+  const serviceName = service?.name || '宿泊施設'
 
   return (
-    <ClientLayout serviceName={service.name}>
+    <ClientLayout serviceName={serviceName}>
       {children}
     </ClientLayout>
   )
