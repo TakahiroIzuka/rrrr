@@ -1,7 +1,7 @@
 import ErrorMessage from '@/components/ErrorMessage'
 import { notFound } from 'next/navigation'
 import HomeClient from '@/components/HomeClient'
-import { fetchFacilitiesByGenre, fetchGenreById } from '@/lib/data/facilities'
+import { fetchFacilitiesByGenre, fetchGenreById, fetchFacilitiesImages } from '@/lib/data/facilities'
 import { SERVICE_CODE } from '../../constants'
 
 interface GenrePageProps {
@@ -27,12 +27,17 @@ export default async function GenrePage({ params }: GenrePageProps) {
     return <ErrorMessage message={error.message} />
   }
 
+  // Fetch images for all facilities
+  const facilityIds = facilities?.map(f => f.id) || []
+  const { imagesMap } = await fetchFacilitiesImages(facilityIds)
+
   return (
     <HomeClient
       facilities={facilities || []}
       genreId={genre.id}
       genreName={genre.name}
       genreCode={genre.code}
+      imagesMap={imagesMap}
     />
   )
 }

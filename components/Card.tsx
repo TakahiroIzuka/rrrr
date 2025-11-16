@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import type { Facility } from '@/types/facility'
 import type { ServiceCode } from '@/lib/constants/services'
@@ -25,30 +25,62 @@ interface CardProps {
   images?: FacilityImage[]
 }
 
-const getGenreNoImage = (genreCode: string | undefined, serviceCode: ServiceCode): string => {
-  if (genreCode) {
-    return `/${serviceCode}/${genreCode}/noimage.jpg`
-  }
-  return `/${serviceCode}/default/noimage.jpg`
-}
-
 export default function Card({ facility, isHovered, onMouseEnter, onMouseLeave, images = [] }: CardProps) {
   const serviceCode = useServiceCode()
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
   const [currentX, setCurrentX] = useState(0)
+  const [displayImages, setDisplayImages] = useState<string[]>([])
 
-  // Create an array of 3 images (display_order 1-3, or default images)
-  // Map images by display_order to ensure correct positioning
-  const displayImages = Array.from({ length: IMAGE_COUNT }).map((_, index) => {
-    const targetDisplayOrder = index + 1 // display_order is 1-indexed
-    const facilityImage = images.find(img => img.display_order === targetDisplayOrder)
-    if (facilityImage) {
-      return facilityImage.publicUrl
+  // Initialize display images
+  useEffect(() => {
+    const defaultImagePath = `/${serviceCode}/default/noimage.jpg`
+
+    const initialImages = Array.from({ length: IMAGE_COUNT }).map((_, index) => {
+      const targetDisplayOrder = index + 1 // display_order is 1-indexed
+      const facilityImage = images.find(img => img.display_order === targetDisplayOrder)
+      if (facilityImage) {
+        return facilityImage.publicUrl
+      }
+      return defaultImagePath
+    })
+
+    setDisplayImages(initialImages)
+
+    // Check for genre-specific noimage.jpg for slots without facility images
+    const genreCode = facility.genre?.code
+    if (genreCode) {
+      const genreNoImagePath = `/${serviceCode}/${genreCode}/noimage.jpg`
+
+      // Check if genre-specific noimage exists
+      const img = new window.Image()
+      img.onload = () => {
+        // If genre-specific image exists, update display images
+        setDisplayImages(prevImages =>
+          prevImages.map((image, index) => {
+            const targetDisplayOrder = index + 1
+            const facilityImage = images.find(img => img.display_order === targetDisplayOrder)
+            // Only update if this slot doesn't have a facility image
+            if (!facilityImage) {
+              return genreNoImagePath
+            }
+            return image
+          })
+        )
+      }
+      img.onerror = () => {
+        // If genre-specific image doesn't exist, keep using default
+        // (already set in initialImages)
+      }
+      img.src = genreNoImagePath
     }
-    return getGenreNoImage(facility.genre?.code, serviceCode)
-  })
+  }, [facility, images, serviceCode])
+
+  // Don't render until displayImages are loaded
+  if (displayImages.length === 0) {
+    return null
+  }
 
   const handlePrevImage = () => {
     setCurrentImageIndex(prev => prev > 0 ? prev - 1 : IMAGE_COUNT - 1)

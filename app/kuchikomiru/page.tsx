@@ -1,6 +1,6 @@
 import ErrorMessage from '@/components/ErrorMessage'
 import HomeClient from '@/components/HomeClient'
-import { fetchAllFacilities } from '@/lib/data/facilities'
+import { fetchAllFacilities, fetchFacilitiesImages } from '@/lib/data/facilities'
 import { SERVICE_CODE } from './constants'
 
 export default async function Page() {
@@ -10,5 +10,9 @@ export default async function Page() {
     return <ErrorMessage message={error.message} />
   }
 
-  return <HomeClient facilities={facilities || []} />
+  // Fetch images for all facilities
+  const facilityIds = facilities?.map(f => f.id) || []
+  const { imagesMap } = await fetchFacilitiesImages(facilityIds)
+
+  return <HomeClient facilities={facilities || []} imagesMap={imagesMap} />
 }
