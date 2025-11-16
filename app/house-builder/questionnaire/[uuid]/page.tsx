@@ -32,8 +32,8 @@ export default async function QuestionnairePage({ params }: QuestionnairePagePro
     <>
       <Header pageType="detail" />
 
-      <main className="min-h-screen" style={{ backgroundColor: 'rgb(242, 240, 236)' }}>
-        <div style={{ paddingBottom: '8rem' }}>
+      <main className="min-h-screen pt-16 md:pt-0" style={{ backgroundColor: 'rgb(242, 240, 236)' }}>
+        <div className="pb-2.5 md:pb-32">
           <QuestionnaireForm
             facilityName={facility.name}
             genreColor={genreColor}
