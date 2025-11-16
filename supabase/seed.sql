@@ -54,7 +54,9 @@ INSERT INTO areas (prefecture_id, name) VALUES
 INSERT INTO companies (code, name) VALUES
   ('dairy_skin_clinic', 'DAILY SKIN CLINIC'),
   ('studio_ivy', 'STUDIO IVY'),
-  ('umeda_clinic', '西梅田シティクリニック');
+  ('umeda_clinic', '西梅田シティクリニック'),
+  ('ito_construction', '株式会社伊藤建設'),
+  ('seiei_corporation', '株式会社清栄コーポレーション');
 
 -- Seed facilities table
 INSERT INTO facilities (genre_id, prefecture_id, area_id, company_id, uuid, service_id) VALUES
@@ -65,7 +67,9 @@ INSERT INTO facilities (genre_id, prefecture_id, area_id, company_id, uuid, serv
   (1, 9, 8, 2, '0fa9580f-c2b5-1ba6-f859-893fbee8633a', 1),
   (1, 9, 9, 2, '978813da-874b-8a97-9ed1-527bde7359d1', 1),
   (2, 5, 1, 3, '0511baf3-69d4-5719-ddb4-7ddacd3d2676', 1),
-  (6, 5, 1, 1, 'd4e5f6a7-b8c9-0123-4567-890abcdef123', 2);
+  (6, 5, 1, 1, 'd4e5f6a7-b8c9-0123-4567-890abcdef123', 2),
+  (15, 11, NULL, 4, '03132990-a519-4774-a8d3-bb844a04057e', 3),
+  (11, 1, NULL, 5, '39273fe5-5908-49a3-9d68-e1a0d3418771', 3);
 
 -- Seed facility_details table
 INSERT INTO facility_details (facility_id, name, star, user_review_count, lat, lng, site_url, postal_code, address, tel) VALUES
@@ -76,7 +80,9 @@ INSERT INTO facility_details (facility_id, name, star, user_review_count, lat, l
   (5, 'STUDIO IVY 恵比寿店', 5, 5, 35.64570669164102, 139.70429115767035, 'https://www.pilates-ivy.jp', '150-0013', '東京都渋谷区恵比寿1-20-8', '03-3456-7890'),
   (6, 'STUDIO IVY 赤坂ANNEX店', 4.7, 3, 35.670664250365526, 139.7346120644181, 'https://www.pilates-ivy.jp', '107-0052', '東京都港区赤坂4-2-6', '03-4567-8901'),
   (7, '西梅田シティクリニック', 3.3, 253, 34.69959423473339, 135.4954401355819, 'https://nishiumeda.city-clinic.jp', '530-0001', '大阪府大阪市北区梅田2-5-25', '06-2345-6789'),
-  (8, 'DAILY SKIN CLINIC 心斎橋院', 4.7, 548, 34.675872736516, 135.49841414232787, 'https://dailyskinclinic.jp', '542-0086', '大阪府大阪市中央区西心斎橋1-5-5', '06-1234-5678');
+  (8, 'DAILY SKIN CLINIC 心斎橋院', 4.7, 548, 34.675872736516, 135.49841414232787, 'https://dailyskinclinic.jp', '542-0086', '大阪府大阪市中央区西心斎橋1-5-5', '06-1234-5678'),
+  (9, '伊藤建設', 4.8, 21, 35.341983436514866, 139.48383143989673, 'https://itokensetsu.com', '251-0052', '神奈川県藤沢市藤沢1015-23', '0466512322'),
+  (10, '清栄コーポレーション', 3.5, 16, 35.0133426, 135.7567308, 'https://www.seiei-1997.co.jp', '604-0847', '京都市中京区烏丸通二条下ル秋野々町514番\n清栄ビル京都烏丸2階', '0120170161');
 
 -- Seed users table with Supabase Auth integration
 -- Note: All passwords are 'pass1234'
