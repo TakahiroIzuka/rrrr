@@ -3,7 +3,6 @@
  */
 export const SERVICE_CODES = {
   MEDICAL: 'medical',
-  KUCHIKOMIRU: 'kuchikomiru',
   HOUSE_BUILDER: 'house-builder',
   VACATION_STAY: 'vacation-stay',
 } as const
@@ -39,34 +38,6 @@ export const REVIEW_RANKING_CONFIG = {
       'dermatology': {
         lineColor: 'rgb(220, 194, 219)',
         color: 'rgb(220, 194, 219)',
-      },
-    },
-  },
-  [SERVICE_CODES.KUCHIKOMIRU]: {
-    buttonText: '地域密着店舗・施設の掲載リクエストはこちら',
-    copyRightText: 'Mr.Review Ranking.',
-    lineColor: "rgb(236, 106, 82)",
-    color: "rgb(236, 106, 82)",
-    genres: {
-      'cosmetic-dermatology': {
-        lineColor: 'rgb(220, 194, 219)',
-        color: 'rgb(220, 194, 219)',
-      },
-      'wedding-venue': {
-        lineColor: 'rgb(236, 106, 82)',
-        color: 'rgb(236, 106, 82)',
-      },
-      'house-builder': {
-        lineColor: 'rgb(248, 176, 66)',
-        color: 'rgb(248, 176, 66)',
-      },
-      'vacation-stay': {
-        lineColor: 'rgb(163, 151, 125)',
-        color: 'rgb(163, 151, 125)',
-      },
-      'restaurant': {
-        lineColor: 'rgb(236, 106, 82)',
-        color: 'rgb(236, 106, 82)',
       },
     },
   },
