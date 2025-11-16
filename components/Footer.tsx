@@ -7,9 +7,10 @@ import { useServiceCode } from '@/contexts/ServiceContext'
 interface FooterProps {
   pageType?: 'top' | 'list' | 'detail' | 'genre-top'
   genreCode?: string
+  backgroundColor?: string
 }
 
-export default function Footer({ pageType = 'top', genreCode }: FooterProps) {
+export default function Footer({ pageType = 'top', genreCode, backgroundColor = 'white' }: FooterProps) {
   const serviceCode = useServiceCode()
   const [footerImagePath, setFooterImagePath] = useState<string>(`/${serviceCode}/default/logo_footer.png`)
 
@@ -41,7 +42,7 @@ export default function Footer({ pageType = 'top', genreCode }: FooterProps) {
   }, [serviceCode, pageType, genreCode, config])
 
   return (
-    <div>
+    <div style={{ backgroundColor }}>
       <footer className="bg-[#eae3db] mx-0 md:mx-[15px] mb-0 md:mb-[15px] mt-0 md:mt-[15px] pt-[30px] pb-6 text-center md:rounded-lg">
         {/* Logo */}
         <div className="flex justify-center mb-6">
