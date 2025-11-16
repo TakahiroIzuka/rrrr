@@ -1,0 +1,326 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import Breadcrumb from './Breadcrumb'
+
+interface QuestionnaireFormProps {
+  facilityName: string
+  genreColor: string
+  serviceCode: string
+}
+
+export default function QuestionnaireForm({ facilityName, genreColor, serviceCode }: QuestionnaireFormProps) {
+  const router = useRouter()
+  const [formData, setFormData] = useState({
+    satisfaction: '',
+    hasGoogleAccount: '',
+    feedback: '',
+    name: '',
+    email: '',
+    googleAccountName: '',
+    privacyConsent: false
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    // バリデーション
+    if (!formData.satisfaction) {
+      alert('満足度を選択してください')
+      return
+    }
+    if (!formData.name) {
+      alert('お名前を入力してください')
+      return
+    }
+    if (!formData.email) {
+      alert('メールアドレスを入力してください')
+      return
+    }
+    if (!formData.googleAccountName) {
+      alert('Googleアカウントで登録されているお名前を入力してください')
+      return
+    }
+    if (!formData.privacyConsent) {
+      alert('個人情報のお取り扱いについて同意してください')
+      return
+    }
+
+    // TODO: アンケートデータの送信処理
+    console.log('Form submitted:', formData)
+    alert('アンケートを送信しました。ありがとうございました。')
+  }
+
+  const handleBack = () => {
+    router.back()
+  }
+
+  return (
+    <>
+      {/* パンくずリスト */}
+      <Breadcrumb
+        items={[
+          { label: 'トップ', href: `/${serviceCode}` },
+          { label: `${facilityName}への5段階評価アンケート` }
+        ]}
+      />
+
+      <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl py-12 px-32" style={{ marginTop: '3rem' }}>
+      {/* タイトル */}
+      <h1 className="text-lg md:text-xl font-bold text-gray-800 mb-2">
+        {facilityName}への5段階評価アンケートはこちらから
+      </h1>
+
+      {/* 英語タイトル */}
+      <div className="flex items-center gap-3 mb-8">
+        <div style={{ width: '40px', height: '5px', backgroundColor: 'rgb(165, 153, 126)' }}></div>
+        <p
+          className="text-sm md:text-base font-semibold"
+          style={{ color: 'rgb(165, 153, 126)', letterSpacing: '0.3em' }}
+        >
+          Questionnaire Form
+        </p>
+      </div>
+
+      {/* 説明欄 */}
+      <div className="bg-white rounded-lg p-6 mb-8 text-center">
+        <p className="text-gray-700 leading-relaxed">
+          {facilityName}への率直なご意見、ご感想をいただけませんか？<br />
+          お預かりしたアンケート内容は、今後の顧客満足度改善に向けて使用させていただきます。<br />
+          お客様の声がスタッフの励みになりますので、ご協力の程、宜しくお願いします。
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        {/* 5段階評価アンケート */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: genreColor }}></div>
+              <h2 className="text-lg text-gray-800">
+                5段階評価アンケートをご入力ください
+              </h2>
+            </div>
+            <div className="flex-1 h-0.5" style={{ backgroundColor: genreColor }}></div>
+          </div>
+
+          {/* 満足度 */}
+          <div className="mb-[10px] flex flex-col md:flex-row md:items-stretch gap-3">
+            <label className="md:w-1/2 text-black text-sm text-center flex items-center justify-center p-3" style={{ backgroundColor: 'rgb(234, 227, 219)' }}>
+              <span>{facilityName}へのご満足度<span className="ml-2 px-2 py-1 rounded text-white text-xs" style={{ backgroundColor: 'rgb(235, 106, 82)' }}>必須</span></span>
+            </label>
+            <div className="md:w-1/2 flex flex-col gap-3">
+              {[5, 4, 3, 2, 1].map((star) => (
+                <label key={star} className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="satisfaction"
+                    value={star}
+                    checked={formData.satisfaction === String(star)}
+                    onChange={(e) => setFormData({ ...formData, satisfaction: e.target.value })}
+                    className="mr-2"
+                  />
+                  <span className="flex items-center">
+                    <Image
+                      src={`/common/star_${star}.0.png`}
+                      alt={`${star}星`}
+                      width={100}
+                      height={20}
+                      className="w-auto"
+                      style={{
+                        height: '18px',
+                        opacity: !formData.satisfaction ? 0.85 : (formData.satisfaction === String(star) ? 1 : 0.85),
+                        filter: !formData.satisfaction ? 'saturate(0.3)' : (formData.satisfaction === String(star) ? 'none' : 'saturate(0.3)')
+                      }}
+                    />
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* 星3,4,5選択時: Googleアカウント */}
+          <div
+            className="mb-[10px] flex flex-col md:flex-row md:items-stretch gap-3 transition-all duration-500 ease-in-out overflow-hidden"
+            style={{
+              maxHeight: (formData.satisfaction === '3' || formData.satisfaction === '4' || formData.satisfaction === '5') ? '500px' : '0',
+              opacity: (formData.satisfaction === '3' || formData.satisfaction === '4' || formData.satisfaction === '5') ? 1 : 0,
+              marginBottom: (formData.satisfaction === '3' || formData.satisfaction === '4' || formData.satisfaction === '5') ? '10px' : '0'
+            }}
+          >
+            <label className="md:w-1/2 text-black text-sm text-center flex items-center justify-center p-3" style={{ backgroundColor: 'rgb(234, 227, 219)' }}>
+              <span>Googleアカウント（Gmail）をお持ちですか？</span>
+            </label>
+            <div className="md:w-1/2">
+              <div className="flex gap-8 mb-3">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="hasGoogleAccount"
+                    value="yes"
+                    checked={formData.hasGoogleAccount === 'yes'}
+                    onChange={(e) => setFormData({ ...formData, hasGoogleAccount: e.target.value })}
+                    className="mr-2"
+                  />
+                  はい
+                </label>
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="hasGoogleAccount"
+                    value="no"
+                    checked={formData.hasGoogleAccount === 'no'}
+                    onChange={(e) => setFormData({ ...formData, hasGoogleAccount: e.target.value })}
+                    className="mr-2"
+                  />
+                  いいえ
+                </label>
+              </div>
+              <p className="text-sm text-gray-400">
+                ※ Googleアカウントをお持ちでない方は、<a href="https://www.google.com/intl/ja/account/about/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">こちらからGoogleアカウントのホームにアクセス</a>し、「アカウントを作成する」を選択してください。<br />
+                ※ Googleアカウントで登録されているお名前でクチコミが反映されます。
+              </p>
+            </div>
+          </div>
+
+          {/* 星1,2選択時: ご意見・ご感想 */}
+          <div
+            className="mb-[10px] flex flex-col md:flex-row md:items-stretch gap-3 transition-all duration-500 ease-in-out overflow-hidden"
+            style={{
+              maxHeight: (formData.satisfaction === '1' || formData.satisfaction === '2') ? '500px' : '0',
+              opacity: (formData.satisfaction === '1' || formData.satisfaction === '2') ? 1 : 0,
+              marginBottom: (formData.satisfaction === '1' || formData.satisfaction === '2') ? '10px' : '0'
+            }}
+          >
+            <label className="md:w-1/2 text-black text-sm text-center flex items-center justify-center p-3" style={{ backgroundColor: 'rgb(234, 227, 219)' }}>
+              <span>{facilityName}への率直なご意見、ご感想をいただけませんか？お預かりしたアンケート内容は、今後の顧客満足度改善に向けて使用させていただきます。※Googleクチコミ投稿はこちらから<span className="ml-2 px-2 py-1 rounded text-white text-xs" style={{ backgroundColor: 'rgb(165, 153, 126)' }}>任意</span></span>
+            </label>
+            <div className="md:w-1/2">
+              <textarea
+                value={formData.feedback}
+                onChange={(e) => setFormData({ ...formData, feedback: e.target.value })}
+                rows={5}
+                className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <p className="text-sm text-gray-400 mt-2">
+                ※ 出来るだけ詳しくご記載いただければ幸いです。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 基本情報 */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: genreColor }}></div>
+              <h2 className="text-lg text-gray-800">
+                お客様の基本情報をご入力ください
+              </h2>
+            </div>
+            <div className="flex-1 h-0.5" style={{ backgroundColor: genreColor }}></div>
+          </div>
+
+          {/* お名前 */}
+          <div className="mb-[10px] flex flex-col md:flex-row md:items-stretch gap-3">
+            <label className="md:w-1/2 text-black text-sm text-center flex items-center justify-center px-5 py-[25px]" style={{ backgroundColor: 'rgb(234, 227, 219)' }}>
+              <span>お名前<span className="ml-2 px-2 py-1 rounded text-white text-xs" style={{ backgroundColor: 'rgb(235, 106, 82)' }}>必須</span></span>
+            </label>
+            <div className="md:w-1/2">
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-4 py-0.5 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <p className="text-sm text-gray-400 mt-2">
+                ※ お名前はフルネームでご記入ください。
+              </p>
+            </div>
+          </div>
+
+          {/* メールアドレス */}
+          <div className="mb-[10px] flex flex-col md:flex-row md:items-stretch gap-3">
+            <label className="md:w-1/2 text-black text-sm text-center flex items-center justify-center px-5 py-[25px]" style={{ backgroundColor: 'rgb(234, 227, 219)' }}>
+              <span>メールアドレス<span className="ml-2 px-2 py-1 rounded text-white text-xs" style={{ backgroundColor: 'rgb(235, 106, 82)' }}>必須</span></span>
+            </label>
+            <div className="md:w-1/2">
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="w-full px-4 py-0.5 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <p className="text-sm text-gray-400 mt-2">
+                ※ メールアドレスはお間違えのないようにご確認ください。
+              </p>
+            </div>
+          </div>
+
+          {/* Googleアカウント名 */}
+          <div className="mb-[10px] flex flex-col md:flex-row md:items-stretch gap-3">
+            <label className="md:w-1/2 text-black text-sm text-center flex items-center justify-center px-5 py-[25px]" style={{ backgroundColor: 'rgb(234, 227, 219)' }}>
+              <span>Googleアカウントで登録されているお名前<span className="ml-2 px-2 py-1 rounded text-white text-xs" style={{ backgroundColor: 'rgb(235, 106, 82)' }}>必須</span></span>
+            </label>
+            <div className="md:w-1/2">
+              <input
+                type="text"
+                value={formData.googleAccountName}
+                onChange={(e) => setFormData({ ...formData, googleAccountName: e.target.value })}
+                className="w-full px-4 py-0.5 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <p className="text-sm text-gray-400 mt-2">
+                ※ 該当するクチコミの照合と本人確認をいたしますので、半角・全角・英数字等のお間違えのないようにご記入ください。
+              </p>
+            </div>
+          </div>
+
+          {/* 個人情報同意 */}
+          <div className="mb-[10px] flex flex-col md:flex-row md:items-stretch gap-3">
+            <label className="md:w-1/2 text-black text-sm text-center flex items-center justify-center px-5 py-[25px]" style={{ backgroundColor: 'rgb(234, 227, 219)' }}>
+              <span>個人情報のお取り扱いについて<span className="ml-2 px-2 py-1 rounded text-white text-xs" style={{ backgroundColor: 'rgb(235, 106, 82)' }}>必須</span></span>
+            </label>
+            <div className="md:w-1/2 flex flex-col justify-center">
+              <label className="flex items-start cursor-pointer mb-2">
+                <input
+                  type="checkbox"
+                  checked={formData.privacyConsent}
+                  onChange={(e) => setFormData({ ...formData, privacyConsent: e.target.checked })}
+                  className="mt-1 mr-3"
+                />
+                <span className="text-black text-sm">
+                  個人情報のお取り扱いについて同意する。
+                </span>
+              </label>
+              <p className="text-sm text-gray-400">
+                ※ こちらの「個人情報のお取り扱いについて」をご確認の上、お進み下さい。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ボタン */}
+        <div className="flex flex-col gap-8 items-center">
+          <button
+            type="submit"
+            className="w-full md:w-64 px-8 py-3 rounded-md text-white hover:opacity-90 transition-opacity"
+            style={{ backgroundColor: genreColor }}
+          >
+            送信
+          </button>
+          <button
+            type="button"
+            onClick={handleBack}
+            className="w-full md:w-auto md:px-48 py-4 text-white hover:opacity-90 transition-opacity"
+            style={{ backgroundColor: 'rgb(165, 153, 126)' }}
+          >
+            戻る
+          </button>
+        </div>
+      </form>
+    </div>
+    </>
+  )
+}

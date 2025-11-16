@@ -41,7 +41,7 @@ export default function Footer({ pageType = 'top', genreCode }: FooterProps) {
   }, [serviceCode, pageType, genreCode, config])
 
   return (
-    <div className="bg-white">
+    <div>
       <footer className="bg-[#eae3db] mx-0 md:mx-[15px] mb-0 md:mb-[15px] mt-0 md:mt-[15px] pt-[30px] pb-6 text-center md:rounded-lg">
         {/* Logo */}
         <div className="flex justify-center mb-6">

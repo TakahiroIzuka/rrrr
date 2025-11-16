@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { createAnonClient } from '@/utils/supabase/server'
 import { SERVICE_CODE } from './constants'
 import ClientLayout from './client-layout'
 
@@ -7,7 +7,7 @@ export default async function Layout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
+  const supabase = createAnonClient()
 
   const { data: service } = await supabase
     .from('services')

@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient, createAnonClient } from '@/utils/supabase/server'
 import type { Facility } from '@/types/facility'
 
 interface FacilityImageWithUrls {
@@ -43,7 +43,7 @@ function transformFacilityDetail(facilityData: unknown): Facility {
  * Get service ID by service code
  */
 async function getServiceId(serviceCode: string): Promise<number | null> {
-  const supabase = await createClient()
+  const supabase = createAnonClient()
   const { data: service } = await supabase
     .from('services')
     .select('id')
@@ -196,6 +196,32 @@ export async function fetchFacilityById(id: string, serviceCode: string) {
     .from('facilities')
     .select(FACILITY_DETAIL_QUERY)
     .eq('id', id)
+    .eq('service_id', serviceId)
+    .single()
+
+  if (error || !facilityData) {
+    return { facility: null, error }
+  }
+
+  const facility = transformFacilityDetail(facilityData)
+  return { facility, error: null }
+}
+
+/**
+ * Fetch single facility by UUID and service code (for public access, no auth required)
+ */
+export async function fetchFacilityByUuid(uuid: string, serviceCode: string) {
+  const serviceId = await getServiceId(serviceCode)
+
+  if (!serviceId) {
+    return { facility: null, error: new Error('Service not found') }
+  }
+
+  const supabase = createAnonClient()
+  const { data: facilityData, error } = await supabase
+    .from('facilities')
+    .select(FACILITY_DETAIL_QUERY)
+    .eq('uuid', uuid)
     .eq('service_id', serviceId)
     .single()
 

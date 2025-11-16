@@ -38,7 +38,8 @@ export default function RootLayout({
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        fontFamily: 'Kosugi Maru, sans-serif'
+        fontFamily: 'Kosugi Maru, sans-serif',
+        backgroundColor: 'rgb(254, 246, 228)'
       }}>
         <ThemeProvider
           attribute="class"
@@ -46,7 +47,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#F1F1F1' }}>
+          <main style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'rgb(254, 246, 228)' }}>
             {children}
           </main>
         </ThemeProvider>
