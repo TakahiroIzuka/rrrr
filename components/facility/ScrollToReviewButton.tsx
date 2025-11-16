@@ -2,9 +2,10 @@
 
 interface ScrollToReviewButtonProps {
   clinicName: string
+  genreColor: string
 }
 
-export default function ScrollToReviewButton({ clinicName }: ScrollToReviewButtonProps) {
+export default function ScrollToReviewButton({ clinicName, genreColor }: ScrollToReviewButtonProps) {
   const handleClick = () => {
     const div3 = document.getElementById('review-section')
     if (div3) {
@@ -39,12 +40,12 @@ export default function ScrollToReviewButton({ clinicName }: ScrollToReviewButto
     <button
       onClick={handleClick}
       className="w-full px-4 py-3 rounded text-white text-sm flex flex-col items-center justify-center gap-1 mt-2 mb-2"
-      style={{ backgroundColor: 'rgb(220, 194, 219)' }}
+      style={{ backgroundColor: genreColor }}
     >
       <div className="flex items-center gap-2">
         <span className="font-semibold">{clinicName}のクチコミ一覧はこちら！</span>
         <span className="flex items-center justify-center w-5 h-5 bg-white rounded-full flex-shrink-0">
-          <span className="font-bold text-base leading-none" style={{ color: 'rgb(220, 194, 219)', transform: 'translate(0.5px, -1px)' }}>›</span>
+          <span className="font-bold text-base leading-none" style={{ color: genreColor, transform: 'translate(0.5px, -1px)' }}>›</span>
         </span>
       </div>
       <span className="text-xs hidden md:inline">Review List</span>

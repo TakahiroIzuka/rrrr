@@ -82,7 +82,7 @@ export default async function DetailPage({ params }: DetailPageProps) {
               </div>
 
               {/* ボタン */}
-              <ScrollToReviewButton clinicName={facility.name} />
+              <ScrollToReviewButton clinicName={facility.name} genreColor={genreColor} />
             </div>
           </div>
 
