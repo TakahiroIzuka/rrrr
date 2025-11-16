@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import type { Facility } from '@/types/facility'
 import Card from './Card'
-import { useServiceCode } from '@/contexts/ServiceContext'
 
 interface FacilityImage {
   id: number
@@ -21,7 +20,6 @@ interface ListPanelProps {
 }
 
 export default function ListPanel({ facilities, imagesMap = {} }: ListPanelProps) {
-  const serviceCode = useServiceCode()
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
   return (

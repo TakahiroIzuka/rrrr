@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
-import type { Clinic } from '@/types/clinic'
+import type { Facility } from '@/types/facility'
 
-export function useClinicFilter(allClinics: Clinic[]) {
+export function useClinicFilter(allClinics: Facility[]) {
   const applyFilters = useCallback((
     prefectures: string[],
     genres: number[],
     ranking: string
-  ): Clinic[] => {
+  ): Facility[] => {
     let filtered = allClinics
 
     if (prefectures.length > 0) {

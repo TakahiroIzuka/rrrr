@@ -1,6 +1,15 @@
 import { createClient } from '@/utils/supabase/server'
 import type { Facility } from '@/types/facility'
-import { SERVICE_CODES } from '@/lib/constants/services'
+
+interface FacilityImageWithUrls {
+  id: number
+  facility_id: number
+  image_path: string
+  thumbnail_path: string | null
+  display_order: number
+  publicUrl: string
+  thumbnailUrl: string | null
+}
 
 /**
  * Transform detail from array to single object and flatten facility_details fields
@@ -11,6 +20,7 @@ function transformFacilityDetail(facilityData: unknown): Facility {
   const detailObj = detail as Record<string, unknown> | undefined
 
   // Extract detail fields and merge them into the main facility object
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { detail: _detail, ...rest } = data
 
   return {
@@ -269,7 +279,7 @@ export async function fetchFacilitiesImages(facilityIds: number[]) {
   }
 
   // Create public URLs and group by facility_id
-  const imagesMap: Record<number, any[]> = {}
+  const imagesMap: Record<number, FacilityImageWithUrls[]> = {}
 
   images?.forEach((image) => {
     if (!imagesMap[image.facility_id]) {

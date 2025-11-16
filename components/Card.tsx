@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import type { Facility } from '@/types/facility'
-import type { ServiceCode } from '@/lib/constants/services'
 import { getStarImage } from '@/lib/utils/starRating'
 import { IMAGE_COUNT, SWIPE_THRESHOLD } from '@/lib/constants'
 import { useServiceCode } from '@/contexts/ServiceContext'

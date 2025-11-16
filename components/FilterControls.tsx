@@ -22,7 +22,7 @@ export default function FilterControls({
   onRankingChange,
   hideGenreFilter = false
 }: FilterControlsProps) {
-  const uniquePrefectures = Array.from(new Set(allFacilities.map(facility => facility.prefecture?.name).filter(Boolean))).sort()
+  const uniquePrefectures = Array.from(new Set(allFacilities.map(facility => facility.prefecture?.name).filter((name): name is string => Boolean(name)))).sort()
 
   // Get unique genres with their names
   const uniqueGenres = Array.from(

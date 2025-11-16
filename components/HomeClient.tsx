@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback } from 'react'
 import type { Facility } from '@/types/facility'
-import type { ServiceCode } from '@/lib/constants/services'
 import ListPanel from '@/components/ListPanel'
 import MapPanel from '@/components/MapPanel'
 import GridSection from '@/components/GridSection'
@@ -30,20 +29,9 @@ export default function HomeClient({
   facilities,
   genreId,
   genreName,
-  genreCode,
   imagesMap = {},
 }: HomeClientProps) {
-  // Normalize detail to handle both array and object formats
-  const normalizedFacilities = useMemo(() => {
-    return facilities.map(facility => ({
-      ...facility,
-      detail: Array.isArray(facility.detail)
-        ? facility.detail[0]
-        : facility.detail
-    }))
-  }, [facilities])
-
-  const [filteredFacilities, setFilteredFacilities] = useState<Facility[]>(normalizedFacilities)
+  const [filteredFacilities, setFilteredFacilities] = useState<Facility[]>(facilities)
   const [selectedFacilityId, setSelectedFacilityId] = useState<number | null>(null)
   const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([])
   const [selectedGenres, setSelectedGenres] = useState<number[]>(genreId ? [genreId] : [])
@@ -60,7 +48,7 @@ export default function HomeClient({
   }, [])
 
   // Show genre header only if genre props are provided
-  const showGenreHeader = genreId && genreName
+  const showGenreHeader = !!(genreId && genreName)
   const hideGenreFilter = !!genreId
 
   return (
@@ -79,13 +67,13 @@ export default function HomeClient({
           {/* Map Full Width on Mobile, Right on PC */}
           <div className="w-full md:flex-1 relative h-1/2 md:h-full order-1 md:order-2">
             <MapPanel
-              allFacilities={normalizedFacilities}
+              allFacilities={facilities}
               filteredFacilities={filteredFacilities}
               onFacilitySelect={handleFacilitySelect}
             />
             {/* Filter Button Overlay on Map */}
             <FilterButton
-              facilities={normalizedFacilities}
+              facilities={facilities}
               onFilterChange={handleFilterChange}
               selectedPrefectures={selectedPrefectures}
               selectedGenres={selectedGenres}
@@ -102,7 +90,7 @@ export default function HomeClient({
         {/* Clinics Grid Section */}
         <GridSection
           facilities={filteredFacilities}
-          allFacilities={normalizedFacilities}
+          allFacilities={facilities}
           selectedPrefectures={selectedPrefectures}
           selectedGenres={selectedGenres}
           selectedRanking={selectedRanking}

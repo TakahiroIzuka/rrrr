@@ -42,15 +42,27 @@ export default function FilterButton({
   const selectedRanking = externalRanking !== undefined ? externalRanking : internalRanking
 
   const setSelectedPrefectures = (value: string[]) => {
-    onPrefecturesChange?.(value) ?? setInternalPrefectures(value)
+    if (onPrefecturesChange) {
+      onPrefecturesChange(value)
+    } else {
+      setInternalPrefectures(value)
+    }
   }
 
   const setSelectedGenres = (value: number[]) => {
-    onGenresChange?.(value) ?? setInternalGenres(value)
+    if (onGenresChange) {
+      onGenresChange(value)
+    } else {
+      setInternalGenres(value)
+    }
   }
 
   const setSelectedRanking = (value: string) => {
-    onRankingChange?.(value) ?? setInternalRanking(value)
+    if (onRankingChange) {
+      onRankingChange(value)
+    } else {
+      setInternalRanking(value)
+    }
   }
 
   const handlePrefectureChange = (prefecture: string) => {

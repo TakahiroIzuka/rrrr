@@ -1,7 +1,6 @@
 'use client'
 
 import type { Facility } from '@/types/facility'
-import type { ServiceCode } from '@/lib/constants/services'
 import { useClinicFilter } from '@/hooks/useClinicFilter'
 import List from './List'
 import FilterControls from './FilterControls'

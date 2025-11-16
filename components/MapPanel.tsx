@@ -6,6 +6,11 @@ import type { Facility } from '@/types/facility'
 import { MAP_PIN_IMAGES } from '@/lib/constants'
 import { useServiceCode } from '@/contexts/ServiceContext'
 
+// Extend AdvancedMarkerElement to include custom updateContent property
+interface ExtendedMarker extends google.maps.marker.AdvancedMarkerElement {
+  updateContent?: (isFocused: boolean) => void
+}
+
 interface MapPanelProps {
   allFacilities: Facility[]
   filteredFacilities: Facility[]
@@ -16,8 +21,7 @@ const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilitie
   const serviceCode = useServiceCode()
   const mapRef = useRef<HTMLDivElement>(null)
   const googleMapRef = useRef<google.maps.Map | null>(null)
-  const markersRef = useRef<google.maps.Marker[]>([])
-  const markersMapRef = useRef<Map<number, google.maps.Marker>>(new Map())
+  const markersMapRef = useRef<Map<number, ExtendedMarker>>(new Map())
   const loaderRef = useRef<Loader | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -192,7 +196,7 @@ const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilitie
             map: googleMapRef.current,
             title: facility.name,
             content: markerDiv
-          })
+          }) as ExtendedMarker
 
           // Store update function on marker for later use
           marker.updateContent = updateMarkerContent

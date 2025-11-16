@@ -18,6 +18,23 @@ interface ServiceData {
   name: string
 }
 
+interface UpdateData {
+  name: string
+  code?: string
+}
+
+interface InsertData {
+  name: string
+  code?: string
+  service_id?: number
+  prefecture_id?: number
+}
+
+interface PrefectureData {
+  id: number
+  name: string
+}
+
 interface MasterManagerProps {
   masterType: 'genres' | 'regions'
   services: ServiceData[]
@@ -25,8 +42,6 @@ interface MasterManagerProps {
   prefectures: MasterData[]
   areas: MasterData[]
 }
-
-type MasterType = 'genres' | 'regions'
 
 const masterLabels = {
   genres: 'ジャンル',
@@ -111,12 +126,12 @@ export default function MasterManager({
     try {
       const supabase = createClient()
 
-      const updateData: any = { name: editName.trim() }
+      const updateData: UpdateData = { name: editName.trim() }
       if (hasCodeField) {
         updateData.code = editCode.trim()
       }
 
-      let tableName = activeTab
+      let tableName: string = activeTab
       if (activeTab === 'regions') {
         tableName = editingType === 'prefecture' ? 'prefectures' : 'areas'
       }
@@ -152,7 +167,7 @@ export default function MasterManager({
     try {
       const supabase = createClient()
 
-      let tableName = activeTab
+      let tableName: string = activeTab
       if (activeTab === 'regions') {
         tableName = type === 'prefecture' ? 'prefectures' : 'areas'
       }
@@ -197,7 +212,7 @@ export default function MasterManager({
     try {
       const supabase = createClient()
 
-      const insertData: any = { name: newName.trim() }
+      const insertData: InsertData = { name: newName.trim() }
       if (hasCodeField) {
         insertData.code = newCode.trim()
       }
@@ -205,11 +220,11 @@ export default function MasterManager({
         insertData.service_id = selectedServiceId
       }
 
-      let tableName = activeTab
+      let tableName: string = activeTab
       if (activeTab === 'regions') {
         if (addingType === 'area') {
           tableName = 'areas'
-          insertData.prefecture_id = addingPrefectureId
+          insertData.prefecture_id = addingPrefectureId ?? undefined
         } else {
           tableName = 'prefectures'
         }
@@ -257,7 +272,7 @@ export default function MasterManager({
       let addedPrefectures = 0
       let addedAreas = 0
       let skippedAreas = 0
-      let currentPrefecture: any = null
+      let currentPrefecture: PrefectureData | null = null
       let currentPrefectureName = ''
 
       for (const row of rows) {

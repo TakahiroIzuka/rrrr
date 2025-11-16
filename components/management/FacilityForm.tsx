@@ -12,13 +12,49 @@ interface MasterData {
   service_id?: number
 }
 
+interface FacilityDetail {
+  name?: string
+  star?: number | null
+  user_review_count?: number
+  lat?: number
+  lng?: number
+  site_url?: string
+  postal_code?: string
+  address?: string
+  tel?: string
+  google_map_url?: string
+}
+
+interface InitialFacilityData {
+  id?: number
+  service_id?: number
+  genre_id?: number
+  prefecture_id?: number
+  area_id?: number
+  company_id?: number
+  detail?: FacilityDetail | FacilityDetail[]
+}
+
+interface DetailUpdateData {
+  name: string
+  star: number | null
+  user_review_count: number
+  lat: number
+  lng: number
+  site_url?: string
+  postal_code?: string
+  address?: string
+  tel?: string
+  google_map_url?: string
+}
+
 interface FacilityFormProps {
   services: MasterData[]
   genres: MasterData[]
   prefectures: MasterData[]
   areas: MasterData[]
   companies: MasterData[]
-  initialData?: any
+  initialData?: InitialFacilityData
   currentUserType?: 'admin' | 'user'
 }
 
@@ -83,7 +119,7 @@ export default function FacilityForm({
   }, [serviceId, genreId, genres])
 
   // Detail fields
-  const detail = initialData?.detail?.[0] || initialData?.detail || {}
+  const detail: Partial<FacilityDetail> = ((initialData?.detail && Array.isArray(initialData.detail) ? initialData.detail[0] : initialData?.detail) || {}) as Partial<FacilityDetail>
   const [name, setName] = useState(detail.name || '')
   const [star, setStar] = useState(detail.star || '')
   const [userReviewCount, setUserReviewCount] = useState(detail.user_review_count || '')
@@ -109,11 +145,11 @@ export default function FacilityForm({
           const { error: facilityError } = await supabase
             .from('facilities')
             .update({
-              service_id: parseInt(serviceId),
-              genre_id: parseInt(genreId),
-              prefecture_id: parseInt(prefectureId),
-              area_id: areaId ? parseInt(areaId) : null,
-              company_id: companyId ? parseInt(companyId) : null
+              service_id: parseInt(String(serviceId)),
+              genre_id: parseInt(String(genreId)),
+              prefecture_id: parseInt(String(prefectureId)),
+              area_id: areaId ? parseInt(String(areaId)) : null,
+              company_id: companyId ? parseInt(String(companyId)) : null
             })
             .eq('id', initialData.id)
 
@@ -121,16 +157,16 @@ export default function FacilityForm({
         }
 
         // Update facility_details
-        const detailUpdateData: any = {
+        const detailUpdateData: DetailUpdateData = {
           name,
-          star: star ? parseFloat(star) : null,
-          user_review_count: userReviewCount ? parseInt(userReviewCount) : 0,
-          lat: lat ? parseFloat(lat) : 0,
-          lng: lng ? parseFloat(lng) : 0,
-          site_url: siteUrl || null,
-          postal_code: postalCode || null,
-          address: address || null,
-          tel: tel || null
+          star: star ? parseFloat(String(star)) : null,
+          user_review_count: userReviewCount ? parseInt(String(userReviewCount)) : 0,
+          lat: lat ? parseFloat(String(lat)) : 0,
+          lng: lng ? parseFloat(String(lng)) : 0,
+          site_url: siteUrl || undefined,
+          postal_code: postalCode || undefined,
+          address: address || undefined,
+          tel: tel || undefined
         }
 
         // Only update google_map_url if user is admin
@@ -151,11 +187,11 @@ export default function FacilityForm({
         const { data: facility, error: facilityError } = await supabase
           .from('facilities')
           .insert({
-            service_id: parseInt(serviceId),
-            genre_id: parseInt(genreId),
-            prefecture_id: parseInt(prefectureId),
-            area_id: areaId ? parseInt(areaId) : null,
-            company_id: companyId ? parseInt(companyId) : null
+            service_id: parseInt(String(serviceId)),
+            genre_id: parseInt(String(genreId)),
+            prefecture_id: parseInt(String(prefectureId)),
+            area_id: areaId ? parseInt(String(areaId)) : null,
+            company_id: companyId ? parseInt(String(companyId)) : null
           })
           .select()
           .single()
@@ -168,14 +204,14 @@ export default function FacilityForm({
           .insert({
             facility_id: facility.id,
             name,
-            star: star ? parseFloat(star) : null,
-            user_review_count: userReviewCount ? parseInt(userReviewCount) : 0,
-            lat: lat ? parseFloat(lat) : 0,
-            lng: lng ? parseFloat(lng) : 0,
-            site_url: siteUrl || null,
-            postal_code: postalCode || null,
-            address: address || null,
-            tel: tel || null,
+            star: star ? parseFloat(String(star)) : null,
+            user_review_count: userReviewCount ? parseInt(String(userReviewCount)) : 0,
+            lat: lat ? parseFloat(String(lat)) : 0,
+            lng: lng ? parseFloat(String(lng)) : 0,
+            site_url: siteUrl || undefined,
+            postal_code: postalCode || undefined,
+            address: address || undefined,
+            tel: tel || undefined,
             google_map_url: googleMapUrl
           })
 

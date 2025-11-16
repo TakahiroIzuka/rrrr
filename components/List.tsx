@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import type { Facility } from '@/types/facility'
 import CardLite from './CardLite'
-import { useServiceCode } from '@/contexts/ServiceContext'
 
 interface FacilityImage {
   id: number
@@ -32,7 +31,6 @@ export default function List({
   gridCols = '5',
   imagesMap = {}
 }: ListProps) {
-  const serviceCode = useServiceCode()
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
   const widthClass = width === 'full' ? 'w-full' : 'w-full md:w-3/4'

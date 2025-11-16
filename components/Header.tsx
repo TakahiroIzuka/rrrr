@@ -14,6 +14,11 @@ interface Genre {
   code: string
 }
 
+interface GenreConfig {
+  lineColor?: string
+  color?: string
+}
+
 interface HeaderProps {
   lineColor?: string
   color?: string
@@ -35,11 +40,11 @@ export default function Header({
 
   const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]
   // pageTypeがdetailまたはgenre-topの場合、REVIEW_RANKING_CONFIGからlineColorとcolorを取得
-  let lineColor = config.lineColor ?? lineColorProp
-  let color = config.color ?? colorProp
+  let lineColor: string = config.lineColor ?? lineColorProp
+  let color: string = config.color ?? colorProp
 
   if ((pageType === 'detail' || pageType === 'genre-top') && genreCode && config?.genres) {
-    const genreConfig = (config.genres as Record<string, any>)[genreCode]
+    const genreConfig = (config.genres as Record<string, GenreConfig>)[genreCode]
     if (genreConfig) {
       lineColor = genreConfig.lineColor ?? lineColor
       color = genreConfig.color ?? color
