@@ -16,8 +16,8 @@ export const REVIEW_RANKING_CONFIG = {
   [SERVICE_CODES.MEDICAL]: {
     buttonText: 'クリニック・施設の掲載リクエストはこちら',
     copyRightText: 'Medical Review Ranking.',
-    lineColor: "#a69a7e",
-    color: "#acd1e6",
+    lineColor: 'rgb(165, 153, 126)',
+    color: 'rgb(165, 153, 126)',
     genres: {
       'pilates': {
         lineColor: 'rgb(238, 154, 162)',
@@ -72,5 +72,12 @@ export const REVIEW_RANKING_CONFIG = {
         color: 'rgb(248, 176, 66)',
       },
     },
+  },
+  [SERVICE_CODES.VACATION_STAY]: {
+    buttonText: '宿泊施設の掲載リクエストはこちら',
+    copyRightText: 'Vacation Stay Review Ranking.',
+    lineColor: 'rgb(165, 153, 126)',
+    color: 'rgb(165, 153, 126)',
+    genres: {},
   },
 } as const
