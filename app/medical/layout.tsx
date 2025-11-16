@@ -1,8 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
 import { SERVICE_CODE } from './constants'
-import MedicalClientLayout from './client-layout'
+import ClientLayout from './client-layout'
 
-export default async function MedicalLayout({
+export default async function Layout({
   children,
 }: {
   children: React.ReactNode
@@ -16,12 +16,12 @@ export default async function MedicalLayout({
     .single()
 
   if (!service) {
-    throw new Error('Medical service not found')
+    throw new Error(`${SERVICE_CODE} service not found`)
   }
 
   return (
-    <MedicalClientLayout serviceName={service.name}>
+    <ClientLayout serviceName={service.name}>
       {children}
-    </MedicalClientLayout>
+    </ClientLayout>
   )
 }

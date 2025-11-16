@@ -1,8 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
 import { SERVICE_CODE } from './constants'
-import HouseBuilderClientLayout from './client-layout'
+import ClientLayout from './client-layout'
 
-export default async function HouseBuilderLayout({
+export default async function Layout({
   children,
 }: {
   children: React.ReactNode
@@ -16,12 +16,12 @@ export default async function HouseBuilderLayout({
     .single()
 
   if (!service) {
-    throw new Error('House builder service not found')
+    throw new Error(`${SERVICE_CODE} service not found`)
   }
 
   return (
-    <HouseBuilderClientLayout serviceName={service.name}>
+    <ClientLayout serviceName={service.name}>
       {children}
-    </HouseBuilderClientLayout>
+    </ClientLayout>
   )
 }

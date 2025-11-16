@@ -3,7 +3,7 @@ import HomeClient from '@/components/HomeClient'
 import { fetchAllFacilities } from '@/lib/data/facilities'
 import { SERVICE_CODE } from './constants'
 
-export default async function HouseBuilderPage() {
+export default async function Page() {
   const { facilities, error } = await fetchAllFacilities(SERVICE_CODE)
 
   if (error) {

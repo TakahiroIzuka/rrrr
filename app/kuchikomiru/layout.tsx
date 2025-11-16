@@ -1,8 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
 import { SERVICE_CODE } from './constants'
-import KuchikomiruClientLayout from './client-layout'
+import ClientLayout from './client-layout'
 
-export default async function KuchikomiruLayout({
+export default async function Layout({
   children,
 }: {
   children: React.ReactNode
@@ -16,12 +16,12 @@ export default async function KuchikomiruLayout({
     .single()
 
   if (!service) {
-    throw new Error('Kuchikomiru service not found')
+    throw new Error(`${SERVICE_CODE} service not found`)
   }
 
   return (
-    <KuchikomiruClientLayout serviceName={service.name}>
+    <ClientLayout serviceName={service.name}>
       {children}
-    </KuchikomiruClientLayout>
+    </ClientLayout>
   )
 }

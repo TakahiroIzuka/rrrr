@@ -4,7 +4,7 @@ import ReviewRanking from '@/components/ReviewRanking'
 import { fetchAllFacilities } from '@/lib/data/facilities'
 import { SERVICE_CODE } from '../constants'
 
-export default async function ClinicListPage() {
+export default async function ListPage() {
   const { facilities, error } = await fetchAllFacilities(SERVICE_CODE)
 
   if (error) {

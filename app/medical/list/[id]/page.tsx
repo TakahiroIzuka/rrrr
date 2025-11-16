@@ -6,13 +6,13 @@ import ScrollToReviewButton from '@/components/facility/ScrollToReviewButton'
 import { fetchFacilityById, fetchFacilityImages } from '@/lib/data/facilities'
 import { SERVICE_CODE } from '../../constants'
 
-interface ClinicDetailPageProps {
+interface DetailPageProps {
   params: Promise<{
     id: string
   }>
 }
 
-export default async function ClinicDetailPage({ params }: ClinicDetailPageProps) {
+export default async function DetailPage({ params }: DetailPageProps) {
   const { id } = await params
 
   const { facility, error } = await fetchFacilityById(id, SERVICE_CODE)
@@ -86,7 +86,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
         </div>
 
         {/* div2 */}
-        <Div2 facility={facility} serviceCode="medical" images={images || []} />
+        <Div2 facility={facility} images={images || []} />
 
         {/* div3 */}
         <div id="review-section" className="mb-2 p-4 rounded-lg" style={{ backgroundColor: 'rgb(255, 249, 240)', marginLeft: '3px', marginRight: '3px' }}>
@@ -124,7 +124,7 @@ export default async function ClinicDetailPage({ params }: ClinicDetailPageProps
 
         {/* div4 */}
         <div className="p-4 flex justify-center">
-          <a href="/medical">
+          <a href={`/${SERVICE_CODE}`}>
             <button className="text-white text-sm w-64 md:w-[390px] h-12 md:h-[60px]" style={{ backgroundColor: 'rgb(163, 151, 125)' }}>
               戻る
             </button>

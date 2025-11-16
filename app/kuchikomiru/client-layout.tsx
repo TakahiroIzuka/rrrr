@@ -7,12 +7,12 @@ import MarqueeText from '@/components/MarqueeText'
 import { ServiceProvider } from '@/contexts/ServiceContext'
 import { SERVICE_CODE } from './constants'
 
-interface KuchikomiruClientLayoutProps {
+interface ClientLayoutProps {
   serviceName: string
   children: React.ReactNode
 }
 
-export default function KuchikomiruClientLayout({ serviceName, children }: KuchikomiruClientLayoutProps) {
+export default function ClientLayout({ serviceName, children }: ClientLayoutProps) {
   const pathname = usePathname()
   const isTopPage = pathname === `/${SERVICE_CODE}`
 

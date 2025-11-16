@@ -2,16 +2,17 @@ import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { SERVICE_CODE } from '../../constants'
 
-interface ClinicDetailLayoutProps {
+interface DetailLayoutProps {
   children: React.ReactNode
   params: Promise<{ id: string }>
 }
 
-export default async function ClinicDetailLayout({
+export default async function DetailLayout({
   children,
   params,
-}: ClinicDetailLayoutProps) {
+}: DetailLayoutProps) {
   const { id } = await params
   const supabase = await createClient()
 
@@ -52,11 +53,11 @@ export default async function ClinicDetailLayout({
           <nav className="text-[12px]">
             <ol className="flex items-center gap-2">
               <li>
-                <a href="/medical" className="text-black hover:underline transition-colors">トップ</a>
+                <a href={`/${SERVICE_CODE}`} className="text-black hover:underline transition-colors">トップ</a>
               </li>
               <li className="text-black">&gt;</li>
               <li>
-                <a href="/medical/list" className="text-black hover:underline transition-colors">クリニック・施設一覧</a>
+                <a href={`/${SERVICE_CODE}/list`} className="text-black hover:underline transition-colors">クリニック・施設一覧</a>
               </li>
               <li className="text-black">&gt;</li>
               <li className="text-black">{facilityName}</li>

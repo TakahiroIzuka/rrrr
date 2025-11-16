@@ -4,16 +4,17 @@ import { usePathname } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Breadcrumb from '@/components/Breadcrumb'
+import { SERVICE_CODE } from '../constants'
 
-export default function HouseBuilderListLayout({
+export default function ListLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const isHouseBuilderListPage = pathname === '/house-builder/list'
+  const isListPage = pathname === `/${SERVICE_CODE}/list`
 
-  if (!isHouseBuilderListPage) {
+  if (!isListPage) {
     return <>{children}</>
   }
 
@@ -24,7 +25,7 @@ export default function HouseBuilderListLayout({
       />
       <Breadcrumb
         items={[
-          { label: 'トップ', href: '/house-builder' },
+          { label: 'トップ', href: `/${SERVICE_CODE}` },
           { label: '施設はこちら' }
         ]}
       />
