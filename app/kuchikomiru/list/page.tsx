@@ -2,11 +2,11 @@ import ErrorMessage from '@/components/ErrorMessage'
 import List from '@/components/List'
 import ReviewRanking from '@/components/ReviewRanking'
 import { fetchAllFacilities } from '@/lib/data/facilities'
-import { SERVICE_CODES } from '@/lib/constants/services'
+import { SERVICE_CODE } from '../constants'
 
 export default async function KuchikomiruListPage() {
   // Fetch facilities with code='kuchikomiru'
-  const { facilities, error } = await fetchAllFacilities(SERVICE_CODES.KUCHIKOMIRU)
+  const { facilities, error } = await fetchAllFacilities(SERVICE_CODE)
 
   if (error) {
     return <ErrorMessage message={error.message} />

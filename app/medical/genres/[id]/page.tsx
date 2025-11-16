@@ -2,7 +2,7 @@ import ErrorMessage from '@/components/ErrorMessage'
 import { notFound } from 'next/navigation'
 import HomeClient from '@/components/HomeClient'
 import { fetchFacilitiesByGenre, fetchGenreById } from '@/lib/data/facilities'
-import { SERVICE_CODES } from '@/lib/constants/services'
+import { SERVICE_CODE } from '../../constants'
 
 interface GenrePageProps {
   params: Promise<{
@@ -20,8 +20,7 @@ export default async function GenrePage({ params }: GenrePageProps) {
     notFound()
   }
 
-  // Get facilities filtered by genre_id and code='medical'
-  const { facilities, error } = await fetchFacilitiesByGenre(id, SERVICE_CODES.MEDICAL)
+  const { facilities, error } = await fetchFacilitiesByGenre(id, SERVICE_CODE)
 
   if (error) {
     return <ErrorMessage message={error.message} />

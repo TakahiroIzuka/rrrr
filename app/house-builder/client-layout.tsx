@@ -5,23 +5,20 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import MarqueeText from '@/components/MarqueeText'
 import { ServiceProvider } from '@/contexts/ServiceContext'
-import type { ServiceCode } from '@/lib/constants/services'
+import { SERVICE_CODE } from './constants'
 
 interface HouseBuilderClientLayoutProps {
-  service: {
-    code: string
-    name: string
-  }
+  serviceName: string
   children: React.ReactNode
 }
 
-export default function HouseBuilderClientLayout({ service, children }: HouseBuilderClientLayoutProps) {
+export default function HouseBuilderClientLayout({ serviceName, children }: HouseBuilderClientLayoutProps) {
   const pathname = usePathname()
-  const isHouseBuilderTopPage = pathname === '/house-builder'
+  const isTopPage = pathname === `/${SERVICE_CODE}`
 
   return (
-    <ServiceProvider serviceCode={service.code as ServiceCode} serviceName={service.name}>
-      {isHouseBuilderTopPage && (
+    <ServiceProvider serviceCode={SERVICE_CODE} serviceName={serviceName}>
+      {isTopPage && (
         <>
           <Header />
           <div className="mt-16 md:mt-0">
@@ -30,7 +27,7 @@ export default function HouseBuilderClientLayout({ service, children }: HouseBui
         </>
       )}
       {children}
-      {isHouseBuilderTopPage && (
+      {isTopPage && (
         <Footer />
       )}
     </ServiceProvider>

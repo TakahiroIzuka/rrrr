@@ -4,7 +4,7 @@ import Div2 from '@/components/facility/Div2'
 import ReviewCard from '@/components/facility/ReviewCard'
 import ScrollToReviewButton from '@/components/facility/ScrollToReviewButton'
 import { fetchFacilityById, fetchFacilityImages } from '@/lib/data/facilities'
-import { SERVICE_CODES } from '@/lib/constants/services'
+import { SERVICE_CODE } from '../../constants'
 import { getGenreColor } from '@/lib/utils/genreColors'
 
 interface FacilityDetailPageProps {
@@ -17,7 +17,7 @@ export default async function FacilityDetailPage({ params }: FacilityDetailPageP
   const { id } = await params
 
   // Fetch facility with code='kuchikomiru'
-  const { facility, error } = await fetchFacilityById(id, SERVICE_CODES.KUCHIKOMIRU)
+  const { facility, error } = await fetchFacilityById(id, SERVICE_CODE)
 
   if (error || !facility) {
     notFound()

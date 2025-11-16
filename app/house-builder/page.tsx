@@ -1,10 +1,10 @@
 import ErrorMessage from '@/components/ErrorMessage'
 import HomeClient from '@/components/HomeClient'
 import { fetchAllFacilities } from '@/lib/data/facilities'
-import { SERVICE_CODES } from '@/lib/constants/services'
+import { SERVICE_CODE } from './constants'
 
 export default async function HouseBuilderPage() {
-  const { facilities, error } = await fetchAllFacilities(SERVICE_CODES.HOUSE_BUILDER)
+  const { facilities, error } = await fetchAllFacilities(SERVICE_CODE)
 
   if (error) {
     return <ErrorMessage message={error.message} />

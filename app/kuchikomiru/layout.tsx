@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
-import { SERVICE_CODES } from '@/lib/constants/services'
+import { SERVICE_CODE } from './constants'
 import KuchikomiruClientLayout from './client-layout'
 
 export default async function KuchikomiruLayout({
@@ -11,8 +11,8 @@ export default async function KuchikomiruLayout({
 
   const { data: service } = await supabase
     .from('services')
-    .select('code, name')
-    .eq('code', SERVICE_CODES.KUCHIKOMIRU)
+    .select('name')
+    .eq('code', SERVICE_CODE)
     .single()
 
   if (!service) {
@@ -20,7 +20,7 @@ export default async function KuchikomiruLayout({
   }
 
   return (
-    <KuchikomiruClientLayout service={service}>
+    <KuchikomiruClientLayout serviceName={service.name}>
       {children}
     </KuchikomiruClientLayout>
   )

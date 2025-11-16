@@ -82,7 +82,7 @@ const FACILITY_BASE_QUERY = `
 /**
  * Fetch all facilities by service code
  */
-export async function fetchAllFacilities(serviceCode: string = SERVICE_CODES.MEDICAL): Promise<{ facilities: Facility[] | null; error: Error | null }> {
+export async function fetchAllFacilities(serviceCode: string): Promise<{ facilities: Facility[] | null; error: Error | null }> {
   const serviceId = await getServiceId(serviceCode)
 
   if (!serviceId) {
@@ -107,7 +107,7 @@ export async function fetchAllFacilities(serviceCode: string = SERVICE_CODES.MED
 /**
  * Fetch facilities by genre ID and service code
  */
-export async function fetchFacilitiesByGenre(genreId: string, serviceCode: string = SERVICE_CODES.MEDICAL): Promise<{ facilities: Facility[] | null; error: Error | null }> {
+export async function fetchFacilitiesByGenre(genreId: string, serviceCode: string): Promise<{ facilities: Facility[] | null; error: Error | null }> {
   const serviceId = await getServiceId(serviceCode)
 
   if (!serviceId) {
@@ -174,7 +174,7 @@ const FACILITY_DETAIL_QUERY = `
 /**
  * Fetch single facility by ID and service code
  */
-export async function fetchFacilityById(id: string, serviceCode: string = SERVICE_CODES.MEDICAL) {
+export async function fetchFacilityById(id: string, serviceCode: string) {
   const serviceId = await getServiceId(serviceCode)
 
   if (!serviceId) {
