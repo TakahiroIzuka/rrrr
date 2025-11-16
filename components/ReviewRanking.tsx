@@ -1,7 +1,7 @@
 'use client'
 
 import { REVIEW_RANKING_CONFIG } from '@/lib/constants/services'
-import { useServiceCode } from '@/contexts/ServiceContext'
+import { useServiceCode, useServiceName } from '@/contexts/ServiceContext'
 
 interface ReviewRankingProps {
   variant?: 'mobile' | 'desktop'
@@ -11,6 +11,7 @@ export default function ReviewRanking({
   variant = 'desktop'
 }: ReviewRankingProps) {
   const serviceCode = useServiceCode()
+  const serviceName = useServiceName()
   const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]
 
   if (!config) {
@@ -18,7 +19,7 @@ export default function ReviewRanking({
     return null
   }
 
-  const { title, buttonText, iconImagePath } = config
+  const { buttonText, iconImagePath } = config
   const isMobile = variant === 'mobile'
 
   const containerClass = isMobile
@@ -46,17 +47,14 @@ export default function ReviewRanking({
         className="w-[95px] h-[95px] object-contain relative z-10 mx-auto mb-3"
       />
 
-      {/* Title */}
       <h3 className="text-base font-bold text-gray-700 mb-3 text-center">
-        {title}
+        {serviceName}クチコミランキング
       </h3>
 
-      {/* Description */}
       <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-        {title}の評価基準は、Googleマップのクチコミ情報の数値（評価平均×評価人数=Ｘ）を算出して、ランキング順位を表示しております。 ※Googleマップのクチコミ情報は、ページを読み込む度に最新情報が同期されます。
+        {serviceName}クチコミランキングの評価基準は、Googleマップのクチコミ情報の数値（評価平均×評価人数=Ｘ）を算出して、ランキング順位を表示しております。 ※Googleマップのクチコミ情報は、ページを読み込む度に最新情報が同期されます。
       </p>
 
-      {/* Button */}
       <button className={`w-full py-3 px-4 bg-[#a59878] text-white text-xs font-bold rounded-full ${buttonHoverClass} transition-all duration-300 group flex items-center justify-center gap-2 relative`}>
         <span className={`transition-transform duration-300 ${buttonScaleClass} inline-block`}>
           {buttonText}

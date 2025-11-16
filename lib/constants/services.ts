@@ -15,9 +15,10 @@ export type ServiceCode = typeof SERVICE_CODES[keyof typeof SERVICE_CODES]
  */
 export const REVIEW_RANKING_CONFIG = {
   [SERVICE_CODES.MEDICAL]: {
-    title: 'メディカルクチコミランキング',
+    // TODO will delete
     iconImagePath: '/medical/icon.png',
     buttonText: 'クリニック・施設の掲載リクエストはこちら',
+    // TODO will rename
     serviceName: 'Medical Review Ranking.',
     lineColor: "#a69a7e",
     color: "#acd1e6",
@@ -45,7 +46,6 @@ export const REVIEW_RANKING_CONFIG = {
     },
   },
   [SERVICE_CODES.KUCHIKOMIRU]: {
-    title: 'クチコミルランキング',
     iconImagePath: '/kuchikomiru/icon.png',
     buttonText: '地域密着店舗・施設の掲載リクエストはこちら',
     serviceName: 'Mr.Review Ranking.',
@@ -75,7 +75,6 @@ export const REVIEW_RANKING_CONFIG = {
     },
   },
   [SERVICE_CODES.HOUSE_BUILDER]: {
-    title: '住宅会社ランキング',
     iconImagePath: '/house-builder/icon.png',
     buttonText: '住宅会社の掲載リクエストはこちら',
     serviceName: 'House Builder Review Ranking.',
