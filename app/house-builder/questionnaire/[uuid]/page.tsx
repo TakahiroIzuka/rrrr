@@ -24,8 +24,8 @@ export default async function QuestionnairePage({ params }: QuestionnairePagePro
   // Get genre color from REVIEW_RANKING_CONFIG
   const config = REVIEW_RANKING_CONFIG[SERVICE_CODE]
   const genreCode = facility.genre?.code
-  const genreColor = genreCode && config.genres?.[genreCode]
-    ? config.genres[genreCode].color
+  const genreColor = genreCode && config.genres && genreCode in config.genres
+    ? (config.genres as Record<string, { color: string; lineColor: string }>)[genreCode].color
     : config.color
 
   return (
