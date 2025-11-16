@@ -1,8 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { Facility } from '@/types/facility'
-import { useServiceCode } from '@/contexts/ServiceContext'
 
 interface FacilityImage {
   id: number
@@ -18,36 +17,69 @@ interface Div2Props {
   images?: FacilityImage[]
 }
 
-const getGenreNoImage = (genreCode?: string, serviceCode?: string): string => {
-  const basePath = serviceCode || 'medical'
-  if (!genreCode) {
-    return `/${basePath}/default/noimage.jpg`
-  }
-  return `/${basePath}/${genreCode}/noimage.jpg`
+interface DisplayImage {
+  url: string
+  thumbnailUrl: string
+  alt: string
 }
 
 export default function Div2({ facility, images = [] }: Div2Props) {
-  const serviceCode = useServiceCode()
   const [selectedImage, setSelectedImage] = useState(0)
+  const [displayImages, setDisplayImages] = useState<DisplayImage[]>([])
 
-  // Create an array of 5 items (fill with images or default)
-  // Map images by display_order to ensure correct positioning
-  const displayImages = Array.from({ length: 5 }).map((_, index) => {
-    const targetDisplayOrder = index + 1 // display_order is 1-indexed
-    const facilityImage = images.find(img => img.display_order === targetDisplayOrder)
-    if (facilityImage) {
-      return {
-        url: facilityImage.publicUrl,
-        thumbnailUrl: facilityImage.thumbnailUrl || facilityImage.publicUrl,
-        alt: `${facility.name}の画像 ${index + 1}`,
+  // Initialize display images
+  useEffect(() => {
+    const initialImages = Array.from({ length: 5 }).map((_, index) => {
+      const targetDisplayOrder = index + 1 // display_order is 1-indexed
+      const facilityImage = images.find(img => img.display_order === targetDisplayOrder)
+      if (facilityImage) {
+        return {
+          url: facilityImage.publicUrl,
+          thumbnailUrl: facilityImage.thumbnailUrl || facilityImage.publicUrl,
+          alt: `${facility.name}の画像 ${index + 1}`,
+        }
       }
+      return {
+        url: '/default/noimage.jpg',
+        thumbnailUrl: '/default/noimage.jpg',
+        alt: `${facility.name}のデフォルト画像 ${index + 1}`,
+      }
+    })
+
+    setDisplayImages(initialImages)
+
+    // Check for genre-specific noimage.jpg for slots without facility images
+    const genreCode = facility.genre?.code
+    if (genreCode) {
+      const genreNoImagePath = `/${genreCode}/noimage.jpg`
+
+      // Check if genre-specific noimage exists
+      const img = new window.Image()
+      img.onload = () => {
+        // If genre-specific image exists, update display images
+        setDisplayImages(prevImages =>
+          prevImages.map((image, index) => {
+            const targetDisplayOrder = index + 1
+            const facilityImage = images.find(img => img.display_order === targetDisplayOrder)
+            // Only update if this slot doesn't have a facility image
+            if (!facilityImage) {
+              return {
+                url: genreNoImagePath,
+                thumbnailUrl: genreNoImagePath,
+                alt: `${facility.name}のデフォルト画像 ${index + 1}`,
+              }
+            }
+            return image
+          })
+        )
+      }
+      img.onerror = () => {
+        // If genre-specific image doesn't exist, keep using default
+        // (already set in initialImages)
+      }
+      img.src = genreNoImagePath
     }
-    return {
-      url: getGenreNoImage(facility.genre?.code, serviceCode),
-      thumbnailUrl: getGenreNoImage(facility.genre?.code, serviceCode),
-      alt: `${facility.name}のデフォルト画像 ${index + 1}`,
-    }
-  })
+  }, [facility, images])
 
   return (
     <div className="p-0 md:py-4 md:px-[10px]">

@@ -3,7 +3,7 @@ import { join } from 'path'
 
 /**
  * Get image path for genre with fallback to default
- * @param serviceCode - Service code (e.g., 'medical', 'kuchikomiru')
+ * @param serviceCode - Service code (e.g., 'medical', 'house-builder')
  * @param genreCode - Genre code (e.g., 'pilates', 'cosmetic-dermatology')
  * @param imageName - Image file name (e.g., 'logo_header.png', 'logo_footer.png')
  * @returns Public path to the image

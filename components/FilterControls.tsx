@@ -1,5 +1,5 @@
 import type { Facility } from '@/types/facility'
-import { GENRE_MAP, RANKING_OPTIONS } from '@/lib/constants'
+import { RANKING_OPTIONS } from '@/lib/constants'
 
 interface FilterControlsProps {
   allFacilities: Facility[]
@@ -23,7 +23,16 @@ export default function FilterControls({
   hideGenreFilter = false
 }: FilterControlsProps) {
   const uniquePrefectures = Array.from(new Set(allFacilities.map(facility => facility.prefecture?.name).filter(Boolean))).sort()
-  const uniqueGenres = Array.from(new Set(allFacilities.map(facility => facility.genre_id))).sort()
+
+  // Get unique genres with their names
+  const uniqueGenres = Array.from(
+    allFacilities.reduce((map, facility) => {
+      if (facility.genre_id && facility.genre?.name) {
+        map.set(facility.genre_id, facility.genre.name)
+      }
+      return map
+    }, new Map<number, string>())
+  ).map(([id, name]) => ({ id, name })).sort((a, b) => a.id - b.id)
 
   return (
     <>
@@ -57,17 +66,17 @@ export default function FilterControls({
             ジャンルを選択
           </h4>
           <div className="flex flex-wrap gap-2">
-            {uniqueGenres.map((genreId) => (
-              <label key={genreId} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white">
+            {uniqueGenres.map((genre) => (
+              <label key={genre.id} className="flex items-center gap-1 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded text-sm border border-gray-200 bg-white">
                 <input
                   type="checkbox"
-                  checked={selectedGenres.includes(genreId)}
-                  onChange={() => onGenreChange(genreId)}
+                  checked={selectedGenres.includes(genre.id)}
+                  onChange={() => onGenreChange(genre.id)}
                   className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                 />
-                <span className="text-xs text-gray-700 font-medium">{GENRE_MAP[genreId as keyof typeof GENRE_MAP]}</span>
+                <span className="text-xs text-gray-700 font-medium">{genre.name}</span>
                 <span className="text-xs text-gray-500">
-                  ({allFacilities.filter(f => f.genre_id === genreId).length})
+                  ({allFacilities.filter(f => f.genre_id === genre.id).length})
                 </span>
               </label>
             ))}
