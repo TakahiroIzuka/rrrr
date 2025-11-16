@@ -28,7 +28,9 @@ export default async function DetailPage({ params }: DetailPageProps) {
   // Get genre color from REVIEW_RANKING_CONFIG
   const config = REVIEW_RANKING_CONFIG[SERVICE_CODE]
   const genreCode = facility.genre?.code
-  const genreColor = (genreCode && config.genres?.[genreCode as keyof typeof config.genres]?.color) || config.color
+  const genreColor = genreCode && config.genres && genreCode in config.genres
+    ? (config.genres as Record<string, { color: string; lineColor: string }>)[genreCode].color
+    : config.color
 
   return (
     <div className="mx-[10px] mb-[10px] pt-[10px] md:mx-20 md:pt-10 md:pb-24 md:mb-0">
