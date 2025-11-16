@@ -14,7 +14,7 @@ export default function Footer({ pageType = 'top', genreCode }: FooterProps) {
   const [footerImagePath, setFooterImagePath] = useState<string>(`/${serviceCode}/default/logo_footer.png`)
 
   const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]
-  const { buttonText, serviceName } = config
+  const { buttonText, copyRightText } = config
 
   // 画像の存在チェック
   useEffect(() => {
@@ -65,11 +65,11 @@ export default function Footer({ pageType = 'top', genreCode }: FooterProps) {
         <div>
           <p className="m-0 text-xs md:text-[10px]" style={{ color: '#999' }}>
             <span className="md:hidden">
-              Copyright © {serviceName}<br />
+              Copyright © {copyRightText}<br />
               All Rights Reserved.
             </span>
             <span className="hidden md:inline">
-              Copyright © {serviceName} All Rights Reserved.
+              Copyright © {copyRightText} All Rights Reserved.
             </span>
           </p>
         </div>

@@ -16,8 +16,7 @@ export type ServiceCode = typeof SERVICE_CODES[keyof typeof SERVICE_CODES]
 export const REVIEW_RANKING_CONFIG = {
   [SERVICE_CODES.MEDICAL]: {
     buttonText: 'クリニック・施設の掲載リクエストはこちら',
-    // TODO will rename
-    serviceName: 'Medical Review Ranking.',
+    copyRightText: 'Medical Review Ranking.',
     lineColor: "#a69a7e",
     color: "#acd1e6",
     genres: {
@@ -45,7 +44,7 @@ export const REVIEW_RANKING_CONFIG = {
   },
   [SERVICE_CODES.KUCHIKOMIRU]: {
     buttonText: '地域密着店舗・施設の掲載リクエストはこちら',
-    serviceName: 'Mr.Review Ranking.',
+    copyRightText: 'Mr.Review Ranking.',
     lineColor: "rgb(236, 106, 82)",
     color: "rgb(236, 106, 82)",
     genres: {
@@ -73,7 +72,7 @@ export const REVIEW_RANKING_CONFIG = {
   },
   [SERVICE_CODES.HOUSE_BUILDER]: {
     buttonText: '住宅会社の掲載リクエストはこちら',
-    serviceName: 'House Builder Review Ranking.',
+    copyRightText: 'House Builder Review Ranking.',
     lineColor: 'rgb(248, 176, 66)',
     color: 'rgb(248, 176, 66)',
     genres: {
