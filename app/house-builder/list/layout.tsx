@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Breadcrumb from '@/components/Breadcrumb'
-import { SERVICE_CODES } from '@/lib/constants/services'
 
 export default function HouseBuilderListLayout({
   children,

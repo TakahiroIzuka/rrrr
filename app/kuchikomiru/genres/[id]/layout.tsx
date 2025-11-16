@@ -3,8 +3,6 @@ import { notFound } from 'next/navigation'
 import Header from '@/components/Header'
 import MarqueeText from '@/components/MarqueeText'
 import Footer from '@/components/Footer'
-import { getGenreColor } from '@/lib/utils/genreColors'
-import { SERVICE_CODES } from '@/lib/constants/services'
 
 interface GenreLayoutProps {
   children: React.ReactNode
@@ -27,8 +25,6 @@ export default async function GenreLayout({
   if (error || !genre) {
     notFound()
   }
-
-  const genreColor = getGenreColor(genre.code)
 
   return (
     <>

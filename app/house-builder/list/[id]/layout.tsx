@@ -2,8 +2,6 @@ import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { getGenreColor } from '@/lib/utils/genreColors'
-import { SERVICE_CODES } from '@/lib/constants/services'
 
 interface FacilityDetailLayoutProps {
   children: React.ReactNode
@@ -41,8 +39,6 @@ export default async function FacilityDetailLayout({
   const facilityName = Array.isArray(facility.detail)
     ? (facility.detail[0] as { name?: string })?.name || ''
     : (facility.detail as { name?: string })?.name || ''
-
-  const genreColor = getGenreColor(genreCode)
 
   return (
     <>
