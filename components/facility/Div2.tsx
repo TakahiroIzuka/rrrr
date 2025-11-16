@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import type { Facility } from '@/types/facility'
+import { useServiceCode } from '@/contexts/ServiceContext'
 
 interface FacilityImage {
   id: number
@@ -24,11 +25,14 @@ interface DisplayImage {
 }
 
 export default function Div2({ facility, images = [] }: Div2Props) {
+  const serviceCode = useServiceCode()
   const [selectedImage, setSelectedImage] = useState(0)
   const [displayImages, setDisplayImages] = useState<DisplayImage[]>([])
 
   // Initialize display images
   useEffect(() => {
+    const defaultImagePath = `/${serviceCode}/default/noimage.jpg`
+
     const initialImages = Array.from({ length: 5 }).map((_, index) => {
       const targetDisplayOrder = index + 1 // display_order is 1-indexed
       const facilityImage = images.find(img => img.display_order === targetDisplayOrder)
@@ -40,8 +44,8 @@ export default function Div2({ facility, images = [] }: Div2Props) {
         }
       }
       return {
-        url: '/default/noimage.jpg',
-        thumbnailUrl: '/default/noimage.jpg',
+        url: defaultImagePath,
+        thumbnailUrl: defaultImagePath,
         alt: `${facility.name}のデフォルト画像 ${index + 1}`,
       }
     })
@@ -51,7 +55,7 @@ export default function Div2({ facility, images = [] }: Div2Props) {
     // Check for genre-specific noimage.jpg for slots without facility images
     const genreCode = facility.genre?.code
     if (genreCode) {
-      const genreNoImagePath = `/${genreCode}/noimage.jpg`
+      const genreNoImagePath = `/${serviceCode}/${genreCode}/noimage.jpg`
 
       // Check if genre-specific noimage exists
       const img = new window.Image()
@@ -79,7 +83,12 @@ export default function Div2({ facility, images = [] }: Div2Props) {
       }
       img.src = genreNoImagePath
     }
-  }, [facility, images])
+  }, [facility, images, serviceCode])
+
+  // Don't render until displayImages are loaded
+  if (displayImages.length === 0) {
+    return null
+  }
 
   return (
     <div className="p-0 md:py-4 md:px-[10px]">

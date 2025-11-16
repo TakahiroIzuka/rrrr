@@ -5,6 +5,7 @@ import ReviewCard from '@/components/facility/ReviewCard'
 import ScrollToReviewButton from '@/components/facility/ScrollToReviewButton'
 import { fetchFacilityById, fetchFacilityImages } from '@/lib/data/facilities'
 import { SERVICE_CODE } from '../../constants'
+import { REVIEW_RANKING_CONFIG } from '@/lib/constants/services'
 
 interface DetailPageProps {
   params: Promise<{
@@ -23,6 +24,11 @@ export default async function DetailPage({ params }: DetailPageProps) {
 
   // Fetch facility images
   const { images } = await fetchFacilityImages(Number(id))
+
+  // Get genre color from REVIEW_RANKING_CONFIG
+  const config = REVIEW_RANKING_CONFIG[SERVICE_CODE]
+  const genreCode = facility.genre?.code
+  const genreColor = (genreCode && config.genres?.[genreCode as keyof typeof config.genres]?.color) || config.color
 
   return (
     <div className="mx-[10px] mb-[10px] pt-[10px] md:mx-20 md:pt-10 md:pb-24 md:mb-0">
@@ -67,11 +73,11 @@ export default async function DetailPage({ params }: DetailPageProps) {
             <div className="w-full md:w-[55%] flex flex-col">
               {/* バー */}
               <div className="relative mb-4 mt-2 hidden md:block">
-                <div className="w-full px-4 py-2 text-sm border-2 rounded text-center" style={{ borderColor: 'rgb(220, 194, 219)', color: 'rgb(220, 194, 219)' }}>
+                <div className="w-full px-4 py-2 text-sm border-2 rounded text-center" style={{ borderColor: genreColor, color: genreColor }}>
                   クチコミ投稿に是非ご協力ください！
                 </div>
                 {/* 下向き三角形 */}
-                <div className="absolute left-1/2 -translate-x-1/2 -bottom-3 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: 'rgb(220, 194, 219)' }}></div>
+                <div className="absolute left-1/2 -translate-x-1/2 -bottom-3 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: genreColor }}></div>
               </div>
 
               {/* ボタン */}
@@ -92,11 +98,11 @@ export default async function DetailPage({ params }: DetailPageProps) {
         <div id="review-section" className="mb-2 p-4 rounded-lg" style={{ backgroundColor: 'rgb(255, 249, 240)', marginLeft: '3px', marginRight: '3px' }}>
           {/* バー */}
           <div className="relative mb-4">
-            <div className="w-full px-4 py-2 text-sm border-2 rounded text-center bg-white" style={{ borderColor: 'rgb(220, 194, 219)', color: 'rgb(220, 194, 219)' }}>
+            <div className="w-full px-4 py-2 text-sm border-2 rounded text-center bg-white" style={{ borderColor: genreColor, color: genreColor }}>
               {facility.name}のクチコミ一覧はこちら！
             </div>
             {/* 下向き三角形 */}
-            <div className="absolute left-1/2 -translate-x-1/2 -bottom-3 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: 'rgb(220, 194, 219)' }}></div>
+            <div className="absolute left-1/2 -translate-x-1/2 -bottom-3 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: genreColor }}></div>
           </div>
 
           {/* カードグリッド */}
