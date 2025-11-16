@@ -13,13 +13,14 @@ export default function ReviewRanking({
   const serviceCode = useServiceCode()
   const serviceName = useServiceName()
   const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]
+  const iconImagePath = `${serviceCode}/icon.png`
 
   if (!config) {
     console.error(`No review ranking config found for service code: ${serviceCode}`)
     return null
   }
 
-  const { buttonText, iconImagePath } = config
+  const { buttonText } = config
   const isMobile = variant === 'mobile'
 
   const containerClass = isMobile
