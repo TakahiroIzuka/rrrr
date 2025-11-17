@@ -29,6 +29,10 @@ const getMenuItems = (userType: 'admin' | 'user') => [
 
 const masterItems = [
   {
+    label: 'サービス',
+    href: '/management/masters/services',
+  },
+  {
     label: 'ジャンル',
     href: '/management/masters/genres',
   },

@@ -101,3 +101,13 @@ BEGIN
     ('user@studio-ivy.jp', 'user', 2, studio_ivy_auth_id),
     ('user@nishiumeda-clinic.jp', 'user', 3, umeda_clinic_auth_id);
 END $$;
+
+-- Fix all sequences after inserting data with explicit IDs
+-- This ensures auto-increment continues from the correct number
+-- Use pg_get_serial_sequence to dynamically find the correct sequence name
+SELECT setval(pg_get_serial_sequence('services', 'id'), (SELECT MAX(id) FROM services));
+SELECT setval(pg_get_serial_sequence('genres', 'id'), (SELECT MAX(id) FROM genres));
+SELECT setval(pg_get_serial_sequence('prefectures', 'id'), (SELECT MAX(id) FROM prefectures));
+SELECT setval(pg_get_serial_sequence('areas', 'id'), (SELECT MAX(id) FROM areas));
+SELECT setval(pg_get_serial_sequence('companies', 'id'), (SELECT MAX(id) FROM companies));
+SELECT setval(pg_get_serial_sequence('facilities', 'id'), (SELECT MAX(id) FROM facilities));
