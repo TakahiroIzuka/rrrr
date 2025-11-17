@@ -134,6 +134,45 @@ export default function MasterManager({
       let tableName: string = activeTab
       if (activeTab === 'regions') {
         tableName = editingType === 'prefecture' ? 'prefectures' : 'areas'
+
+        // Check for duplicate name when editing
+        if (editingType === 'prefecture') {
+          const { data: existingPrefecture } = await supabase
+            .from('prefectures')
+            .select('id')
+            .eq('name', editName.trim())
+            .neq('id', editingId)
+            .single()
+
+          if (existingPrefecture) {
+            alert('既に同じ名前の都道府県が存在します')
+            setIsUpdating(false)
+            return
+          }
+        } else {
+          // For areas, get the prefecture_id of the current area being edited
+          const { data: currentArea } = await supabase
+            .from('areas')
+            .select('prefecture_id')
+            .eq('id', editingId)
+            .single()
+
+          if (currentArea) {
+            const { data: existingArea } = await supabase
+              .from('areas')
+              .select('id')
+              .eq('name', editName.trim())
+              .eq('prefecture_id', currentArea.prefecture_id)
+              .neq('id', editingId)
+              .single()
+
+            if (existingArea) {
+              alert('この都道府県には既に同じ名前の地域が存在します')
+              setIsUpdating(false)
+              return
+            }
+          }
+        }
       }
 
       const { error } = await supabase
@@ -225,8 +264,35 @@ export default function MasterManager({
         if (addingType === 'area') {
           tableName = 'areas'
           insertData.prefecture_id = addingPrefectureId ?? undefined
+
+          // Check for duplicate area name within the same prefecture
+          const { data: existingArea } = await supabase
+            .from('areas')
+            .select('id')
+            .eq('name', newName.trim())
+            .eq('prefecture_id', addingPrefectureId)
+            .single()
+
+          if (existingArea) {
+            alert('この都道府県には既に同じ名前の地域が存在します')
+            setIsUpdating(false)
+            return
+          }
         } else {
           tableName = 'prefectures'
+
+          // Check for duplicate prefecture name
+          const { data: existingPrefecture } = await supabase
+            .from('prefectures')
+            .select('id')
+            .eq('name', newName.trim())
+            .single()
+
+          if (existingPrefecture) {
+            alert('既に同じ名前の都道府県が存在します')
+            setIsUpdating(false)
+            return
+          }
         }
       }
 
@@ -435,16 +501,54 @@ export default function MasterManager({
           )}
         </div>
 
-        {/* Add Form */}
-        {isAdding && (
+        {/* Add Form for Prefecture (only shown at top when adding prefecture) */}
+        {isAdding && addingType === 'prefecture' && activeTab === 'regions' && (
           <div className="mb-4 p-4 border border-blue-200 bg-blue-50 rounded-lg">
             <h3 className="text-sm font-semibold text-gray-900 mb-3">
-              {activeTab === 'regions'
-                ? addingType === 'prefecture'
-                  ? '都道府県を追加'
-                  : `地域を追加（${prefectures.find(p => p.id === addingPrefectureId)?.name}）`
-                : '新規追加'
-              }
+              都道府県を追加
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  名前 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={handleAdd}
+                disabled={isUpdating}
+                className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 disabled:opacity-50"
+              >
+                追加
+              </button>
+              <button
+                onClick={() => {
+                  setIsAdding(false)
+                  setAddingType(null)
+                  setAddingPrefectureId(null)
+                  setNewName('')
+                  setNewCode('')
+                }}
+                className="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
+              >
+                キャンセル
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Add Form for Genres */}
+        {isAdding && activeTab === 'genres' && (
+          <div className="mb-4 p-4 border border-blue-200 bg-blue-50 rounded-lg">
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">
+              新規追加
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
@@ -558,6 +662,10 @@ export default function MasterManager({
                               setIsAdding(true)
                               setAddingType('area')
                               setAddingPrefectureId(prefecture.id)
+                              // Expand the prefecture to show areas
+                              const newExpanded = new Set(expandedPrefectures)
+                              newExpanded.add(prefecture.id)
+                              setExpandedPrefectures(newExpanded)
                             }}
                             className="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
                           >
@@ -582,6 +690,43 @@ export default function MasterManager({
                   {/* Areas under this prefecture */}
                   {isExpanded && (
                     <div className="bg-white divide-y divide-gray-100">
+                      {/* Add Area Form (shown when adding area for this prefecture) */}
+                      {isAdding && addingType === 'area' && addingPrefectureId === prefecture.id && (
+                        <div className="px-4 py-3 pl-12 bg-green-50 border border-green-200">
+                          <h4 className="text-sm font-semibold text-gray-900 mb-2">
+                            地域を追加
+                          </h4>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={newName}
+                              onChange={(e) => setNewName(e.target.value)}
+                              placeholder="地域名を入力"
+                              className="w-64 px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                            />
+                            <button
+                              onClick={handleAdd}
+                              disabled={isUpdating}
+                              className="px-4 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 disabled:opacity-50"
+                            >
+                              追加
+                            </button>
+                            <button
+                              onClick={() => {
+                                setIsAdding(false)
+                                setAddingType(null)
+                                setAddingPrefectureId(null)
+                                setNewName('')
+                                setNewCode('')
+                              }}
+                              className="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
+                            >
+                              キャンセル
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
                       {prefectureAreas.map((area) => {
                         const isEditingArea = editingId === area.id && editingType === 'area'
 
