@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { uploadFacilityImageComplete } from '@/lib/utils/imageUpload'
+import Image from 'next/image'
 
 interface MasterData {
   id: number
@@ -48,6 +50,16 @@ interface DetailUpdateData {
   google_map_url?: string
 }
 
+interface FacilityImage {
+  id: number
+  facility_id: number
+  image_path: string
+  thumbnail_path: string | null
+  display_order: number
+  publicUrl: string
+  thumbnailUrl: string | null
+}
+
 interface FacilityFormProps {
   services: MasterData[]
   genres: MasterData[]
@@ -56,6 +68,7 @@ interface FacilityFormProps {
   companies: MasterData[]
   initialData?: InitialFacilityData
   currentUserType?: 'admin' | 'user'
+  images?: FacilityImage[]
 }
 
 export default function FacilityForm({
@@ -65,10 +78,13 @@ export default function FacilityForm({
   areas,
   companies,
   initialData,
-  currentUserType = 'admin'
+  currentUserType = 'admin',
+  images = []
 }: FacilityFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [uploadingImages, setUploadingImages] = useState<Record<number, boolean>>({})
+  const [facilityImages, setFacilityImages] = useState<FacilityImage[]>(images)
 
   // Facility fields
   const [serviceId, setServiceId] = useState(initialData?.service_id || '')
@@ -130,6 +146,94 @@ export default function FacilityForm({
   const [address, setAddress] = useState(detail.address || '')
   const [tel, setTel] = useState(detail.tel || '')
   const [googleMapUrl, setGoogleMapUrl] = useState(detail.google_map_url || '')
+
+  const handleImageUpload = async (displayOrder: number, file: File) => {
+    if (!initialData?.id) {
+      alert('施設を先に保存してください')
+      return
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('画像ファイルを選択してください')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('ファイルサイズは5MB以下にしてください')
+      return
+    }
+
+    setUploadingImages(prev => ({ ...prev, [displayOrder]: true }))
+
+    try {
+      const uploadedImage = await uploadFacilityImageComplete(
+        initialData.id,
+        file,
+        displayOrder
+      )
+
+      // Update local state
+      setFacilityImages(prev => {
+        const filtered = prev.filter(img => img.display_order !== displayOrder)
+        return [...filtered, uploadedImage as FacilityImage].sort((a, b) => a.display_order - b.display_order)
+      })
+
+      alert('画像をアップロードしました')
+      router.refresh()
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      alert('画像のアップロードに失敗しました')
+    } finally {
+      setUploadingImages(prev => ({ ...prev, [displayOrder]: false }))
+    }
+  }
+
+  const handleImageDelete = async (imageId: number, imagePath: string, thumbnailPath: string | null, displayOrder: number) => {
+    if (!confirm('この画像を削除してもよろしいですか？')) {
+      return
+    }
+
+    setUploadingImages(prev => ({ ...prev, [displayOrder]: true }))
+
+    try {
+      const supabase = createClient()
+
+      // Delete from storage
+      const pathsToDelete = [imagePath]
+      if (thumbnailPath) {
+        pathsToDelete.push(thumbnailPath)
+      }
+
+      const { error: storageError } = await supabase.storage
+        .from('facility-images')
+        .remove(pathsToDelete)
+
+      if (storageError) {
+        console.error('Storage error:', storageError)
+      }
+
+      // Delete from database
+      const { error: dbError } = await supabase
+        .from('facility_images')
+        .delete()
+        .eq('id', imageId)
+
+      if (dbError) throw dbError
+
+      // Update local state
+      setFacilityImages(prev => prev.filter(img => img.id !== imageId))
+
+      alert('画像を削除しました')
+      router.refresh()
+    } catch (error) {
+      console.error('Error deleting image:', error)
+      alert('画像の削除に失敗しました')
+    } finally {
+      setUploadingImages(prev => ({ ...prev, [displayOrder]: false }))
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -217,9 +321,14 @@ export default function FacilityForm({
 
         if (detailError) throw detailError
 
-        alert('施設を追加しました')
+        alert('施設を追加しました。続けて画像を登録できます。')
+        // Redirect to edit page to allow image upload
+        router.push(`/management/facilities/${facility.id}/edit`)
+        router.refresh()
+        return
       }
 
+      alert('施設を更新しました')
       router.push('/management/facilities')
       router.refresh()
     } catch (error) {
@@ -527,6 +636,109 @@ export default function FacilityForm({
               </div>
             )}
           </div>
+        </div>
+
+        {/* Image Upload Section */}
+        <div>
+          <h2 className="text-base font-semibold text-gray-900 mb-4">施設画像（最大5枚）</h2>
+
+          {!initialData && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <p className="text-sm text-blue-800">
+                ※ 施設を保存後に画像を登録できます。まず施設情報を保存してください。
+              </p>
+            </div>
+          )}
+
+          {initialData && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3, 4, 5].map((displayOrder) => {
+                const existingImage = facilityImages.find(img => img.display_order === displayOrder)
+                const isUploading = uploadingImages[displayOrder]
+
+                return (
+                  <div key={displayOrder} className="border border-gray-300 rounded-lg p-4">
+                    <div className="mb-2">
+                      <span className="text-sm font-medium text-gray-700">画像 {displayOrder}</span>
+                    </div>
+
+                    {existingImage ? (
+                      <div className="space-y-2">
+                        <div className="aspect-video bg-gray-100 rounded overflow-hidden relative">
+                          <Image
+                            src={existingImage.publicUrl}
+                            alt={`画像 ${displayOrder}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <label className="flex-1 px-3 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 cursor-pointer text-center disabled:opacity-50">
+                            {isUploading ? '処理中...' : '差し替え'}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              disabled={isUploading}
+                              onChange={(e) => {
+                                const file = e.target.files?.[0]
+                                if (file) {
+                                  handleImageUpload(displayOrder, file)
+                                }
+                                e.target.value = ''
+                              }}
+                            />
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => handleImageDelete(
+                              existingImage.id,
+                              existingImage.image_path,
+                              existingImage.thumbnail_path,
+                              displayOrder
+                            )}
+                            disabled={isUploading}
+                            className="px-3 py-2 bg-red-500 text-white text-sm rounded hover:bg-red-600 disabled:opacity-50"
+                          >
+                            削除
+                          </button>
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          <p className="truncate">ID: {existingImage.id}</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="aspect-video bg-gray-100 rounded flex items-center justify-center">
+                          <span className="text-gray-400 text-sm">画像なし</span>
+                        </div>
+                        <label className="block w-full px-3 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 cursor-pointer text-center disabled:opacity-50">
+                          {isUploading ? '処理中...' : 'アップロード'}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            disabled={isUploading}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0]
+                              if (file) {
+                                handleImageUpload(displayOrder, file)
+                              }
+                              e.target.value = ''
+                            }}
+                          />
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
+          <p className="mt-4 text-sm text-gray-600">
+            ※ 画像は最大5MB、推奨サイズは600x400ピクセルです。元のサイズのままアップロードされます。
+          </p>
         </div>
 
         {/* Buttons */}

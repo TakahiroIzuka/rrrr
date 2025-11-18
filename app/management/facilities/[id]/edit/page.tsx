@@ -36,6 +36,30 @@ export default async function EditFacilityPage({ params }: PageProps) {
     notFound()
   }
 
+  // Fetch facility images
+  const { data: images } = await supabase
+    .from('facility_images')
+    .select('*')
+    .eq('facility_id', id)
+    .order('display_order', { ascending: true })
+
+  // Get public URLs for images
+  const imagesWithUrls = (images || []).map(img => {
+    const { data: publicData } = supabase.storage
+      .from('facility-images')
+      .getPublicUrl(img.image_path)
+
+    const thumbnailData = img.thumbnail_path
+      ? supabase.storage.from('facility-images').getPublicUrl(img.thumbnail_path)
+      : null
+
+    return {
+      ...img,
+      publicUrl: publicData.publicUrl,
+      thumbnailUrl: thumbnailData?.data.publicUrl || null
+    }
+  })
+
   // Fetch master data
   const [
     { data: services },
@@ -62,6 +86,7 @@ export default async function EditFacilityPage({ params }: PageProps) {
         companies={companies || []}
         initialData={facility}
         currentUserType={currentUser?.type || 'user'}
+        images={imagesWithUrls}
       />
     </div>
   )

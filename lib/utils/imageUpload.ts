@@ -333,12 +333,13 @@ export async function uploadFacilityImageComplete(
 
   // 2. 画像リサイズ（Edge Function呼び出し）
   // オリジナル: 600x400、サムネイル: 225x150
-  try {
-    await resizeImages("facility-images", originalPath, thumbnailPath);
-  } catch (error) {
-    console.error("画像リサイズエラー:", error);
-    // リサイズに失敗してもオリジナル画像のアップロードは成功しているので続行
-  }
+  // NOTE: Edge Functionに問題があるため、一時的に無効化
+  // try {
+  //   await resizeImages("facility-images", originalPath, thumbnailPath);
+  // } catch (error) {
+  //   console.error("画像リサイズエラー:", error);
+  //   // リサイズに失敗してもオリジナル画像のアップロードは成功しているので続行
+  // }
 
   // 3. DBに保存（既存レコードがあれば更新）
   const imageData = await saveFacilityImageToDb(
