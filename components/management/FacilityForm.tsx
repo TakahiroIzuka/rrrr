@@ -810,7 +810,7 @@ export default function FacilityForm({
           </div>
 
           <p className="mt-4 text-sm text-gray-600">
-            ※ 画像は最大5MB、推奨サイズは600x400ピクセルです。元のサイズのままアップロードされます。
+            ※ 画像は最大5MB、推奨サイズは600x400ピクセルです。自動的にリサイズされます（オリジナル: 600x400、サムネイル: 225x150）。
             {!initialData && ' 施設情報と一緒に保存されます。'}
           </p>
         </div>
