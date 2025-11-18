@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { createUser } from '@/app/actions/users'
 
 interface User {
   id: number
@@ -260,31 +261,17 @@ export default function UserManager({ users: initialUsers, companies, currentUse
     setIsUpdating(true)
 
     try {
-      const supabase = createClient()
+      // Use server action to create user without affecting current session
+      const result = await createUser(newEmail.trim(), newPassword.trim(), newType, newCompanyId)
 
-      // Create Supabase Auth user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: newEmail.trim(),
-        password: newPassword.trim(),
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/confirm`,
+      if (result.error) {
+        if (result.error.includes('already registered') || result.error.includes('already exists')) {
+          alert('このメールアドレスは既に使用されています')
+        } else {
+          alert(`追加に失敗しました: ${result.error}`)
         }
-      })
-
-      if (authError) throw authError
-      if (!authData.user) throw new Error('ユーザーの作成に失敗しました')
-
-      // Insert into users table
-      const { error } = await supabase
-        .from('users')
-        .insert({
-          email: newEmail.trim(),
-          type: newType,
-          company_id: newCompanyId,
-          auth_user_id: authData.user.id
-        })
-
-      if (error) throw error
+        return
+      }
 
       alert('追加しました')
       setIsAdding(false)
@@ -297,12 +284,8 @@ export default function UserManager({ users: initialUsers, companies, currentUse
       router.refresh()
     } catch (error) {
       console.error('Error adding:', error)
-      if (error && typeof error === 'object' && 'code' in error && error.code === '23505') {
-        alert('このメールアドレスは既に使用されています')
-      } else {
-        const message = error && typeof error === 'object' && 'message' in error ? String(error.message) : '不明なエラー'
-        alert(`追加に失敗しました: ${message}`)
-      }
+      const message = error && typeof error === 'object' && 'message' in error ? String(error.message) : '不明なエラー'
+      alert(`追加に失敗しました: ${message}`)
     } finally {
       setIsUpdating(false)
     }
