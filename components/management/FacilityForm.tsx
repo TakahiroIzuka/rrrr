@@ -85,6 +85,7 @@ export default function FacilityForm({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [uploadingImages, setUploadingImages] = useState<Record<number, boolean>>({})
   const [facilityImages, setFacilityImages] = useState<FacilityImage[]>(images)
+  const [pendingImageFiles, setPendingImageFiles] = useState<Record<number, File>>({})
 
   // Facility fields
   const [serviceId, setServiceId] = useState(initialData?.service_id || '')
@@ -147,12 +148,18 @@ export default function FacilityForm({
   const [tel, setTel] = useState(detail.tel || '')
   const [googleMapUrl, setGoogleMapUrl] = useState(detail.google_map_url || '')
 
-  const handleImageUpload = async (displayOrder: number, file: File) => {
-    if (!initialData?.id) {
-      alert('施設を先に保存してください')
-      return
+  // Cleanup object URLs on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(pendingImageFiles).forEach(file => {
+        if (file) {
+          URL.revokeObjectURL(URL.createObjectURL(file))
+        }
+      })
     }
+  }, [pendingImageFiles])
 
+  const handleImageUpload = async (displayOrder: number, file: File) => {
     // Validate file type
     if (!file.type.startsWith('image/')) {
       alert('画像ファイルを選択してください')
@@ -165,29 +172,43 @@ export default function FacilityForm({
       return
     }
 
-    setUploadingImages(prev => ({ ...prev, [displayOrder]: true }))
+    // If editing existing facility, upload immediately
+    if (initialData?.id) {
+      setUploadingImages(prev => ({ ...prev, [displayOrder]: true }))
 
-    try {
-      const uploadedImage = await uploadFacilityImageComplete(
-        initialData.id,
-        file,
-        displayOrder
-      )
+      try {
+        const uploadedImage = await uploadFacilityImageComplete(
+          initialData.id,
+          file,
+          displayOrder
+        )
 
-      // Update local state
-      setFacilityImages(prev => {
-        const filtered = prev.filter(img => img.display_order !== displayOrder)
-        return [...filtered, uploadedImage as FacilityImage].sort((a, b) => a.display_order - b.display_order)
-      })
+        // Update local state
+        setFacilityImages(prev => {
+          const filtered = prev.filter(img => img.display_order !== displayOrder)
+          return [...filtered, uploadedImage as FacilityImage].sort((a, b) => a.display_order - b.display_order)
+        })
 
-      alert('画像をアップロードしました')
-      router.refresh()
-    } catch (error) {
-      console.error('Error uploading image:', error)
-      alert('画像のアップロードに失敗しました')
-    } finally {
-      setUploadingImages(prev => ({ ...prev, [displayOrder]: false }))
+        alert('画像をアップロードしました')
+        router.refresh()
+      } catch (error) {
+        console.error('Error uploading image:', error)
+        alert('画像のアップロードに失敗しました')
+      } finally {
+        setUploadingImages(prev => ({ ...prev, [displayOrder]: false }))
+      }
+    } else {
+      // If creating new facility, store file for later upload
+      setPendingImageFiles(prev => ({ ...prev, [displayOrder]: file }))
     }
+  }
+
+  const handleRemovePendingImage = (displayOrder: number) => {
+    setPendingImageFiles(prev => {
+      const newFiles = { ...prev }
+      delete newFiles[displayOrder]
+      return newFiles
+    })
   }
 
   const handleImageDelete = async (imageId: number, imagePath: string, thumbnailPath: string | null, displayOrder: number) => {
@@ -321,9 +342,33 @@ export default function FacilityForm({
 
         if (detailError) throw detailError
 
-        alert('施設を追加しました。続けて画像を登録できます。')
-        // Redirect to edit page to allow image upload
-        router.push(`/management/facilities/${facility.id}/edit`)
+        // Upload pending images if any
+        const pendingImageEntries = Object.entries(pendingImageFiles)
+        if (pendingImageEntries.length > 0) {
+          let uploadedCount = 0
+          let failedCount = 0
+
+          for (const [displayOrderStr, file] of pendingImageEntries) {
+            const displayOrder = parseInt(displayOrderStr)
+            try {
+              await uploadFacilityImageComplete(facility.id, file, displayOrder)
+              uploadedCount++
+            } catch (error) {
+              console.error(`画像 ${displayOrder} のアップロードに失敗:`, error)
+              failedCount++
+            }
+          }
+
+          if (failedCount > 0) {
+            alert(`施設を追加しました。画像: ${uploadedCount}枚成功、${failedCount}枚失敗`)
+          } else {
+            alert(`施設を追加しました。画像${uploadedCount}枚もアップロードしました。`)
+          }
+        } else {
+          alert('施設を追加しました。')
+        }
+
+        router.push('/management/facilities')
         router.refresh()
         return
       }
@@ -642,27 +687,19 @@ export default function FacilityForm({
         <div>
           <h2 className="text-base font-semibold text-gray-900 mb-4">施設画像（最大5枚）</h2>
 
-          {!initialData && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <p className="text-sm text-blue-800">
-                ※ 施設を保存後に画像を登録できます。まず施設情報を保存してください。
-              </p>
-            </div>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3, 4, 5].map((displayOrder) => {
+              const existingImage = facilityImages.find(img => img.display_order === displayOrder)
+              const pendingFile = pendingImageFiles[displayOrder]
+              const isUploading = uploadingImages[displayOrder]
 
-          {initialData && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3, 4, 5].map((displayOrder) => {
-                const existingImage = facilityImages.find(img => img.display_order === displayOrder)
-                const isUploading = uploadingImages[displayOrder]
+              return (
+                <div key={displayOrder} className="border border-gray-300 rounded-lg p-4">
+                  <div className="mb-2">
+                    <span className="text-sm font-medium text-gray-700">画像 {displayOrder}</span>
+                  </div>
 
-                return (
-                  <div key={displayOrder} className="border border-gray-300 rounded-lg p-4">
-                    <div className="mb-2">
-                      <span className="text-sm font-medium text-gray-700">画像 {displayOrder}</span>
-                    </div>
-
-                    {existingImage ? (
+                  {existingImage ? (
                       <div className="space-y-2">
                         <div className="aspect-video bg-gray-100 rounded overflow-hidden relative">
                           <Image
@@ -706,19 +743,23 @@ export default function FacilityForm({
                         <div className="text-xs text-gray-500">
                           <p className="truncate">ID: {existingImage.id}</p>
                         </div>
+                    </div>
+                  ) : pendingFile ? (
+                    <div className="space-y-2">
+                      <div className="aspect-video bg-gray-100 rounded overflow-hidden relative">
+                        <img
+                          src={URL.createObjectURL(pendingFile)}
+                          alt={`選択された画像 ${displayOrder}`}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                    ) : (
-                      <div className="space-y-2">
-                        <div className="aspect-video bg-gray-100 rounded flex items-center justify-center">
-                          <span className="text-gray-400 text-sm">画像なし</span>
-                        </div>
-                        <label className="block w-full px-3 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 cursor-pointer text-center disabled:opacity-50">
-                          {isUploading ? '処理中...' : 'アップロード'}
+                      <div className="flex gap-2">
+                        <label className="flex-1 px-3 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 cursor-pointer text-center">
+                          差し替え
                           <input
                             type="file"
                             accept="image/*"
                             className="hidden"
-                            disabled={isUploading}
                             onChange={(e) => {
                               const file = e.target.files?.[0]
                               if (file) {
@@ -728,16 +769,49 @@ export default function FacilityForm({
                             }}
                           />
                         </label>
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePendingImage(displayOrder)}
+                          className="px-3 py-2 bg-red-500 text-white text-sm rounded hover:bg-red-600"
+                        >
+                          削除
+                        </button>
                       </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          )}
+                      <div className="text-xs text-gray-500">
+                        <p className="truncate">選択済み: {pendingFile.name}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="aspect-video bg-gray-100 rounded flex items-center justify-center">
+                        <span className="text-gray-400 text-sm">画像なし</span>
+                      </div>
+                      <label className="block w-full px-3 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 cursor-pointer text-center disabled:opacity-50">
+                        {isUploading ? '処理中...' : 'アップロード'}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={isUploading}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              handleImageUpload(displayOrder, file)
+                            }
+                            e.target.value = ''
+                          }}
+                        />
+                      </label>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
 
           <p className="mt-4 text-sm text-gray-600">
             ※ 画像は最大5MB、推奨サイズは600x400ピクセルです。元のサイズのままアップロードされます。
+            {!initialData && ' 施設情報と一緒に保存されます。'}
           </p>
         </div>
 
