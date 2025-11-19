@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useRef, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import * as XLSX from 'xlsx'
 
@@ -56,9 +56,34 @@ export default function MasterManager({
   areas
 }: MasterManagerProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const activeTab = masterType
-  const [selectedServiceId, setSelectedServiceId] = useState<number>(services[0]?.id || 1)
+
+  // Get service ID from URL or use first service
+  const serviceIdFromUrl = searchParams.get('service')
+  const initialServiceId = serviceIdFromUrl
+    ? parseInt(serviceIdFromUrl)
+    : services[0]?.id || 1
+
+  const [selectedServiceId, setSelectedServiceId] = useState<number>(initialServiceId)
   const [isUpdating, setIsUpdating] = useState(false)
+
+  // Update selectedServiceId when URL changes
+  useEffect(() => {
+    if (serviceIdFromUrl) {
+      const parsedId = parseInt(serviceIdFromUrl)
+      if (services.some(s => s.id === parsedId)) {
+        setSelectedServiceId(parsedId)
+      }
+    }
+  }, [serviceIdFromUrl, services])
+
+  const handleServiceChange = (serviceId: number) => {
+    setSelectedServiceId(serviceId)
+    setEditingId(null)
+    setIsAdding(false)
+    router.push(`/management/masters/genres?service=${serviceId}`, { scroll: false })
+  }
 
   // Edit state
   const [editingId, setEditingId] = useState<number | null>(null)
@@ -434,11 +459,7 @@ export default function MasterManager({
             {services.map((service) => (
               <button
                 key={service.id}
-                onClick={() => {
-                  setSelectedServiceId(service.id)
-                  setEditingId(null)
-                  setIsAdding(false)
-                }}
+                onClick={() => handleServiceChange(service.id)}
                 className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
                   selectedServiceId === service.id
                     ? 'bg-[#2271b1] text-white border-b-2 border-[#135e96]'

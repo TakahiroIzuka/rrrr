@@ -119,7 +119,7 @@ export default function ReviewCheckForm({
         alert('クチコミを登録しました')
       }
 
-      router.push('/management/reviews')
+      router.push(`/management/reviews?service=${serviceId}`)
       router.refresh()
     } catch (error) {
       console.error('Error saving review check:', error)
@@ -275,7 +275,7 @@ export default function ReviewCheckForm({
           </button>
           <button
             type="button"
-            onClick={() => router.push('/management/reviews')}
+            onClick={() => router.push(`/management/reviews?service=${serviceId}`)}
             className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50 transition-colors font-medium"
           >
             キャンセル

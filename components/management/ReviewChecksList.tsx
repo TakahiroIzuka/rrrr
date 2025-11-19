@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 interface ServiceData {
@@ -38,8 +38,26 @@ interface ReviewChecksListProps {
 
 export default function ReviewChecksList({ services, reviewChecks, currentUserType, showNewButton = false }: ReviewChecksListProps) {
   const router = useRouter()
-  const [selectedServiceId, setSelectedServiceId] = useState<number>(services[0]?.id || 1)
+  const searchParams = useSearchParams()
+
+  // Get service ID from URL or use first service
+  const serviceIdFromUrl = searchParams.get('service')
+  const initialServiceId = serviceIdFromUrl
+    ? parseInt(serviceIdFromUrl)
+    : services[0]?.id || 1
+
+  const [selectedServiceId, setSelectedServiceId] = useState<number>(initialServiceId)
   const [deletingId, setDeletingId] = useState<number | null>(null)
+
+  // Update selectedServiceId when URL changes
+  useEffect(() => {
+    if (serviceIdFromUrl) {
+      const parsedId = parseInt(serviceIdFromUrl)
+      if (services.some(s => s.id === parsedId)) {
+        setSelectedServiceId(parsedId)
+      }
+    }
+  }, [serviceIdFromUrl, services])
 
   // Update selectedServiceId when services changes
   useEffect(() => {
@@ -47,6 +65,11 @@ export default function ReviewChecksList({ services, reviewChecks, currentUserTy
       setSelectedServiceId(services[0]?.id || 1)
     }
   }, [services, selectedServiceId])
+
+  const handleServiceChange = (serviceId: number) => {
+    setSelectedServiceId(serviceId)
+    router.push(`/management/reviews?service=${serviceId}`, { scroll: false })
+  }
 
   const filteredReviewChecks = reviewChecks.filter(r => r.facility?.service_id === selectedServiceId)
 
@@ -83,7 +106,7 @@ export default function ReviewChecksList({ services, reviewChecks, currentUserTy
           {services.map((service) => (
             <button
               key={service.id}
-              onClick={() => setSelectedServiceId(service.id)}
+              onClick={() => handleServiceChange(service.id)}
               className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
                 selectedServiceId === service.id
                   ? 'bg-[#2271b1] text-white border-b-2 border-[#135e96]'

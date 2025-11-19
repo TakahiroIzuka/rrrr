@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import DeleteFacilityButton from './DeleteFacilityButton'
 
 interface ServiceData {
@@ -28,6 +29,9 @@ interface FacilitiesListProps {
 }
 
 export default function FacilitiesList({ services, facilities, currentUserType, currentUserCompanyId }: FacilitiesListProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
   // Filter services based on user type
   const visibleServices = currentUserType === 'user'
     ? services.filter(service =>
@@ -35,7 +39,23 @@ export default function FacilitiesList({ services, facilities, currentUserType, 
       )
     : services
 
-  const [selectedServiceId, setSelectedServiceId] = useState<number>(visibleServices[0]?.id || 1)
+  // Get service ID from URL or use first visible service
+  const serviceIdFromUrl = searchParams.get('service')
+  const initialServiceId = serviceIdFromUrl
+    ? parseInt(serviceIdFromUrl)
+    : visibleServices[0]?.id || 1
+
+  const [selectedServiceId, setSelectedServiceId] = useState<number>(initialServiceId)
+
+  // Update selectedServiceId when URL changes
+  useEffect(() => {
+    if (serviceIdFromUrl) {
+      const parsedId = parseInt(serviceIdFromUrl)
+      if (visibleServices.some(s => s.id === parsedId)) {
+        setSelectedServiceId(parsedId)
+      }
+    }
+  }, [serviceIdFromUrl, visibleServices])
 
   // Update selectedServiceId when visibleServices changes
   useEffect(() => {
@@ -43,6 +63,11 @@ export default function FacilitiesList({ services, facilities, currentUserType, 
       setSelectedServiceId(visibleServices[0]?.id || 1)
     }
   }, [visibleServices, selectedServiceId])
+
+  const handleServiceChange = (serviceId: number) => {
+    setSelectedServiceId(serviceId)
+    router.push(`/management/facilities?service=${serviceId}`, { scroll: false })
+  }
 
   const filteredFacilities = facilities
     .filter(f => f.service_id === selectedServiceId)
@@ -62,7 +87,7 @@ export default function FacilitiesList({ services, facilities, currentUserType, 
           {visibleServices.map((service) => (
             <button
               key={service.id}
-              onClick={() => setSelectedServiceId(service.id)}
+              onClick={() => handleServiceChange(service.id)}
               className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
                 selectedServiceId === service.id
                   ? 'bg-[#2271b1] text-white border-b-2 border-[#135e96]'

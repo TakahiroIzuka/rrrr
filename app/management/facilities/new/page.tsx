@@ -1,7 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import FacilityForm from '@/components/management/FacilityForm'
 
-export default async function NewFacilityPage() {
+interface NewFacilityPageProps {
+  searchParams: Promise<{ service?: string }>
+}
+
+export default async function NewFacilityPage({ searchParams }: NewFacilityPageProps) {
+  const { service } = await searchParams
   const supabase = await createClient()
 
   // Fetch master data
@@ -28,6 +33,7 @@ export default async function NewFacilityPage() {
         prefectures={prefectures || []}
         areas={areas || []}
         companies={companies || []}
+        defaultServiceId={service ? parseInt(service) : undefined}
       />
     </div>
   )

@@ -2,7 +2,12 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import FacilitiesList from '@/components/management/FacilitiesList'
 
-export default async function FacilitiesPage() {
+interface FacilitiesPageProps {
+  searchParams: Promise<{ service?: string }>
+}
+
+export default async function FacilitiesPage({ searchParams }: FacilitiesPageProps) {
+  const { service } = await searchParams
   const supabase = await createClient()
 
   // Get current logged-in user
@@ -43,7 +48,7 @@ export default async function FacilitiesPage() {
         <h1 className="text-2xl font-semibold text-gray-900">施設一覧</h1>
         {currentUser?.type === 'admin' && (
           <Link
-            href="/management/facilities/new"
+            href={`/management/facilities/new${service ? `?service=${service}` : ''}`}
             className="px-4 py-2 bg-[#2271b1] text-white rounded text-sm hover:bg-[#135e96] transition-colors font-medium"
           >
             新規追加

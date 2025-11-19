@@ -69,6 +69,7 @@ interface FacilityFormProps {
   initialData?: InitialFacilityData
   currentUserType?: 'admin' | 'user'
   images?: FacilityImage[]
+  defaultServiceId?: number
 }
 
 export default function FacilityForm({
@@ -79,7 +80,8 @@ export default function FacilityForm({
   companies,
   initialData,
   currentUserType = 'admin',
-  images = []
+  images = [],
+  defaultServiceId
 }: FacilityFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -88,7 +90,7 @@ export default function FacilityForm({
   const [pendingImageFiles, setPendingImageFiles] = useState<Record<number, File>>({})
 
   // Facility fields
-  const [serviceId, setServiceId] = useState(initialData?.service_id || '')
+  const [serviceId, setServiceId] = useState(initialData?.service_id || defaultServiceId || '')
   const [genreId, setGenreId] = useState(initialData?.genre_id || '')
   const [prefectureId, setPrefectureId] = useState(initialData?.prefecture_id || '')
   const [areaId, setAreaId] = useState(initialData?.area_id || '')
@@ -307,7 +309,7 @@ export default function FacilityForm({
         if (detailError) throw detailError
 
         alert('施設を更新しました')
-        router.push('/management/facilities')
+        router.push(`/management/facilities?service=${serviceId}`)
         router.refresh()
         return
       } else {
@@ -371,7 +373,7 @@ export default function FacilityForm({
           alert('施設を追加しました。')
         }
 
-        router.push('/management/facilities')
+        router.push(`/management/facilities?service=${serviceId}`)
         router.refresh()
         return
       }
@@ -825,7 +827,7 @@ export default function FacilityForm({
           </button>
           <button
             type="button"
-            onClick={() => router.push('/management/facilities')}
+            onClick={() => router.push(`/management/facilities?service=${serviceId}`)}
             className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50 transition-colors font-medium"
           >
             キャンセル
