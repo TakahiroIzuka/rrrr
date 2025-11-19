@@ -307,6 +307,9 @@ export default function FacilityForm({
         if (detailError) throw detailError
 
         alert('施設を更新しました')
+        router.push('/management/facilities')
+        router.refresh()
+        return
       } else {
         // Insert new facility
         const { data: facility, error: facilityError } = await supabase
@@ -372,10 +375,6 @@ export default function FacilityForm({
         router.refresh()
         return
       }
-
-      alert('施設を更新しました')
-      router.push('/management/facilities')
-      router.refresh()
     } catch (error) {
       console.error('Error saving facility:', error)
       alert('施設の保存に失敗しました')
