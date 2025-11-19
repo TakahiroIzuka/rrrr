@@ -1,0 +1,203 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+
+interface ServiceData {
+  id: number
+  name: string
+}
+
+interface ReviewCheckData {
+  id: number
+  facility_id: number
+  reviewer_name: string | null
+  google_account_name: string | null
+  email: string | null
+  review_url: string | null
+  review_star: number | null
+  is_sent: boolean
+  is_approved: boolean
+  is_giftcode_sent: boolean
+  created_at: string
+  facility?: {
+    id: number
+    service_id: number
+    detail?: { name: string }[]
+  }
+}
+
+interface ReviewChecksListProps {
+  services: ServiceData[]
+  reviewChecks: ReviewCheckData[]
+  currentUserType: 'admin' | 'user'
+  showNewButton?: boolean
+}
+
+export default function ReviewChecksList({ services, reviewChecks, currentUserType, showNewButton = false }: ReviewChecksListProps) {
+  const router = useRouter()
+  const [selectedServiceId, setSelectedServiceId] = useState<number>(services[0]?.id || 1)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
+
+  // Update selectedServiceId when services changes
+  useEffect(() => {
+    if (services.length > 0 && !services.some(s => s.id === selectedServiceId)) {
+      setSelectedServiceId(services[0]?.id || 1)
+    }
+  }, [services, selectedServiceId])
+
+  const filteredReviewChecks = reviewChecks.filter(r => r.facility?.service_id === selectedServiceId)
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('このクチコミを削除してもよろしいですか？')) {
+      return
+    }
+
+    setDeletingId(id)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('review_checks')
+        .delete()
+        .eq('id', id)
+
+      if (error) throw error
+
+      alert('クチコミを削除しました')
+      router.refresh()
+    } catch (error) {
+      console.error('Error deleting review check:', error)
+      alert('削除に失敗しました')
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Service Tabs */}
+      <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+        <div className="flex border-b border-gray-200 overflow-x-auto">
+          {services.map((service) => (
+            <button
+              key={service.id}
+              onClick={() => setSelectedServiceId(service.id)}
+              className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
+                selectedServiceId === service.id
+                  ? 'bg-[#2271b1] text-white border-b-2 border-[#135e96]'
+                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              {service.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Review Checks Table */}
+      <div className="bg-white rounded shadow border border-gray-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-base font-semibold text-gray-900">
+            クチコミ一覧 ({filteredReviewChecks.length}件)
+          </h2>
+          {showNewButton && (
+            <Link
+              href={`/management/reviews/new?serviceId=${selectedServiceId}`}
+              className="px-4 py-2 bg-[#2271b1] text-white rounded text-sm hover:bg-[#135e96] transition-colors font-medium"
+            >
+              新規登録
+            </Link>
+          )}
+        </div>
+
+        {filteredReviewChecks.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">編集</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">ID</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">施設名</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">投稿者名</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">Googleアカウント</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">メール</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">評価</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">送信済</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">承認済</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">ギフト送付</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">登録日</th>
+                  <th className="px-4 py-3 text-right font-medium text-gray-700">削除</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredReviewChecks.map((review) => (
+                  <tr key={review.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/management/reviews/${review.id}/edit`}
+                        className="text-[#2271b1] hover:text-[#135e96] font-medium"
+                      >
+                        編集
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3">{review.id}</td>
+                    <td className="px-4 py-3">
+                      {review.facility?.detail?.[0]?.name || '-'}
+                    </td>
+                    <td className="px-4 py-3">{review.reviewer_name || '-'}</td>
+                    <td className="px-4 py-3">{review.google_account_name || '-'}</td>
+                    <td className="px-4 py-3">{review.email || '-'}</td>
+                    <td className="px-4 py-3">
+                      {review.review_star ? `${review.review_star}` : '-'}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                        review.is_sent ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {review.is_sent ? 'Yes' : 'No'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                        review.is_approved ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {review.is_approved ? 'Yes' : 'No'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                        review.is_giftcode_sent ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {review.is_giftcode_sent ? 'Yes' : 'No'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {new Date(review.created_at).toLocaleDateString('ja-JP')}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        onClick={() => handleDelete(review.id)}
+                        disabled={deletingId === review.id}
+                        className="text-red-600 hover:text-red-800 text-sm disabled:opacity-50"
+                      >
+                        {deletingId === review.id ? '削除中...' : '削除'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="p-8 text-center">
+            <p className="text-gray-600">
+              クチコミデータがありません。
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
