@@ -1,6 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
+// Edge Functionを非同期で呼び出し
+async function triggerReviewCheck(reviewCheckId: number) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('Missing Supabase environment variables')
+    return
+  }
+
+  try {
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/check-review`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+        },
+        body: JSON.stringify({ review_check_id: reviewCheckId }),
+      }
+    )
+
+    if (!response.ok) {
+      console.error('Edge Function call failed:', response.statusText)
+    }
+  } catch (error) {
+    console.error('Error calling Edge Function:', error)
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -17,6 +48,7 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient()
 
+    // review_checksにレコードを登録（is_sent: falseで登録）
     const { data, error } = await supabase
       .from('review_checks')
       .insert({
@@ -25,6 +57,7 @@ export async function POST(request: NextRequest) {
         google_account_name,
         email,
         review_star,
+        is_sent: false,
       })
       .select()
       .single()
@@ -36,6 +69,9 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    // Edge Functionを非同期で呼び出し（レスポンスを待たない）
+    triggerReviewCheck(data.id)
 
     return NextResponse.json({ data }, { status: 201 })
   } catch (error) {
