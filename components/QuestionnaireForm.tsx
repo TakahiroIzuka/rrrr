@@ -6,13 +6,15 @@ import Image from 'next/image'
 import Breadcrumb from './Breadcrumb'
 
 interface QuestionnaireFormProps {
+  facilityId: number
   facilityName: string
   genreColor: string
   serviceCode: string
 }
 
-export default function QuestionnaireForm({ facilityName, genreColor, serviceCode }: QuestionnaireFormProps) {
+export default function QuestionnaireForm({ facilityId, facilityName, genreColor, serviceCode }: QuestionnaireFormProps) {
   const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     satisfaction: '',
     hasGoogleAccount: '',
@@ -23,7 +25,7 @@ export default function QuestionnaireForm({ facilityName, genreColor, serviceCod
     privacyConsent: false
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     // バリデーション
@@ -48,13 +50,38 @@ export default function QuestionnaireForm({ facilityName, genreColor, serviceCod
       return
     }
 
-    // TODO: アンケートデータの送信処理
-    console.log('Form submitted:', formData)
-    alert('アンケートを送信しました。ありがとうございました。')
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('/api/review-checks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          facility_id: facilityId,
+          reviewer_name: formData.name,
+          google_account_name: formData.googleAccountName,
+          email: formData.email,
+          review_star: Number(formData.satisfaction),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('送信に失敗しました')
+      }
+
+      alert('アンケートを送信しました。ありがとうございました。')
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      alert('送信に失敗しました。もう一度お試しください。')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleBack = () => {
-    router.back()
+    router.push(`/${serviceCode}`)
   }
 
   return (
@@ -305,10 +332,11 @@ export default function QuestionnaireForm({ facilityName, genreColor, serviceCod
         <div className="flex flex-col gap-4 md:gap-8 items-center">
           <button
             type="submit"
-            className="w-full md:w-64 px-8 py-3 rounded-md text-white hover:opacity-90 transition-opacity"
+            disabled={isSubmitting}
+            className="w-full md:w-64 px-8 py-3 rounded-md text-white hover:opacity-90 transition-opacity disabled:opacity-50"
             style={{ backgroundColor: genreColor }}
           >
-            送信
+            {isSubmitting ? '送信中...' : '送信'}
           </button>
           <button
             type="button"
