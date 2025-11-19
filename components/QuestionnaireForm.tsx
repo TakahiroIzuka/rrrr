@@ -72,6 +72,17 @@ export default function QuestionnaireForm({ facilityId, facilityName, genreColor
       }
 
       alert('アンケートを送信しました。ありがとうございました。')
+
+      // 入力項目を初期化
+      setFormData({
+        satisfaction: '',
+        hasGoogleAccount: '',
+        feedback: '',
+        name: '',
+        email: '',
+        googleAccountName: '',
+        privacyConsent: false
+      })
     } catch (error) {
       console.error('Error submitting form:', error)
       alert('送信に失敗しました。もう一度お試しください。')
