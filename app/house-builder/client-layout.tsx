@@ -21,7 +21,7 @@ export default function ClientLayout({ serviceName, children }: ClientLayoutProp
       {isTopPage && (
         <>
           <Header />
-          <div className="mt-16 md:mt-0">
+          <div className="hidden md:block md:mt-0">
             <MarqueeText />
           </div>
         </>

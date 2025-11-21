@@ -56,16 +56,16 @@ export default function HomeClient({
       {/* Header with genre label (only for genre pages) */}
       <div className="flex flex-col w-full">
         {/* Map Section */}
-        <div id="map-section" className={`flex flex-col md:flex-row w-full overflow-hidden ${showGenreHeader ? 'h-[calc(100vh-64px)]' : 'h-[calc(100vh-64px)]'} md:h-[calc(100vh-150px)]`}>
+        <div id="map-section" className={`hidden md:flex md:flex-row w-full overflow-hidden md:h-[calc(100vh-150px)]`}>
           {/* Sidebar Below Map on Mobile, Left on PC */}
-          <div className="w-full md:w-[430px] flex-shrink-0 h-1/2 md:h-full order-2 md:order-1 overflow-y-auto" style={{ backgroundColor: '#fff9f0'}}>
+          <div className="w-full md:w-[430px] flex-shrink-0 h-auto md:h-full order-2 md:order-1 overflow-y-auto" style={{ backgroundColor: '#fff9f0'}}>
             <ListPanel
               facilities={selectedFacilityId ? filteredFacilities.filter(facility => facility.id === selectedFacilityId) : filteredFacilities}
               imagesMap={imagesMap}
             />
           </div>
           {/* Map Full Width on Mobile, Right on PC */}
-          <div className="w-full md:flex-1 relative h-1/2 md:h-full order-1 md:order-2">
+          <div className="md:flex-1 relative md:h-full order-1 md:order-2">
             <MapPanel
               allFacilities={facilities}
               filteredFacilities={filteredFacilities}
@@ -88,19 +88,21 @@ export default function HomeClient({
         </div>
 
         {/* Clinics Grid Section */}
-        <GridSection
-          facilities={filteredFacilities}
-          allFacilities={facilities}
-          selectedPrefectures={selectedPrefectures}
-          selectedGenres={selectedGenres}
-          selectedRanking={selectedRanking}
-          onPrefecturesChange={setSelectedPrefectures}
-          onGenresChange={setSelectedGenres}
-          onRankingChange={setSelectedRanking}
-          imagesMap={imagesMap}
-          onFilterChange={handleFilterChange}
-          hideGenreFilter={hideGenreFilter}
-        />
+        <div className="mt-16 md:mt-0">
+          <GridSection
+            facilities={filteredFacilities}
+            allFacilities={facilities}
+            selectedPrefectures={selectedPrefectures}
+            selectedGenres={selectedGenres}
+            selectedRanking={selectedRanking}
+            onPrefecturesChange={setSelectedPrefectures}
+            onGenresChange={setSelectedGenres}
+            onRankingChange={setSelectedRanking}
+            imagesMap={imagesMap}
+            onFilterChange={handleFilterChange}
+            hideGenreFilter={hideGenreFilter}
+          />
+        </div>
       </div>
     </>
   )
