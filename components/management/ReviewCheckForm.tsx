@@ -57,7 +57,7 @@ export default function ReviewCheckForm({
   }
 
   // Form fields
-  const [serviceId, setServiceId] = useState<number | string>(getInitialServiceId())
+  const [serviceId] = useState<number | string>(getInitialServiceId())
   const [facilityId, setFacilityId] = useState(initialData?.facility_id || '')
   const [reviewerName, setReviewerName] = useState(initialData?.reviewer_name || '')
   const [googleAccountName, setGoogleAccountName] = useState(initialData?.google_account_name || '')

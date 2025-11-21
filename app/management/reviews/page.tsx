@@ -46,7 +46,6 @@ export default async function ReviewsPage() {
       <ReviewChecksList
         services={services || []}
         reviewChecks={reviewChecks || []}
-        currentUserType={currentUser?.type || 'user'}
         showNewButton={currentUser?.type === 'admin'}
       />
     </div>

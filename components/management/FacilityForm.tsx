@@ -34,6 +34,7 @@ interface InitialFacilityData {
   prefecture_id?: number
   area_id?: number
   company_id?: number
+  uuid?: string
   detail?: FacilityDetail | FacilityDetail[]
 }
 
@@ -61,7 +62,6 @@ interface FacilityImage {
 }
 
 interface FacilityFormProps {
-  services: MasterData[]
   genres: MasterData[]
   prefectures: MasterData[]
   areas: MasterData[]
@@ -73,7 +73,6 @@ interface FacilityFormProps {
 }
 
 export default function FacilityForm({
-  services,
   genres,
   prefectures,
   areas,
@@ -90,7 +89,7 @@ export default function FacilityForm({
   const [pendingImageFiles, setPendingImageFiles] = useState<Record<number, File>>({})
 
   // Facility fields
-  const [serviceId, setServiceId] = useState(initialData?.service_id || defaultServiceId || '')
+  const [serviceId] = useState(initialData?.service_id || defaultServiceId || '')
   const [genreId, setGenreId] = useState(initialData?.genre_id || '')
   const [prefectureId, setPrefectureId] = useState(initialData?.prefecture_id || '')
   const [areaId, setAreaId] = useState(initialData?.area_id || '')
@@ -126,16 +125,6 @@ export default function FacilityForm({
     }
   }, [prefectureId, areaId, areas])
 
-  // Reset genreId when serviceId changes
-  useEffect(() => {
-    if (serviceId && genreId) {
-      // Check if current genre belongs to selected service
-      const selectedGenre = genres.find(g => g.id === Number(genreId))
-      if (selectedGenre && selectedGenre.service_id !== Number(serviceId)) {
-        setGenreId('')
-      }
-    }
-  }, [serviceId, genreId, genres])
 
   // Detail fields
   const detail: Partial<FacilityDetail> = ((initialData?.detail && Array.isArray(initialData.detail) ? initialData.detail[0] : initialData?.detail) || {}) as Partial<FacilityDetail>
@@ -261,6 +250,13 @@ export default function FacilityForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+
+    // Validate serviceId is set
+    if (!serviceId) {
+      alert('サービスが選択されていません')
+      setIsSubmitting(false)
+      return
+    }
 
     try {
       const supabase = createClient()
@@ -393,155 +389,153 @@ export default function FacilityForm({
           <div>
             <h2 className="text-base font-semibold text-gray-900 mb-4">基本情報</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                サービス <span className="text-red-500">*</span>
-              </label>
-              <select
-                required
-                value={serviceId}
-                onChange={(e) => setServiceId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">選択してください</option>
-                {services.map((service) => (
-                  <option key={service.id} value={service.id}>
-                    {service.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <div className="space-y-4">
+              {/* ジャンル - 1行目 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ジャンル <span className="text-red-500">*</span>
+                </label>
+                <select
+                  required
+                  value={genreId}
+                  onChange={(e) => setGenreId(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">選択してください</option>
+                  {genres
+                    .filter((genre) => genre.service_id === Number(serviceId))
+                    .map((genre) => (
+                      <option key={genre.id} value={genre.id}>
+                        {genre.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                ジャンル <span className="text-red-500">*</span>
-              </label>
-              <select
-                required
-                value={genreId}
-                onChange={(e) => setGenreId(e.target.value)}
-                disabled={!serviceId}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-              >
-                <option value="">
-                  {serviceId ? '選択してください' : 'サービスを先に選択してください'}
-                </option>
-                {serviceId && genres
-                  .filter((genre) => genre.service_id === Number(serviceId))
-                  .map((genre) => (
-                    <option key={genre.id} value={genre.id}>
-                      {genre.name}
+              {/* 都道府県・地域 - 2行目（横並び） */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    都道府県 <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    required
+                    value={prefectureId}
+                    onChange={(e) => setPrefectureId(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">選択してください</option>
+                    {prefectures.map((prefecture) => (
+                      <option key={prefecture.id} value={prefecture.id}>
+                        {prefecture.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    地域
+                  </label>
+                  <select
+                    value={areaId}
+                    onChange={(e) => setAreaId(e.target.value)}
+                    disabled={!prefectureId}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  >
+                    <option value="">
+                      {prefectureId ? '選択してください' : '都道府県を先に選択してください'}
                     </option>
-                  ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                都道府県 <span className="text-red-500">*</span>
-              </label>
-              <select
-                required
-                value={prefectureId}
-                onChange={(e) => setPrefectureId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">選択してください</option>
-                {prefectures.map((prefecture) => (
-                  <option key={prefecture.id} value={prefecture.id}>
-                    {prefecture.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                地域
-              </label>
-              <select
-                value={areaId}
-                onChange={(e) => setAreaId(e.target.value)}
-                disabled={!prefectureId}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-              >
-                <option value="">
-                  {prefectureId ? '選択してください' : '都道府県を先に選択してください'}
-                </option>
-                {prefectureId && areas
-                  .filter((area) => area.prefecture_id === Number(prefectureId))
-                  .map((area) => (
-                    <option key={area.id} value={area.id}>
-                      {area.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            <div className="md:col-span-2 relative" ref={companyDropdownRef}>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                会社コード
-              </label>
-              <button
-                type="button"
-                onClick={() => setCompanyCodeFocused(!companyCodeFocused)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-left flex items-center justify-between"
-              >
-                <span className={companyId ? 'text-gray-900' : 'text-gray-500'}>
-                  {companyId
-                    ? companies.find(c => c.id === Number(companyId))?.code || '選択してください'
-                    : '選択してください'
-                  }
-                </span>
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {companyCodeFocused && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
-                  <div className="p-2 border-b border-gray-200">
-                    <input
-                      type="text"
-                      value={companyCodeInput}
-                      onChange={(e) => setCompanyCodeInput(e.target.value)}
-                      placeholder="会社コードで検索..."
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      autoFocus
-                    />
-                  </div>
-                  <div className="max-h-60 overflow-y-auto">
-                    {companies
-                      .filter((company) =>
-                        company.code?.toLowerCase().includes(companyCodeInput.toLowerCase())
-                      )
-                      .map((company) => (
-                        <div
-                          key={company.id}
-                          onClick={() => {
-                            setCompanyId(company.id.toString())
-                            setCompanyCodeInput('')
-                            setCompanyCodeFocused(false)
-                          }}
-                          className="px-3 py-2 hover:bg-blue-50 cursor-pointer"
-                        >
-                          <div className="text-sm font-medium text-gray-900">{company.code}</div>
-                          <div className="text-xs text-gray-500">{company.name}</div>
-                        </div>
+                    {prefectureId && areas
+                      .filter((area) => area.prefecture_id === Number(prefectureId))
+                      .map((area) => (
+                        <option key={area.id} value={area.id}>
+                          {area.name}
+                        </option>
                       ))}
-                    {companies.filter((company) =>
-                      company.code?.toLowerCase().includes(companyCodeInput.toLowerCase())
-                    ).length === 0 && (
-                      <div className="px-3 py-2 text-sm text-gray-500">
-                        該当する会社が見つかりません
-                      </div>
-                    )}
+                  </select>
+                </div>
+              </div>
+
+              {/* 会社コード - 3行目 */}
+              <div className="relative" ref={companyDropdownRef}>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  会社コード
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setCompanyCodeFocused(!companyCodeFocused)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-left flex items-center justify-between"
+                >
+                  <span className={companyId ? 'text-gray-900' : 'text-gray-500'}>
+                    {companyId
+                      ? companies.find(c => c.id === Number(companyId))?.code || '選択してください'
+                      : '選択してください'
+                    }
+                  </span>
+                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {companyCodeFocused && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                    <div className="p-2 border-b border-gray-200">
+                      <input
+                        type="text"
+                        value={companyCodeInput}
+                        onChange={(e) => setCompanyCodeInput(e.target.value)}
+                        placeholder="会社コードで検索..."
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        autoFocus
+                      />
+                    </div>
+                    <div className="max-h-60 overflow-y-auto">
+                      {companies
+                        .filter((company) =>
+                          company.code?.toLowerCase().includes(companyCodeInput.toLowerCase())
+                        )
+                        .map((company) => (
+                          <div
+                            key={company.id}
+                            onClick={() => {
+                              setCompanyId(company.id.toString())
+                              setCompanyCodeInput('')
+                              setCompanyCodeFocused(false)
+                            }}
+                            className="px-3 py-2 hover:bg-blue-50 cursor-pointer"
+                          >
+                            <div className="text-sm font-medium text-gray-900">{company.code}</div>
+                            <div className="text-xs text-gray-500">{company.name}</div>
+                          </div>
+                        ))}
+                      {companies.filter((company) =>
+                        company.code?.toLowerCase().includes(companyCodeInput.toLowerCase())
+                      ).length === 0 && (
+                        <div className="px-3 py-2 text-sm text-gray-500">
+                          該当する会社が見つかりません
+                        </div>
+                      )}
+                    </div>
                   </div>
+                )}
+              </div>
+
+              {/* UUID表示 - 編集時のみ */}
+              {initialData?.uuid && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    UUID
+                  </label>
+                  <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm font-mono">
+                    {initialData.uuid}
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500">
+                    この値は自動生成され、変更できません。アンケート画面を表示する場合はこの値をサービス名の後に設定してください。
+                  </p>
                 </div>
               )}
             </div>
           </div>
-        </div>
         )}
 
         {/* Detail Info */}

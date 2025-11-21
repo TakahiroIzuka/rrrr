@@ -26,9 +26,10 @@ interface FacilitiesListProps {
   facilities: FacilityData[]
   currentUserType: 'admin' | 'user'
   currentUserCompanyId: number | null
+  showNewButton?: boolean
 }
 
-export default function FacilitiesList({ services, facilities, currentUserType, currentUserCompanyId }: FacilitiesListProps) {
+export default function FacilitiesList({ services, facilities, currentUserType, currentUserCompanyId, showNewButton = false }: FacilitiesListProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -102,10 +103,18 @@ export default function FacilitiesList({ services, facilities, currentUserType, 
 
       {/* Facilities Table */}
       <div className="bg-white rounded shadow border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
           <h2 className="text-base font-semibold text-gray-900">
             施設一覧 ({filteredFacilities.length}件)
           </h2>
+          {showNewButton && (
+            <Link
+              href={`/management/facilities/new?service=${selectedServiceId}`}
+              className="px-4 py-2 bg-[#2271b1] text-white rounded text-sm hover:bg-[#135e96] transition-colors font-medium"
+            >
+              新規追加
+            </Link>
+          )}
         </div>
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">

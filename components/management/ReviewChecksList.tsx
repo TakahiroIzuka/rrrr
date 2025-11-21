@@ -32,11 +32,10 @@ interface ReviewCheckData {
 interface ReviewChecksListProps {
   services: ServiceData[]
   reviewChecks: ReviewCheckData[]
-  currentUserType: 'admin' | 'user'
   showNewButton?: boolean
 }
 
-export default function ReviewChecksList({ services, reviewChecks, currentUserType, showNewButton = false }: ReviewChecksListProps) {
+export default function ReviewChecksList({ services, reviewChecks, showNewButton = false }: ReviewChecksListProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
