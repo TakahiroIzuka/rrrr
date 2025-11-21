@@ -13,7 +13,7 @@ export default function ReviewRanking({
   const serviceCode = useServiceCode()
   const serviceName = useServiceName()
   const config = REVIEW_RANKING_CONFIG[serviceCode as keyof typeof REVIEW_RANKING_CONFIG]
-  const iconImagePath = `${serviceCode}/icon.png`
+  const iconImagePath = `/${serviceCode}/icon.png`
 
   if (!config) {
     console.error(`No review ranking config found for service code: ${serviceCode}`)
