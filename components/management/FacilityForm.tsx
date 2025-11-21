@@ -530,7 +530,7 @@ export default function FacilityForm({
                     {initialData.uuid}
                   </div>
                   <p className="mt-1 text-xs text-gray-500">
-                    この値は自動生成され、変更できません。アンケート画面を表示する場合はこの値をサービス名の後に設定してください。
+                    この値は自動生成され、変更できません。アンケート画面を表示する場合はこの値を/サービス名/questionnaireの後に設定してください。
                   </p>
                 </div>
               )}
