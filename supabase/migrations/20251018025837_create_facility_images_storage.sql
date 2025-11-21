@@ -1,6 +1,7 @@
 -- Create storage bucket for facility images (public)
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('facility-images', 'facility-images', true);
+VALUES ('facility-images', 'facility-images', true)
+ON CONFLICT (id) DO NOTHING;
 
 -- Policy: Authenticated users can upload facility images
 CREATE POLICY "Authenticated users can upload facility images"
