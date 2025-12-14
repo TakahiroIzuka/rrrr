@@ -110,7 +110,10 @@ serve(async (req) => {
       reviewCheckId,
       adminApprovalToken,
       reviewerName,
+      reviewerEmail,
+      googleAccountName,
       facilityName,
+      facilityUrl,
       reviewUrl
     } = await req.json()
 
@@ -135,8 +138,11 @@ serve(async (req) => {
 以下のリンクから最終承認をお願いします。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
+お名前: ${reviewerName} 様
+メールアドレス: ${reviewerEmail}
+Googleアカウント名: ${googleAccountName}
 施設名: ${facilityName}
-投稿者: ${reviewerName} 様
+施設URL: ${facilityUrl || '未設定'}
 クチコミURL: ${reviewUrl || '未取得'}
 施設承認: 完了
 ━━━━━━━━━━━━━━━━━━━━━━━━

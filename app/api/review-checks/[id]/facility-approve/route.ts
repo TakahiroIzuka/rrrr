@@ -6,7 +6,10 @@ async function sendAdminApprovalRequestEmail(
   reviewCheckId: number,
   adminApprovalToken: string,
   reviewerName: string,
+  reviewerEmail: string,
+  googleAccountName: string,
   facilityName: string,
+  facilityUrl: string | null,
   reviewUrl: string | null
 ): Promise<boolean> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -30,7 +33,10 @@ async function sendAdminApprovalRequestEmail(
           reviewCheckId,
           adminApprovalToken,
           reviewerName,
+          reviewerEmail,
+          googleAccountName,
           facilityName,
+          facilityUrl,
           reviewUrl,
         }),
       }
@@ -69,7 +75,7 @@ export async function POST(
     // トークン検証とレコード取得
     const { data: reviewCheck, error: reviewCheckError } = await supabase
       .from('review_checks')
-      .select('facility_approval_token, admin_approval_token, reviewer_name, facility_id, is_approved, review_url')
+      .select('facility_approval_token, admin_approval_token, reviewer_name, email, google_account_name, facility_id, is_approved, review_url')
       .eq('id', reviewCheckId)
       .single()
 
@@ -89,7 +95,7 @@ export async function POST(
     // 施設情報を取得
     const { data: facilityDetail, error: facilityError } = await supabase
       .from('facility_details')
-      .select('name')
+      .select('name, google_map_url')
       .eq('facility_id', reviewCheck.facility_id)
       .single()
 
@@ -114,7 +120,10 @@ export async function POST(
       parseInt(reviewCheckId),
       reviewCheck.admin_approval_token,
       reviewCheck.reviewer_name,
+      reviewCheck.email,
+      reviewCheck.google_account_name,
       facilityDetail.name,
+      facilityDetail.google_map_url,
       reviewCheck.review_url
     )
 
