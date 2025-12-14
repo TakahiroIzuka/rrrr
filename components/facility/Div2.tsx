@@ -226,6 +226,38 @@ export default function Div2({ facility, images = [] }: Div2Props) {
               </div>
             </div>
           )}
+          {facility.youtube_url && (() => {
+            // Extract YouTube video ID
+            const getVideoId = (url: string): string | null => {
+              const watchMatch = url.match(/(?:youtube\.com\/watch\?v=|youtube\.com\/watch\?.*&v=)([^&]+)/)
+              if (watchMatch) return watchMatch[1]
+              const shortMatch = url.match(/youtu\.be\/([^?&]+)/)
+              if (shortMatch) return shortMatch[1]
+              const embedMatch = url.match(/youtube\.com\/embed\/([^?&]+)/)
+              if (embedMatch) return embedMatch[1]
+              return null
+            }
+            const videoId = getVideoId(facility.youtube_url)
+            if (!videoId) return null
+            return (
+              <div className="border-0 md:border-b border-gray-300 p-1.5 flex flex-col md:flex-row">
+                <div className="w-full md:w-[30%] p-2 rounded text-center flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
+                  <p className="font-semibold">Youtube動画</p>
+                </div>
+                <div className="w-full md:w-[70%] p-2">
+                  <div className="aspect-video max-w-md">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${videoId}`}
+                      title="YouTube video"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full rounded-lg"
+                    />
+                  </div>
+                </div>
+              </div>
+            )
+          })()}
         </div>
       </div>
     </div>

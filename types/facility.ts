@@ -14,6 +14,7 @@ export interface Facility {
   site_url?: string
   portfolio_url?: string
   event_url?: string
+  youtube_url?: string
   postal_code?: string
   address?: string
   tel?: string

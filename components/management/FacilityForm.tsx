@@ -23,6 +23,7 @@ interface FacilityDetail {
   site_url?: string
   portfolio_url?: string
   event_url?: string
+  youtube_url?: string
   postal_code?: string
   address?: string
   tel?: string
@@ -49,6 +50,7 @@ interface DetailUpdateData {
   site_url?: string
   portfolio_url?: string
   event_url?: string
+  youtube_url?: string
   postal_code?: string
   address?: string
   tel?: string
@@ -140,7 +142,25 @@ export default function FacilityForm({
   const [siteUrl, setSiteUrl] = useState(detail.site_url || '')
   const [portfolioUrl, setPortfolioUrl] = useState(detail.portfolio_url || '')
   const [eventUrl, setEventUrl] = useState(detail.event_url || '')
+  const [youtubeUrl, setYoutubeUrl] = useState(detail.youtube_url || '')
   const [postalCode, setPostalCode] = useState(detail.postal_code || '')
+
+  // Helper function to extract YouTube video ID from URL
+  const getYoutubeVideoId = (url: string): string | null => {
+    if (!url) return null
+    // Match youtube.com/watch?v=xxx
+    const watchMatch = url.match(/(?:youtube\.com\/watch\?v=|youtube\.com\/watch\?.*&v=)([^&]+)/)
+    if (watchMatch) return watchMatch[1]
+    // Match youtu.be/xxx
+    const shortMatch = url.match(/youtu\.be\/([^?&]+)/)
+    if (shortMatch) return shortMatch[1]
+    // Match youtube.com/embed/xxx
+    const embedMatch = url.match(/youtube\.com\/embed\/([^?&]+)/)
+    if (embedMatch) return embedMatch[1]
+    return null
+  }
+
+  const youtubeVideoId = getYoutubeVideoId(youtubeUrl)
   const [address, setAddress] = useState(detail.address || '')
   const [tel, setTel] = useState(detail.tel || '')
   const [googleMapUrl, setGoogleMapUrl] = useState(detail.google_map_url || '')
@@ -295,6 +315,7 @@ export default function FacilityForm({
           site_url: siteUrl || undefined,
           portfolio_url: portfolioUrl || undefined,
           event_url: eventUrl || undefined,
+          youtube_url: youtubeUrl || undefined,
           postal_code: postalCode || undefined,
           address: address || undefined,
           tel: tel || undefined
@@ -345,6 +366,7 @@ export default function FacilityForm({
             site_url: siteUrl || undefined,
             portfolio_url: portfolioUrl || undefined,
             event_url: eventUrl || undefined,
+            youtube_url: youtubeUrl || undefined,
             postal_code: postalCode || undefined,
             address: address || undefined,
             tel: tel || undefined,
@@ -658,6 +680,38 @@ export default function FacilityForm({
                 placeholder="https://..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Youtube動画
+              </label>
+              <input
+                type="url"
+                value={youtubeUrl}
+                onChange={(e) => setYoutubeUrl(e.target.value)}
+                placeholder="https://www.youtube.com/watch?v=..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {youtubeVideoId && (
+                <div className="mt-2">
+                  <p className="text-xs text-gray-500 mb-1">プレビュー:</p>
+                  <div className="aspect-video max-w-md">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${youtubeVideoId}`}
+                      title="YouTube video preview"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full rounded-lg border border-gray-200"
+                    />
+                  </div>
+                </div>
+              )}
+              {youtubeUrl && !youtubeVideoId && (
+                <p className="mt-1 text-xs text-red-500">
+                  有効なYouTube URLを入力してください
+                </p>
+              )}
             </div>
 
             <div>
