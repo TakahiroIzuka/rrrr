@@ -408,10 +408,10 @@ serve(async (req) => {
         .update({ status: 'confirmed', confirmed_review_id: reviewId, executed_at: new Date().toISOString() })
         .eq('id', review_check_task_id)
 
-      // review_checksのis_sentをtrueに更新、review_urlも保存
+      // review_checksのreview_urlを保存
       await supabase
         .from('review_checks')
-        .update({ is_sent: true, review_url: reviewUrl })
+        .update({ review_url: reviewUrl })
         .eq('id', typedReviewCheck.id)
 
       console.log(`Review match found for: ${typedReviewCheck.google_account_name}`)

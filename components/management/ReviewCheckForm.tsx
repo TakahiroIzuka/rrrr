@@ -23,7 +23,6 @@ interface ReviewCheckData {
   email?: string
   review_url?: string
   review_star?: number
-  is_sent?: boolean
   is_approved?: boolean
   is_giftcode_sent?: boolean
 }
@@ -64,7 +63,6 @@ export default function ReviewCheckForm({
   const [email, setEmail] = useState(initialData?.email || '')
   const [reviewUrl, setReviewUrl] = useState(initialData?.review_url || '')
   const [reviewStar, setReviewStar] = useState(initialData?.review_star || '')
-  const [isSent, setIsSent] = useState(initialData?.is_sent || false)
   const [isApproved, setIsApproved] = useState(initialData?.is_approved || false)
   const [isGiftcodeSent, setIsGiftcodeSent] = useState(initialData?.is_giftcode_sent || false)
 
@@ -95,7 +93,6 @@ export default function ReviewCheckForm({
         email: email || null,
         review_url: reviewUrl || null,
         review_star: reviewStar ? parseFloat(String(reviewStar)) : null,
-        is_sent: isSent,
         is_approved: isApproved,
         is_giftcode_sent: isGiftcodeSent
       }
@@ -232,16 +229,6 @@ export default function ReviewCheckForm({
             ステータス
           </label>
           <div className="space-y-3">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={isSent}
-                onChange={(e) => setIsSent(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="ml-2 text-sm text-gray-700">送信済み</span>
-            </label>
-
             <label className="flex items-center">
               <input
                 type="checkbox"

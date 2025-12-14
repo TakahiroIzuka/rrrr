@@ -26,7 +26,6 @@ export async function POST(request: NextRequest) {
         google_account_name,
         email,
         review_star,
-        is_sent: false,
         status: 'pending',
       })
       .select()

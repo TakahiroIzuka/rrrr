@@ -18,7 +18,6 @@ interface ReviewCheckData {
   email: string | null
   review_url: string | null
   review_star: number | null
-  is_sent: boolean
   is_approved: boolean
   is_giftcode_sent: boolean
   created_at: string
@@ -146,7 +145,6 @@ export default function ReviewChecksList({ services, reviewChecks, showNewButton
                   <th className="px-4 py-3 text-left font-medium text-gray-700">Googleアカウント</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">メール</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">評価</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700">送信済</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">承認済</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">ギフト送付</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">登録日</th>
@@ -173,13 +171,6 @@ export default function ReviewChecksList({ services, reviewChecks, showNewButton
                     <td className="px-4 py-3">{review.email || '-'}</td>
                     <td className="px-4 py-3">
                       {review.review_star ? `${review.review_star}` : '-'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                        review.is_sent ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {review.is_sent ? 'Yes' : 'No'}
-                      </span>
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
