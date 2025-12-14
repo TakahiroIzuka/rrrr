@@ -12,6 +12,7 @@ export interface Facility {
   company_id?: number
   // Fields from facility_details (flattened)
   site_url?: string
+  portfolio_url?: string
   postal_code?: string
   address?: string
   tel?: string

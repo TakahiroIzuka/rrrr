@@ -188,6 +188,25 @@ export default function Div2({ facility, images = [] }: Div2Props) {
               )}
             </div>
           </div>
+          {facility.portfolio_url && (
+            <div className="border-0 md:border-b border-gray-300 p-1.5 flex flex-col md:flex-row">
+              <div className="w-full md:w-[30%] p-2 rounded text-center flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 249, 240)' }}>
+                <p className="font-semibold">実績紹介</p>
+              </div>
+              <div className="w-full md:w-[70%] p-2 flex items-center">
+                <a
+                  href={facility.portfolio_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative bg-white border-2 px-3 py-1.5 rounded font-medium hover:bg-gray-50 transition-colors overflow-visible"
+                  style={{ borderColor: 'rgb(163, 151, 125)', color: 'rgb(163, 151, 125)' }}
+                >
+                  実績紹介の一覧ページはこちら
+                  <div className="absolute -top-2 -right-2 w-4 h-4 border-2 rounded-sm" style={{ borderColor: 'rgb(163, 151, 125)' }}></div>
+                </a>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

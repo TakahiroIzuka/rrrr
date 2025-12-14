@@ -32,6 +32,7 @@ function transformFacilityDetail(facilityData: unknown): Facility {
     lat: detailObj?.lat as number,
     lng: detailObj?.lng as number,
     site_url: detailObj?.site_url as string | undefined,
+    portfolio_url: detailObj?.portfolio_url as string | undefined,
     postal_code: detailObj?.postal_code as string | undefined,
     address: detailObj?.address as string | undefined,
     tel: detailObj?.tel as string | undefined,
@@ -83,6 +84,7 @@ const FACILITY_BASE_QUERY = `
     lat,
     lng,
     site_url,
+    portfolio_url,
     postal_code,
     address,
     tel
@@ -174,6 +176,7 @@ const FACILITY_DETAIL_QUERY = `
     lat,
     lng,
     site_url,
+    portfolio_url,
     postal_code,
     address,
     tel,
