@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 const SMTP_HOST = process.env.SMTP_HOST || 'localhost'
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '1025')
 const SMTP_FROM = process.env.SMTP_FROM || 'noreply@example.com'
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@example.com'
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || 'admin@example.com').split(',').map(email => email.trim()).filter(Boolean)
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
 // 簡易SMTPクライアント
@@ -65,7 +65,7 @@ async function sendEmailViaSMTP(
   }
 }
 
-// 管理者承認依頼メール送信
+// 管理者承認依頼メール送信（複数の管理者に送信）
 async function sendAdminApprovalRequestEmail(
   reviewCheckId: number,
   adminApprovalToken: string,
@@ -94,11 +94,19 @@ ${approvalUrl}
 ※このリンクは本メールの受信者専用です。第三者への共有はお控えください。
 `
 
-  return sendEmailViaSMTP(
-    ADMIN_EMAIL,
-    `【管理者承認依頼】${facilityName} のクチコミ承認`,
-    body
+  // 全ての管理者にメール送信
+  const results = await Promise.all(
+    ADMIN_EMAILS.map(email =>
+      sendEmailViaSMTP(
+        email,
+        `【管理者承認依頼】${facilityName} のクチコミ承認`,
+        body
+      )
+    )
   )
+
+  // 少なくとも1件成功すればtrueを返す
+  return results.some(result => result === true)
 }
 
 export async function POST(

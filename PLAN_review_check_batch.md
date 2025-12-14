@@ -391,11 +391,11 @@ ${approvalUrl}
 ### 4.2 管理者承認依頼メール（新規）
 
 - **送信タイミング:** 施設承認完了時（is_approved = true）
-- **送信先:** ソースコード内で定義した管理者メールアドレス（環境変数 `ADMIN_EMAIL`）
+- **送信先:** 環境変数 `ADMIN_EMAILS` で設定した複数の管理者メールアドレス（カンマ区切り）
 - **内容:** トークン付き承認リンクの通知メール
 
 ```typescript
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@example.com'
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || 'admin@example.com').split(',').map(email => email.trim()).filter(Boolean)
 
 async function sendAdminApprovalRequestEmail(
   reviewCheckId: number,
@@ -610,7 +610,7 @@ SELECT cron.schedule(
 
 ### Phase 5: 環境変数
 11. 必要な環境変数の追加
-   - `ADMIN_EMAIL`: 管理者メールアドレス
+   - `ADMIN_EMAILS`: 管理者メールアドレス（カンマ区切りで複数指定可能）
    - `NEXT_PUBLIC_BASE_URL`: 承認リンク用のベースURL
 
 ### Phase 6: 管理画面（オプション）
