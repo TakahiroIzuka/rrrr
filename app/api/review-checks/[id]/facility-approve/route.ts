@@ -2,105 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || 'admin@example.com').split(',').map(email => email.trim()).filter(Boolean)
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-const RESEND_API_KEY = process.env.RESEND_API_KEY
-const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@example.com'
 
-// メール送信（Resend API使用、ローカルはSMTPにフォールバック）
-async function sendEmail(
-  to: string,
-  subject: string,
-  body: string
-): Promise<boolean> {
-  // Resend APIキーがある場合はResendを使用
-  if (RESEND_API_KEY) {
-    try {
-      const response = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${RESEND_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: EMAIL_FROM,
-          to: [to],
-          subject: subject,
-          text: body,
-        }),
-      })
-
-      if (response.ok) {
-        console.log(`Email sent via Resend to: ${to}`)
-        return true
-      } else {
-        const errorData = await response.text()
-        console.error(`Resend API error: ${errorData}`)
-        return false
-      }
-    } catch (error) {
-      console.error('Resend error:', error)
-      return false
-    }
-  }
-
-  // ローカル開発用: SMTP
-  const SMTP_HOST = process.env.SMTP_HOST || 'localhost'
-  const SMTP_PORT = parseInt(process.env.SMTP_PORT || '1025')
-
-  try {
-    const net = await import('net')
-
-    return new Promise((resolve) => {
-      const client = net.createConnection({ host: SMTP_HOST, port: SMTP_PORT }, () => {
-        let step = 0
-        const commands = [
-          `EHLO localhost`,
-          `MAIL FROM:<${EMAIL_FROM}>`,
-          `RCPT TO:<${to}>`,
-          'DATA',
-          [
-            `From: ${EMAIL_FROM}`,
-            `To: ${to}`,
-            `Subject: =?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`,
-            'MIME-Version: 1.0',
-            'Content-Type: text/plain; charset=UTF-8',
-            '',
-            body,
-            '.',
-          ].join('\r\n'),
-          'QUIT',
-        ]
-
-        client.on('data', () => {
-          if (step < commands.length) {
-            client.write(commands[step] + '\r\n')
-            step++
-          }
-        })
-
-        client.on('end', () => {
-          console.log(`Email sent via SMTP to: ${to}`)
-          resolve(true)
-        })
-
-        client.on('error', (err) => {
-          console.error('SMTP error:', err)
-          resolve(false)
-        })
-      })
-
-      client.on('error', (err) => {
-        console.error('SMTP connection error:', err)
-        resolve(false)
-      })
-    })
-  } catch (error) {
-    console.error('Failed to send email:', error)
-    return false
-  }
-}
-
-// 管理者承認依頼メール送信（複数の管理者に送信）
+// 管理者承認依頼メール送信（Supabase Edge Function経由）
 async function sendAdminApprovalRequestEmail(
   reviewCheckId: number,
   adminApprovalToken: string,
@@ -108,40 +11,47 @@ async function sendAdminApprovalRequestEmail(
   facilityName: string,
   reviewUrl: string | null
 ): Promise<boolean> {
-  const approvalUrl = `${BASE_URL}/api/review-checks/${reviewCheckId}/admin-approve?token=${adminApprovalToken}`
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  const body = `管理者様
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('Missing Supabase environment variables')
+    return false
+  }
 
-施設オーナーによるクチコミ承認が完了しました。
-以下のリンクから最終承認をお願いします。
-
-━━━━━━━━━━━━━━━━━━━━━━━━
-施設名: ${facilityName}
-投稿者: ${reviewerName} 様
-クチコミURL: ${reviewUrl || '未取得'}
-施設承認: 完了
-━━━━━━━━━━━━━━━━━━━━━━━━
-
-▼ 承認する場合は以下のリンクをクリックしてください
-${approvalUrl}
-
-※このメールは自動送信されています。
-※このリンクは本メールの受信者専用です。第三者への共有はお控えください。
-`
-
-  // 全ての管理者にメール送信
-  const results = await Promise.all(
-    ADMIN_EMAILS.map(email =>
-      sendEmail(
-        email,
-        `【管理者承認依頼】${facilityName} のクチコミ承認`,
-        body
-      )
+  try {
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/send-admin-approval-email`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+        },
+        body: JSON.stringify({
+          adminEmails: ADMIN_EMAILS,
+          reviewCheckId,
+          adminApprovalToken,
+          reviewerName,
+          facilityName,
+          reviewUrl,
+        }),
+      }
     )
-  )
 
-  // 少なくとも1件成功すればtrueを返す
-  return results.some(result => result === true)
+    if (response.ok) {
+      const result = await response.json()
+      console.log(`Admin approval email sent via Edge Function:`, result)
+      return result.success
+    } else {
+      const errorText = await response.text()
+      console.error(`Edge Function error: ${errorText}`)
+      return false
+    }
+  } catch (error) {
+    console.error('Error calling Edge Function:', error)
+    return false
+  }
 }
 
 export async function POST(
@@ -202,7 +112,7 @@ export async function POST(
       return NextResponse.json({ error: '更新に失敗しました' }, { status: 500 })
     }
 
-    // 管理者へ承認依頼メールを送信
+    // 管理者へ承認依頼メールを送信（Edge Function経由）
     const emailSent = await sendAdminApprovalRequestEmail(
       parseInt(reviewCheckId),
       reviewCheck.admin_approval_token,
