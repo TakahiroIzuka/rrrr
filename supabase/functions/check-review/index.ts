@@ -135,7 +135,10 @@ async function sendFacilityApprovalRequestEmail(
   reviewCheckId: number,
   facilityApprovalToken: string,
   reviewerName: string,
+  reviewerEmail: string,
+  googleAccountName: string,
   facilityName: string,
+  facilityUrl: string | null,
   reviewUrl: string | null
 ): Promise<boolean> {
   const baseUrl = Deno.env.get('NEXT_PUBLIC_BASE_URL') || 'http://localhost:3000'
@@ -147,8 +150,10 @@ async function sendFacilityApprovalRequestEmail(
 以下のリンクから承認をお願いします。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
-施設名: ${facilityName}
-投稿者: ${reviewerName} 様
+お名前: ${reviewerName} 様
+メールアドレス: ${reviewerEmail}
+Googleアカウント名: ${googleAccountName}
+施設URL: ${facilityUrl || '未設定'}
 クチコミURL: ${reviewUrl || '未取得'}
 ━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -427,7 +432,10 @@ serve(async (req) => {
         typedReviewCheck.id,
         typedReviewCheck.facility_approval_token,
         typedReviewCheck.reviewer_name,
+        typedReviewCheck.email,
+        typedReviewCheck.google_account_name,
         facilityDetail.name,
+        googleMapUrl,
         reviewUrl
       )
 
