@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getStarImage } from '@/lib/utils/starRating'
 import Div2 from '@/components/facility/Div2'
-import ReviewCard from '@/components/facility/ReviewCard'
+import ReviewSection from '@/components/facility/ReviewSection'
 import ScrollToReviewButton from '@/components/facility/ScrollToReviewButton'
 import { fetchFacilityById, fetchFacilityImages } from '@/lib/data/facilities'
 import { SERVICE_CODE } from '../../constants'
@@ -95,38 +95,7 @@ export default async function DetailPage({ params }: DetailPageProps) {
         <Div2 facility={facility} images={images || []} />
 
         {/* div3 */}
-        <div id="review-section" className="mb-2 p-4 rounded-lg" style={{ backgroundColor: 'rgb(255, 249, 240)', marginLeft: '3px', marginRight: '3px' }}>
-          {/* バー */}
-          <div className="relative mb-4">
-            <div className="w-full px-4 py-2 text-sm border-2 rounded text-center bg-white" style={{ borderColor: genreColor, color: genreColor }}>
-              {facility.name}のクチコミ一覧はこちら！
-            </div>
-            {/* 下向き三角形 */}
-            <div className="absolute left-1/2 -translate-x-1/2 -bottom-3 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-l-transparent border-r-transparent" style={{ borderTopColor: genreColor }}></div>
-          </div>
-
-          {/* カードグリッド */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5 mt-6 p-0 md:px-[15px]">
-            <ReviewCard
-              facility={facility}
-              userImage="https://placehold.co/100x100/e3d5ca/000000?text=User"
-              showDate={false}
-            />
-            {[
-              'https://placehold.co/100x100/d4c4b0/000000?text=User',
-              'https://placehold.co/100x100/c5b299/000000?text=User',
-              'https://placehold.co/100x100/b6a082/000000?text=User',
-              'https://placehold.co/100x100/a78e6b/000000?text=User'
-            ].map((image, index) => (
-              <ReviewCard
-                key={index}
-                facility={facility}
-                userImage={image}
-                showDate={true}
-              />
-            ))}
-          </div>
-        </div>
+        <ReviewSection facility={facility} genreColor={genreColor} />
 
         {/* div4 */}
         <div className="p-4 flex justify-center">
