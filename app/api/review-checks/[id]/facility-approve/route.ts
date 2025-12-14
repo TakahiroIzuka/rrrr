@@ -1,18 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-const SMTP_HOST = process.env.SMTP_HOST || 'localhost'
-const SMTP_PORT = parseInt(process.env.SMTP_PORT || '1025')
-const SMTP_FROM = process.env.SMTP_FROM || 'noreply@example.com'
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || 'admin@example.com').split(',').map(email => email.trim()).filter(Boolean)
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+const RESEND_API_KEY = process.env.RESEND_API_KEY
+const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@example.com'
 
-// 簡易SMTPクライアント
-async function sendEmailViaSMTP(
+// メール送信（Resend API使用、ローカルはSMTPにフォールバック）
+async function sendEmail(
   to: string,
   subject: string,
   body: string
 ): Promise<boolean> {
+  // Resend APIキーがある場合はResendを使用
+  if (RESEND_API_KEY) {
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: EMAIL_FROM,
+          to: [to],
+          subject: subject,
+          text: body,
+        }),
+      })
+
+      if (response.ok) {
+        console.log(`Email sent via Resend to: ${to}`)
+        return true
+      } else {
+        const errorData = await response.text()
+        console.error(`Resend API error: ${errorData}`)
+        return false
+      }
+    } catch (error) {
+      console.error('Resend error:', error)
+      return false
+    }
+  }
+
+  // ローカル開発用: SMTP
+  const SMTP_HOST = process.env.SMTP_HOST || 'localhost'
+  const SMTP_PORT = parseInt(process.env.SMTP_PORT || '1025')
+
   try {
     const net = await import('net')
 
@@ -21,11 +55,11 @@ async function sendEmailViaSMTP(
         let step = 0
         const commands = [
           `EHLO localhost`,
-          `MAIL FROM:<${SMTP_FROM}>`,
+          `MAIL FROM:<${EMAIL_FROM}>`,
           `RCPT TO:<${to}>`,
           'DATA',
           [
-            `From: ${SMTP_FROM}`,
+            `From: ${EMAIL_FROM}`,
             `To: ${to}`,
             `Subject: =?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`,
             'MIME-Version: 1.0',
@@ -45,6 +79,7 @@ async function sendEmailViaSMTP(
         })
 
         client.on('end', () => {
+          console.log(`Email sent via SMTP to: ${to}`)
           resolve(true)
         })
 
@@ -97,7 +132,7 @@ ${approvalUrl}
   // 全ての管理者にメール送信
   const results = await Promise.all(
     ADMIN_EMAILS.map(email =>
-      sendEmailViaSMTP(
+      sendEmail(
         email,
         `【管理者承認依頼】${facilityName} のクチコミ承認`,
         body

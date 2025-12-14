@@ -35,20 +35,55 @@ interface ReviewCheck {
   review_url: string | null
 }
 
-// 簡易SMTPクライアント（ローカル開発用・本番はResend等を使用）
-async function sendEmailViaSMTP(
-  host: string,
-  port: number,
-  from: string,
+// メール送信（Resend API使用、ローカルはSMTPにフォールバック）
+async function sendEmail(
   to: string,
   subject: string,
   body: string
 ): Promise<boolean> {
+  const resendApiKey = Deno.env.get('RESEND_API_KEY')
+  const fromEmail = Deno.env.get('EMAIL_FROM') || 'noreply@example.com'
+
+  // Resend APIキーがある場合はResendを使用
+  if (resendApiKey) {
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: fromEmail,
+          to: [to],
+          subject: subject,
+          text: body,
+        }),
+      })
+
+      if (response.ok) {
+        console.log(`Email sent via Resend to: ${to}`)
+        return true
+      } else {
+        const errorData = await response.text()
+        console.error(`Resend API error: ${errorData}`)
+        return false
+      }
+    } catch (error) {
+      console.error('Resend error:', error)
+      return false
+    }
+  }
+
+  // ローカル開発用: SMTP
+  const smtpHost = Deno.env.get('SMTP_HOST') || 'supabase_inbucket_my-map'
+  const smtpPort = parseInt(Deno.env.get('SMTP_PORT') || '1025')
+
   const encoder = new TextEncoder()
   const decoder = new TextDecoder()
 
   try {
-    const conn = await Deno.connect({ hostname: host, port })
+    const conn = await Deno.connect({ hostname: smtpHost, port: smtpPort })
 
     const read = async (): Promise<string> => {
       const buf = new Uint8Array(1024)
@@ -60,20 +95,18 @@ async function sendEmailViaSMTP(
       await conn.write(encoder.encode(data + '\r\n'))
     }
 
-    // SMTP会話
-    await read() // 220 greeting
+    await read()
     await write(`EHLO localhost`)
-    await read() // 250
-    await write(`MAIL FROM:<${from}>`)
-    await read() // 250
+    await read()
+    await write(`MAIL FROM:<${fromEmail}>`)
+    await read()
     await write(`RCPT TO:<${to}>`)
-    await read() // 250
+    await read()
     await write('DATA')
-    await read() // 354
+    await read()
 
-    // メールヘッダーと本文
     const emailContent = [
-      `From: ${from}`,
+      `From: ${fromEmail}`,
       `To: ${to}`,
       `Subject: =?UTF-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=`,
       'MIME-Version: 1.0',
@@ -84,10 +117,11 @@ async function sendEmailViaSMTP(
     ].join('\r\n')
 
     await write(emailContent)
-    await read() // 250
+    await read()
     await write('QUIT')
 
     conn.close()
+    console.log(`Email sent via SMTP to: ${to}`)
     return true
   } catch (error) {
     console.error('SMTP error:', error)
@@ -104,11 +138,7 @@ async function sendFacilityApprovalRequestEmail(
   facilityName: string,
   reviewUrl: string | null
 ): Promise<boolean> {
-  const smtpHost = Deno.env.get('SMTP_HOST') || 'supabase_inbucket_my-map'
-  const smtpPort = parseInt(Deno.env.get('SMTP_PORT') || '1025')
-  const fromEmail = Deno.env.get('SMTP_FROM') || 'noreply@example.com'
   const baseUrl = Deno.env.get('NEXT_PUBLIC_BASE_URL') || 'http://localhost:3000'
-
   const approvalUrl = `${baseUrl}/api/review-checks/${reviewCheckId}/facility-approve?token=${facilityApprovalToken}`
 
   const body = `${facilityName} のオーナー様
@@ -129,22 +159,7 @@ ${approvalUrl}
 ※このリンクは本メールの受信者専用です。第三者への共有はお控えください。
 `
 
-  const sent = await sendEmailViaSMTP(
-    smtpHost,
-    smtpPort,
-    fromEmail,
-    toEmail,
-    `【${facilityName}】クチコミ承認のお願い`,
-    body
-  )
-
-  if (sent) {
-    console.log(`Facility approval request email sent to: ${toEmail}`)
-  } else {
-    console.error(`Failed to send facility approval request email to: ${toEmail}`)
-  }
-
-  return sent
+  return sendEmail(toEmail, `【${facilityName}】クチコミ承認のお願い`, body)
 }
 
 // エラー通知メール送信関数（アンケート送信者へ）
@@ -153,10 +168,6 @@ async function sendErrorNotificationEmail(
   reviewerName: string,
   facilityName: string
 ): Promise<boolean> {
-  const smtpHost = Deno.env.get('SMTP_HOST') || 'supabase_inbucket_my-map'
-  const smtpPort = parseInt(Deno.env.get('SMTP_PORT') || '1025')
-  const fromEmail = Deno.env.get('SMTP_FROM') || 'noreply@example.com'
-
   const body = `${reviewerName} 様
 
 ${facilityName} のクチコミ投稿確認ができませんでした。
@@ -171,22 +182,7 @@ ${facilityName} のクチコミ投稿確認ができませんでした。
 ※このメールは自動送信されています。
 `
 
-  const sent = await sendEmailViaSMTP(
-    smtpHost,
-    smtpPort,
-    fromEmail,
-    toEmail,
-    `【${facilityName}】クチコミ確認のお知らせ`,
-    body
-  )
-
-  if (sent) {
-    console.log(`Error notification email sent to: ${toEmail}`)
-  } else {
-    console.error(`Failed to send error notification email to: ${toEmail}`)
-  }
-
-  return sent
+  return sendEmail(toEmail, `【${facilityName}】クチコミ確認のお知らせ`, body)
 }
 
 // Google MapクチコミをApifyから取得
