@@ -329,15 +329,6 @@ serve(async (req) => {
 
     const typedReviewCheck = reviewCheck as ReviewCheck
 
-    // 既に同じreview_check_idでconfirmedのタスクがあるか確認
-    const { data: existingConfirmed } = await supabase
-      .from('review_check_tasks')
-      .select('id, confirmed_review_id')
-      .eq('review_check_id', typedTask.review_check_id)
-      .eq('status', 'confirmed')
-      .neq('id', typedTask.id)
-      .single()
-
     // 施設詳細からname, google_map_url, review_approval_emailを取得
     const { data: facilityDetail, error: facilityDetailError } = await supabase
       .from('facility_details')
@@ -380,18 +371,33 @@ serve(async (req) => {
     const { matched, reviewUrl, reviewId } = findMatchingReview(reviews, typedReviewCheck.google_account_name)
 
     if (matched) {
-      // 既に別タスクで同じレビューが確認済みかチェック
-      if (existingConfirmed && existingConfirmed.confirmed_review_id === reviewId) {
+      // 既に同じreviewIdで確認済みのタスクがあるかチェック（全てのreview_check_tasks対象）
+      const { data: existingConfirmed } = await supabase
+        .from('review_check_tasks')
+        .select('id, review_check_id')
+        .eq('confirmed_review_id', reviewId)
+        .eq('status', 'confirmed')
+        .neq('id', review_check_task_id)
+        .limit(1)
+        .single()
+
+      if (existingConfirmed) {
         // already_confirmedに更新
         await supabase
           .from('review_check_tasks')
           .update({ status: 'already_confirmed', executed_at: new Date().toISOString() })
           .eq('id', review_check_task_id)
 
-        console.log(`Review already confirmed for: ${typedReviewCheck.google_account_name}`)
+        // review_checksのstatusもalready_confirmedに更新
+        await supabase
+          .from('review_checks')
+          .update({ status: 'already_confirmed' })
+          .eq('id', typedReviewCheck.id)
+
+        console.log(`Review already confirmed by another review_check for: ${typedReviewCheck.google_account_name}`)
 
         return new Response(
-          JSON.stringify({ success: true, status: 'already_confirmed' }),
+          JSON.stringify({ success: true, status: 'already_confirmed', message: 'This review was already confirmed by another submission' }),
           { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
