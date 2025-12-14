@@ -13,6 +13,7 @@ export interface Facility {
   // Fields from facility_details (flattened)
   site_url?: string
   portfolio_url?: string
+  event_url?: string
   postal_code?: string
   address?: string
   tel?: string

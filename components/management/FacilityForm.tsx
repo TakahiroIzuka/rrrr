@@ -22,6 +22,7 @@ interface FacilityDetail {
   lng?: number
   site_url?: string
   portfolio_url?: string
+  event_url?: string
   postal_code?: string
   address?: string
   tel?: string
@@ -47,6 +48,7 @@ interface DetailUpdateData {
   lng: number
   site_url?: string
   portfolio_url?: string
+  event_url?: string
   postal_code?: string
   address?: string
   tel?: string
@@ -137,6 +139,7 @@ export default function FacilityForm({
   const [lng, setLng] = useState(detail.lng || '')
   const [siteUrl, setSiteUrl] = useState(detail.site_url || '')
   const [portfolioUrl, setPortfolioUrl] = useState(detail.portfolio_url || '')
+  const [eventUrl, setEventUrl] = useState(detail.event_url || '')
   const [postalCode, setPostalCode] = useState(detail.postal_code || '')
   const [address, setAddress] = useState(detail.address || '')
   const [tel, setTel] = useState(detail.tel || '')
@@ -291,6 +294,7 @@ export default function FacilityForm({
           lng: lng ? parseFloat(String(lng)) : 0,
           site_url: siteUrl || undefined,
           portfolio_url: portfolioUrl || undefined,
+          event_url: eventUrl || undefined,
           postal_code: postalCode || undefined,
           address: address || undefined,
           tel: tel || undefined
@@ -340,6 +344,7 @@ export default function FacilityForm({
             lng: lng ? parseFloat(String(lng)) : 0,
             site_url: siteUrl || undefined,
             portfolio_url: portfolioUrl || undefined,
+            event_url: eventUrl || undefined,
             postal_code: postalCode || undefined,
             address: address || undefined,
             tel: tel || undefined,
@@ -637,6 +642,19 @@ export default function FacilityForm({
                 type="url"
                 value={portfolioUrl}
                 onChange={(e) => setPortfolioUrl(e.target.value)}
+                placeholder="https://..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                最新のイベント情報
+              </label>
+              <input
+                type="url"
+                value={eventUrl}
+                onChange={(e) => setEventUrl(e.target.value)}
                 placeholder="https://..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
