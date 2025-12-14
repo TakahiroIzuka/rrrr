@@ -10,8 +10,29 @@ interface ApifyReview {
   name?: string
   reviewerName?: string
   reviewUrl?: string
+  reviewId?: string
   url?: string
   [key: string]: unknown
+}
+
+interface ReviewCheckTask {
+  id: number
+  review_check_id: number
+  scheduled_at: string
+  status: string
+  confirmed_review_id: string | null
+  executed_at: string | null
+  error_message: string | null
+}
+
+interface ReviewCheck {
+  id: number
+  facility_id: number
+  google_account_name: string
+  email: string
+  reviewer_name: string
+  facility_approval_token: string
+  review_url: string | null
 }
 
 // 簡易SMTPクライアント（ローカル開発用・本番はResend等を使用）
@@ -22,98 +43,150 @@ async function sendEmailViaSMTP(
   to: string,
   subject: string,
   body: string
-): Promise<void> {
+): Promise<boolean> {
   const encoder = new TextEncoder()
   const decoder = new TextDecoder()
 
-  const conn = await Deno.connect({ hostname: host, port })
+  try {
+    const conn = await Deno.connect({ hostname: host, port })
 
-  const read = async (): Promise<string> => {
-    const buf = new Uint8Array(1024)
-    const n = await conn.read(buf)
-    return decoder.decode(buf.subarray(0, n || 0))
+    const read = async (): Promise<string> => {
+      const buf = new Uint8Array(1024)
+      const n = await conn.read(buf)
+      return decoder.decode(buf.subarray(0, n || 0))
+    }
+
+    const write = async (data: string): Promise<void> => {
+      await conn.write(encoder.encode(data + '\r\n'))
+    }
+
+    // SMTP会話
+    await read() // 220 greeting
+    await write(`EHLO localhost`)
+    await read() // 250
+    await write(`MAIL FROM:<${from}>`)
+    await read() // 250
+    await write(`RCPT TO:<${to}>`)
+    await read() // 250
+    await write('DATA')
+    await read() // 354
+
+    // メールヘッダーと本文
+    const emailContent = [
+      `From: ${from}`,
+      `To: ${to}`,
+      `Subject: =?UTF-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=`,
+      'MIME-Version: 1.0',
+      'Content-Type: text/plain; charset=UTF-8',
+      '',
+      body,
+      '.',
+    ].join('\r\n')
+
+    await write(emailContent)
+    await read() // 250
+    await write('QUIT')
+
+    conn.close()
+    return true
+  } catch (error) {
+    console.error('SMTP error:', error)
+    return false
   }
-
-  const write = async (data: string): Promise<void> => {
-    await conn.write(encoder.encode(data + '\r\n'))
-  }
-
-  // SMTP会話
-  await read() // 220 greeting
-  await write(`EHLO localhost`)
-  await read() // 250
-  await write(`MAIL FROM:<${from}>`)
-  await read() // 250
-  await write(`RCPT TO:<${to}>`)
-  await read() // 250
-  await write('DATA')
-  await read() // 354
-
-  // メールヘッダーと本文
-  const emailContent = [
-    `From: ${from}`,
-    `To: ${to}`,
-    `Subject: =?UTF-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=`,
-    'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset=UTF-8',
-    '',
-    body,
-    '.',
-  ].join('\r\n')
-
-  await write(emailContent)
-  await read() // 250
-  await write('QUIT')
-
-  conn.close()
 }
 
-// 施設オーナーへの通知メール送信関数
-async function sendReviewNotificationEmail(
+// 施設承認依頼メール送信関数
+async function sendFacilityApprovalRequestEmail(
+  toEmail: string,
+  reviewCheckId: number,
+  facilityApprovalToken: string,
+  reviewerName: string,
+  facilityName: string,
+  reviewUrl: string | null
+): Promise<boolean> {
+  const smtpHost = Deno.env.get('SMTP_HOST') || 'supabase_inbucket_my-map'
+  const smtpPort = parseInt(Deno.env.get('SMTP_PORT') || '1025')
+  const fromEmail = Deno.env.get('SMTP_FROM') || 'noreply@example.com'
+  const baseUrl = Deno.env.get('NEXT_PUBLIC_BASE_URL') || 'http://localhost:3000'
+
+  const approvalUrl = `${baseUrl}/api/review-checks/${reviewCheckId}/facility-approve?token=${facilityApprovalToken}`
+
+  const body = `${facilityName} のオーナー様
+
+新しいクチコミの確認が完了しました。
+以下のリンクから承認をお願いします。
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+施設名: ${facilityName}
+投稿者: ${reviewerName} 様
+クチコミURL: ${reviewUrl || '未取得'}
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+▼ 承認する場合は以下のリンクをクリックしてください
+${approvalUrl}
+
+※このメールは自動送信されています。
+※このリンクは本メールの受信者専用です。第三者への共有はお控えください。
+`
+
+  const sent = await sendEmailViaSMTP(
+    smtpHost,
+    smtpPort,
+    fromEmail,
+    toEmail,
+    `【${facilityName}】クチコミ承認のお願い`,
+    body
+  )
+
+  if (sent) {
+    console.log(`Facility approval request email sent to: ${toEmail}`)
+  } else {
+    console.error(`Failed to send facility approval request email to: ${toEmail}`)
+  }
+
+  return sent
+}
+
+// エラー通知メール送信関数（アンケート送信者へ）
+async function sendErrorNotificationEmail(
   toEmail: string,
   reviewerName: string,
-  reviewerEmail: string,
-  googleAccountName: string,
-  facilityName: string,
-  googleMapUrl: string
+  facilityName: string
 ): Promise<boolean> {
   const smtpHost = Deno.env.get('SMTP_HOST') || 'supabase_inbucket_my-map'
   const smtpPort = parseInt(Deno.env.get('SMTP_PORT') || '1025')
   const fromEmail = Deno.env.get('SMTP_FROM') || 'noreply@example.com'
 
-  const body = `${facilityName} のオーナー様
+  const body = `${reviewerName} 様
 
-新しいクチコミが投稿されました。
+${facilityName} のクチコミ投稿確認ができませんでした。
 
-━━━━━━━━━━━━━━━━━━━━━━━━
-施設名: ${facilityName}
-投稿者: ${reviewerName} 様
-メールアドレス: ${reviewerEmail}
-Googleアカウント名: ${googleAccountName}
-送信確認: 済み
-━━━━━━━━━━━━━━━━━━━━━━━━
+以下の理由が考えられます：
+- クチコミがまだ公開されていない
+- Googleアカウント名が一致しない
+- クチコミが削除された
 
-Google Mapにてクチコミ内容をご確認ください。
-${googleMapUrl}
+お手数ですが、クチコミ投稿状況をご確認ください。
 
 ※このメールは自動送信されています。
 `
 
-  try {
-    await sendEmailViaSMTP(
-      smtpHost,
-      smtpPort,
-      fromEmail,
-      toEmail,
-      `【${facilityName}】新しいクチコミが投稿されました`,
-      body
-    )
-    console.log(`Review notification email sent to: ${toEmail}`)
-    return true
-  } catch (error) {
-    console.error('Failed to send email:', error)
-    return false
+  const sent = await sendEmailViaSMTP(
+    smtpHost,
+    smtpPort,
+    fromEmail,
+    toEmail,
+    `【${facilityName}】クチコミ確認のお知らせ`,
+    body
+  )
+
+  if (sent) {
+    console.log(`Error notification email sent to: ${toEmail}`)
+  } else {
+    console.error(`Failed to send error notification email to: ${toEmail}`)
   }
+
+  return sent
 }
 
 // Google MapクチコミをApifyから取得
@@ -182,16 +255,17 @@ async function fetchGoogleMapReviews(googleMapUrl: string): Promise<ApifyReview[
   }
 }
 
-// レビューの名前をチェックし、一致したレビューのURLを返す
-function findMatchingReview(reviews: ApifyReview[], googleAccountName: string): { matched: boolean; reviewUrl: string | null } {
+// レビューの名前をチェックし、一致したレビューのURLとIDを返す
+function findMatchingReview(reviews: ApifyReview[], googleAccountName: string): { matched: boolean; reviewUrl: string | null; reviewId: string | null } {
   for (const review of reviews) {
     const reviewerName = review.name || review.reviewerName || ''
     if (reviewerName && reviewerName === googleAccountName) {
       const reviewUrl = review.reviewUrl || review.url || null
-      return { matched: true, reviewUrl }
+      const reviewId = review.reviewId || null
+      return { matched: true, reviewUrl, reviewId }
     }
   }
-  return { matched: false, reviewUrl: null }
+  return { matched: false, reviewUrl: null, reviewId: null }
 }
 
 serve(async (req) => {
@@ -201,11 +275,11 @@ serve(async (req) => {
   }
 
   try {
-    const { review_check_id } = await req.json()
+    const { review_check_task_id } = await req.json()
 
-    if (!review_check_id) {
+    if (!review_check_task_id) {
       return new Response(
-        JSON.stringify({ error: 'review_check_id is required' }),
+        JSON.stringify({ error: 'review_check_task_id is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -215,30 +289,68 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-    // review_checksレコードを取得（メール送信用にemail, reviewer_nameも取得）
+    // review_check_taskと関連するreview_checkを取得
+    const { data: task, error: taskError } = await supabase
+      .from('review_check_tasks')
+      .select('*')
+      .eq('id', review_check_task_id)
+      .single()
+
+    if (taskError || !task) {
+      console.error('Error fetching review check task:', taskError)
+      return new Response(
+        JSON.stringify({ error: 'Review check task not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const typedTask = task as ReviewCheckTask
+
+    // review_checksレコードを取得
     const { data: reviewCheck, error: reviewError } = await supabase
       .from('review_checks')
-      .select('id, facility_id, google_account_name, email, reviewer_name')
-      .eq('id', review_check_id)
+      .select('id, facility_id, google_account_name, email, reviewer_name, facility_approval_token, review_url')
+      .eq('id', typedTask.review_check_id)
       .single()
 
     if (reviewError || !reviewCheck) {
       console.error('Error fetching review check:', reviewError)
+      // タスクをfailedに更新
+      await supabase
+        .from('review_check_tasks')
+        .update({ status: 'failed', executed_at: new Date().toISOString(), error_message: 'Review check not found' })
+        .eq('id', review_check_task_id)
       return new Response(
         JSON.stringify({ error: 'Review check not found' }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    // 施設詳細からname, google_map_url, confirm_emailを取得
+    const typedReviewCheck = reviewCheck as ReviewCheck
+
+    // 既に同じreview_check_idでconfirmedのタスクがあるか確認
+    const { data: existingConfirmed } = await supabase
+      .from('review_check_tasks')
+      .select('id, confirmed_review_id')
+      .eq('review_check_id', typedTask.review_check_id)
+      .eq('status', 'confirmed')
+      .neq('id', typedTask.id)
+      .single()
+
+    // 施設詳細からname, google_map_url, review_approval_emailを取得
     const { data: facilityDetail, error: facilityDetailError } = await supabase
       .from('facility_details')
-      .select('name, google_map_url, confirm_email')
-      .eq('facility_id', reviewCheck.facility_id)
+      .select('name, google_map_url, review_approval_email')
+      .eq('facility_id', typedReviewCheck.facility_id)
       .single()
 
     if (facilityDetailError || !facilityDetail) {
       console.error('Error fetching facility detail:', facilityDetailError)
+      // タスクをfailedに更新
+      await supabase
+        .from('review_check_tasks')
+        .update({ status: 'failed', executed_at: new Date().toISOString(), error_message: 'Facility detail not found' })
+        .eq('id', review_check_task_id)
       return new Response(
         JSON.stringify({ error: 'Facility detail not found' }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -249,8 +361,13 @@ serve(async (req) => {
 
     if (!googleMapUrl) {
       console.log('No google_map_url for facility')
+      // タスクをfailedに更新
+      await supabase
+        .from('review_check_tasks')
+        .update({ status: 'failed', executed_at: new Date().toISOString(), error_message: 'No google_map_url for facility' })
+        .eq('id', review_check_task_id)
       return new Response(
-        JSON.stringify({ message: 'No google_map_url', is_sent: false }),
+        JSON.stringify({ message: 'No google_map_url', status: 'failed' }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -259,53 +376,117 @@ serve(async (req) => {
     const reviews = await fetchGoogleMapReviews(googleMapUrl)
 
     // google_account_nameと一致するレビューがあるかチェック
-    const { matched, reviewUrl } = findMatchingReview(reviews, reviewCheck.google_account_name)
+    const { matched, reviewUrl, reviewId } = findMatchingReview(reviews, typedReviewCheck.google_account_name)
 
     if (matched) {
-      // is_sentをtrueに更新
-      const { error: updateError } = await supabase
-        .from('review_checks')
-        .update({ is_sent: true })
-        .eq('id', review_check_id)
+      // 既に別タスクで同じレビューが確認済みかチェック
+      if (existingConfirmed && existingConfirmed.confirmed_review_id === reviewId) {
+        // already_confirmedに更新
+        await supabase
+          .from('review_check_tasks')
+          .update({ status: 'already_confirmed', executed_at: new Date().toISOString() })
+          .eq('id', review_check_task_id)
 
-      if (updateError) {
-        console.error('Error updating review check:', updateError)
+        console.log(`Review already confirmed for: ${typedReviewCheck.google_account_name}`)
+
         return new Response(
-          JSON.stringify({ error: 'Failed to update review check' }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          JSON.stringify({ success: true, status: 'already_confirmed' }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
 
-      console.log(`Review match found for: ${reviewCheck.google_account_name}`)
+      // confirmedに更新
+      await supabase
+        .from('review_check_tasks')
+        .update({ status: 'confirmed', confirmed_review_id: reviewId, executed_at: new Date().toISOString() })
+        .eq('id', review_check_task_id)
 
-      // 施設オーナーにメールを送信（confirm_emailが設定されている場合）
-      const confirmEmail = facilityDetail.confirm_email
-      if (confirmEmail) {
-        // クチコミURLがない場合は施設URLをフォールバック
-        const emailReviewUrl = reviewUrl || googleMapUrl
-        const emailSent = await sendReviewNotificationEmail(
-          confirmEmail,
-          reviewCheck.reviewer_name,
-          reviewCheck.email,
-          reviewCheck.google_account_name,
-          facilityDetail.name,
-          emailReviewUrl
+      // review_checksのis_sentをtrueに更新、review_urlも保存
+      await supabase
+        .from('review_checks')
+        .update({ is_sent: true, review_url: reviewUrl })
+        .eq('id', typedReviewCheck.id)
+
+      console.log(`Review match found for: ${typedReviewCheck.google_account_name}`)
+
+      // review_approval_emailの確認
+      const reviewApprovalEmail = facilityDetail.review_approval_email
+      if (!reviewApprovalEmail) {
+        console.error(`review_approval_email is not set for facility_id: ${typedReviewCheck.facility_id}`)
+        // review_checks.statusをfailedに更新
+        await supabase
+          .from('review_checks')
+          .update({ status: 'failed' })
+          .eq('id', typedReviewCheck.id)
+
+        return new Response(
+          JSON.stringify({ success: false, status: 'confirmed', error: 'review_approval_email not set' }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
-
-        if (emailSent) {
-          console.log(`Review notification email sent to: ${confirmEmail}`)
-        } else {
-          console.error(`Failed to send review notification email to: ${confirmEmail}`)
-        }
-      } else {
-        console.log('No confirm_email set for facility')
       }
+
+      // 施設承認依頼メールを送信
+      const emailSent = await sendFacilityApprovalRequestEmail(
+        reviewApprovalEmail,
+        typedReviewCheck.id,
+        typedReviewCheck.facility_approval_token,
+        typedReviewCheck.reviewer_name,
+        facilityDetail.name,
+        reviewUrl
+      )
+
+      if (!emailSent) {
+        console.error(`Failed to send facility approval email for review_check_id: ${typedReviewCheck.id}`)
+        // review_checks.statusをfailedに更新
+        await supabase
+          .from('review_checks')
+          .update({ status: 'failed' })
+          .eq('id', typedReviewCheck.id)
+
+        return new Response(
+          JSON.stringify({ success: false, status: 'confirmed', error: 'Failed to send facility approval email' }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      return new Response(
+        JSON.stringify({ success: true, status: 'confirmed' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    } else {
+      // failedに更新
+      await supabase
+        .from('review_check_tasks')
+        .update({ status: 'failed', executed_at: new Date().toISOString(), error_message: 'Review not found' })
+        .eq('id', review_check_task_id)
+
+      // エラーメール送信（アンケート送信者へ）
+      await sendErrorNotificationEmail(
+        typedReviewCheck.email,
+        typedReviewCheck.reviewer_name,
+        facilityDetail.name
+      )
+
+      // 両方のタスクがfailedかチェック
+      const { data: allTasks } = await supabase
+        .from('review_check_tasks')
+        .select('status')
+        .eq('review_check_id', typedTask.review_check_id)
+
+      const allFailed = allTasks?.every((t: { status: string }) => t.status === 'failed')
+      if (allFailed) {
+        // review_checks.statusをfailedに更新
+        await supabase
+          .from('review_checks')
+          .update({ status: 'failed' })
+          .eq('id', typedReviewCheck.id)
+      }
+
+      return new Response(
+        JSON.stringify({ success: true, status: 'failed' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
-
-    return new Response(
-      JSON.stringify({ success: true, is_sent: matched }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
   } catch (error) {
     console.error('Error in check-review function:', error)
     return new Response(

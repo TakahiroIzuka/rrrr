@@ -1,37 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-// Edge Functionを非同期で呼び出し
-async function triggerReviewCheck(reviewCheckId: number) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.error('Missing Supabase environment variables')
-    return
-  }
-
-  try {
-    const response = await fetch(
-      `${supabaseUrl}/functions/v1/check-review`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseAnonKey}`,
-        },
-        body: JSON.stringify({ review_check_id: reviewCheckId }),
-      }
-    )
-
-    if (!response.ok) {
-      console.error('Edge Function call failed:', response.statusText)
-    }
-  } catch (error) {
-    console.error('Error calling Edge Function:', error)
-  }
-}
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -48,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient()
 
-    // review_checksにレコードを登録（is_sent: falseで登録）
+    // review_checksにレコードを登録（status: 'pending'で登録、トークンは自動生成）
     const { data, error } = await supabase
       .from('review_checks')
       .insert({
@@ -58,6 +27,7 @@ export async function POST(request: NextRequest) {
         email,
         review_star,
         is_sent: false,
+        status: 'pending',
       })
       .select()
       .single()
@@ -70,8 +40,31 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Edge Functionを非同期で呼び出し（レスポンスを待たない）
-    triggerReviewCheck(data.id)
+    // review_check_tasksに2レコード挿入（1時間後と1日後）
+    const now = new Date()
+    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000)
+    const oneDayLater = new Date(now.getTime() + 24 * 60 * 60 * 1000)
+
+    const { error: tasksError } = await supabase
+      .from('review_check_tasks')
+      .insert([
+        {
+          review_check_id: data.id,
+          scheduled_at: oneHourLater.toISOString(),
+          status: 'pending',
+        },
+        {
+          review_check_id: data.id,
+          scheduled_at: oneDayLater.toISOString(),
+          status: 'pending',
+        },
+      ])
+
+    if (tasksError) {
+      console.error('Error inserting review check tasks:', tasksError)
+      // タスク作成に失敗した場合でも、review_checkは作成されているのでエラーは返さない
+      // ただしログは残す
+    }
 
     return NextResponse.json({ data }, { status: 201 })
   } catch (error) {
