@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || 'admin@example.com').split(',').map(email => email.trim()).filter(Boolean)
-
 // 管理者承認依頼メール送信（Supabase Edge Function経由）
 async function sendAdminApprovalRequestEmail(
   reviewCheckId: number,
@@ -29,7 +27,6 @@ async function sendAdminApprovalRequestEmail(
           'Authorization': `Bearer ${supabaseAnonKey}`,
         },
         body: JSON.stringify({
-          adminEmails: ADMIN_EMAILS,
           reviewCheckId,
           adminApprovalToken,
           reviewerName,

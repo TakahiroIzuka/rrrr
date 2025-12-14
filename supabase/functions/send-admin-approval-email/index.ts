@@ -107,7 +107,6 @@ serve(async (req) => {
 
   try {
     const {
-      adminEmails,
       reviewCheckId,
       adminApprovalToken,
       reviewerName,
@@ -115,10 +114,15 @@ serve(async (req) => {
       reviewUrl
     } = await req.json()
 
-    if (!adminEmails || !Array.isArray(adminEmails) || adminEmails.length === 0) {
+    // 環境変数からADMIN_EMAILSを取得
+    const adminEmailsEnv = Deno.env.get('ADMIN_EMAILS') || ''
+    const adminEmails = adminEmailsEnv.split(',').map(email => email.trim()).filter(Boolean)
+
+    if (adminEmails.length === 0) {
+      console.error('ADMIN_EMAILS environment variable is not set or empty')
       return new Response(
-        JSON.stringify({ error: 'adminEmails is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'ADMIN_EMAILS is not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
