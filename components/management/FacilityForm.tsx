@@ -28,6 +28,7 @@ interface FacilityDetail {
   address?: string
   tel?: string
   google_map_url?: string
+  google_place_id?: string
 }
 
 interface InitialFacilityData {
@@ -55,6 +56,7 @@ interface DetailUpdateData {
   address?: string
   tel?: string
   google_map_url?: string
+  google_place_id?: string
 }
 
 interface FacilityImage {
@@ -164,6 +166,7 @@ export default function FacilityForm({
   const [address, setAddress] = useState(detail.address || '')
   const [tel, setTel] = useState(detail.tel || '')
   const [googleMapUrl, setGoogleMapUrl] = useState(detail.google_map_url || '')
+  const [googlePlaceId, setGooglePlaceId] = useState(detail.google_place_id || '')
 
   // Cleanup object URLs on unmount
   useEffect(() => {
@@ -321,9 +324,10 @@ export default function FacilityForm({
           tel: tel || undefined
         }
 
-        // Only update google_map_url if user is admin
+        // Only update google_map_url and google_place_id if user is admin
         if (currentUserType === 'admin') {
           detailUpdateData.google_map_url = googleMapUrl
+          detailUpdateData.google_place_id = googlePlaceId || undefined
         }
 
         const { error: detailError } = await supabase
@@ -370,7 +374,8 @@ export default function FacilityForm({
             postal_code: postalCode || undefined,
             address: address || undefined,
             tel: tel || undefined,
-            google_map_url: googleMapUrl
+            google_map_url: googleMapUrl,
+            google_place_id: googlePlaceId || undefined
           })
 
         if (detailError) throw detailError
@@ -752,18 +757,37 @@ export default function FacilityForm({
             </div>
 
             {currentUserType === 'admin' && (
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Google Map URL <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="url"
-                  required
-                  value={googleMapUrl}
-                  onChange={(e) => setGoogleMapUrl(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Google Map URL <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="url"
+                    required
+                    value={googleMapUrl}
+                    onChange={(e) => setGoogleMapUrl(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Google Place ID <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={googlePlaceId}
+                    onChange={(e) => setGooglePlaceId(e.target.value)}
+                    placeholder="ChIJ..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Place Details API用のPlace ID（例: ChIJN1t_tDeuEmsRUsoyG83frY4）
+                  </p>
+                </div>
+              </>
             )}
           </div>
         </div>
