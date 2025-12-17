@@ -597,28 +597,40 @@ export default function FacilityForm({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 評価（星）
               </label>
-              <input
-                type="number"
-                step="0.1"
-                min="0"
-                max="5"
-                value={star}
-                onChange={(e) => setStar(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              {initialData ? (
+                <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700">
+                  {star || '-'}
+                </div>
+              ) : (
+                <input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="5"
+                  value={star}
+                  onChange={(e) => setStar(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              )}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 レビュー数
               </label>
-              <input
-                type="number"
-                min="0"
-                value={userReviewCount}
-                onChange={(e) => setUserReviewCount(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              {initialData ? (
+                <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700">
+                  {userReviewCount || '-'}
+                </div>
+              ) : (
+                <input
+                  type="number"
+                  min="0"
+                  value={userReviewCount}
+                  onChange={(e) => setUserReviewCount(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              )}
             </div>
 
             <div>
