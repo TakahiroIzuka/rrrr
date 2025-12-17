@@ -10,6 +10,11 @@ interface ServiceData {
   name: string
 }
 
+interface ReviewCheckTaskData {
+  id: number
+  status: string
+}
+
 interface ReviewCheckData {
   id: number
   facility_id: number
@@ -26,12 +31,40 @@ interface ReviewCheckData {
     service_id: number
     detail?: { name: string }[]
   }
+  tasks?: ReviewCheckTaskData[]
 }
 
 interface ReviewChecksListProps {
   services: ServiceData[]
   reviewChecks: ReviewCheckData[]
   showNewButton?: boolean
+}
+
+// 投稿確認ステータスを計算する関数
+function getConfirmationStatus(tasks?: ReviewCheckTaskData[]): { label: string; color: string } {
+  if (!tasks || tasks.length === 0) {
+    return { label: '確認中', color: 'bg-yellow-100 text-yellow-800' }
+  }
+
+  const statuses = tasks.map(t => t.status)
+
+  // どちらかがconfirmedの場合 => 成功
+  if (statuses.some(s => s === 'confirmed')) {
+    return { label: '成功', color: 'bg-green-100 text-green-800' }
+  }
+
+  // 両方がalready_confirmedの場合 => 既出
+  if (statuses.length >= 2 && statuses.every(s => s === 'already_confirmed')) {
+    return { label: '既出', color: 'bg-blue-100 text-blue-800' }
+  }
+
+  // 両方がfailedの場合 => 失敗
+  if (statuses.length >= 2 && statuses.every(s => s === 'failed')) {
+    return { label: '失敗', color: 'bg-red-100 text-red-800' }
+  }
+
+  // 上記以外 => 確認中
+  return { label: '確認中', color: 'bg-yellow-100 text-yellow-800' }
 }
 
 export default function ReviewChecksList({ services, reviewChecks, showNewButton = false }: ReviewChecksListProps) {
@@ -145,6 +178,7 @@ export default function ReviewChecksList({ services, reviewChecks, showNewButton
                   <th className="px-4 py-3 text-left font-medium text-gray-700">Googleアカウント</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">メール</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">評価</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">投稿確認</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">承認済</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">ギフト送付</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">登録日</th>
@@ -171,6 +205,16 @@ export default function ReviewChecksList({ services, reviewChecks, showNewButton
                     <td className="px-4 py-3">{review.email || '-'}</td>
                     <td className="px-4 py-3">
                       {review.review_star ? `${review.review_star}` : '-'}
+                    </td>
+                    <td className="px-4 py-3">
+                      {(() => {
+                        const status = getConfirmationStatus(review.tasks)
+                        return (
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${status.color}`}>
+                            {status.label}
+                          </span>
+                        )
+                      })()}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${

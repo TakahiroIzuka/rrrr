@@ -15,6 +15,11 @@ interface Facility {
   detail?: { name: string }[]
 }
 
+interface ReviewCheckTaskData {
+  id: number
+  status: string
+}
+
 interface ReviewCheckData {
   id?: number
   facility_id?: number
@@ -27,18 +32,57 @@ interface ReviewCheckData {
   is_giftcode_sent?: boolean
 }
 
+// 投稿確認ステータスの選択肢
+const CONFIRMATION_STATUS_OPTIONS = [
+  { value: 'pending', label: '確認中' },
+  { value: 'confirmed', label: '成功' },
+  { value: 'already_confirmed', label: '既出' },
+  { value: 'failed', label: '失敗' },
+] as const
+
+type ConfirmationStatusValue = typeof CONFIRMATION_STATUS_OPTIONS[number]['value']
+
+// tasksから投稿確認ステータスを計算
+function getConfirmationStatusFromTasks(tasks?: ReviewCheckTaskData[]): ConfirmationStatusValue {
+  if (!tasks || tasks.length === 0) {
+    return 'pending'
+  }
+
+  const statuses = tasks.map(t => t.status)
+
+  // どちらかがconfirmedの場合 => 成功
+  if (statuses.some(s => s === 'confirmed')) {
+    return 'confirmed'
+  }
+
+  // 両方がalready_confirmedの場合 => 既出
+  if (statuses.length >= 2 && statuses.every(s => s === 'already_confirmed')) {
+    return 'already_confirmed'
+  }
+
+  // 両方がfailedの場合 => 失敗
+  if (statuses.length >= 2 && statuses.every(s => s === 'failed')) {
+    return 'failed'
+  }
+
+  // 上記以外 => 確認中
+  return 'pending'
+}
+
 interface ReviewCheckFormProps {
   services: Service[]
   facilities: Facility[]
   initialData?: ReviewCheckData
   defaultServiceId?: number
+  tasks?: ReviewCheckTaskData[]
 }
 
 export default function ReviewCheckForm({
   services,
   facilities,
   initialData,
-  defaultServiceId
+  defaultServiceId,
+  tasks
 }: ReviewCheckFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -65,6 +109,9 @@ export default function ReviewCheckForm({
   const [reviewStar, setReviewStar] = useState(initialData?.review_star || '')
   const [isApproved, setIsApproved] = useState(initialData?.is_approved || false)
   const [isGiftcodeSent, setIsGiftcodeSent] = useState(initialData?.is_giftcode_sent || false)
+  const [confirmationStatus, setConfirmationStatus] = useState<ConfirmationStatusValue>(
+    getConfirmationStatusFromTasks(tasks)
+  )
 
   // Filter facilities by selected service
   const filteredFacilities = facilities.filter(f => f.service_id === Number(serviceId))
@@ -105,6 +152,19 @@ export default function ReviewCheckForm({
           .eq('id', initialData.id)
 
         if (error) throw error
+
+        // Update tasks status if tasks exist
+        if (tasks && tasks.length > 0) {
+          const { error: tasksError } = await supabase
+            .from('review_check_tasks')
+            .update({ status: confirmationStatus })
+            .eq('review_check_id', initialData.id)
+
+          if (tasksError) {
+            console.error('Error updating tasks:', tasksError)
+          }
+        }
+
         alert('クチコミを更新しました')
       } else {
         // Insert new
@@ -222,6 +282,31 @@ export default function ReviewCheckForm({
             />
           </div>
         </div>
+
+        {/* Confirmation Status (edit only) */}
+        {initialData?.id && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              投稿確認
+            </label>
+            <select
+              value={confirmationStatus}
+              onChange={(e) => setConfirmationStatus(e.target.value as ConfirmationStatusValue)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {CONFIRMATION_STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            {(!tasks || tasks.length === 0) && (
+              <p className="mt-1 text-xs text-gray-500">
+                ※ タスクが未作成のため、保存しても反映されません
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Status Checkboxes */}
         <div>

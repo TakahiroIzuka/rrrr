@@ -28,7 +28,8 @@ export default async function ReviewsPage() {
           id,
           service_id,
           detail:facility_details!facility_id(name)
-        )
+        ),
+        tasks:review_check_tasks(id, status)
       `)
       .order('id', { ascending: false })
   ])

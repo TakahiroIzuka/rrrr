@@ -14,7 +14,8 @@ export default async function EditReviewPage({ params }: EditReviewPageProps) {
   const [
     { data: reviewCheck, error },
     { data: services },
-    { data: facilities }
+    { data: facilities },
+    { data: tasks }
   ] = await Promise.all([
     supabase
       .from('review_checks')
@@ -29,7 +30,11 @@ export default async function EditReviewPage({ params }: EditReviewPageProps) {
         service_id,
         detail:facility_details!facility_id(name)
       `)
-      .order('id', { ascending: false })
+      .order('id', { ascending: false }),
+    supabase
+      .from('review_check_tasks')
+      .select('id, status')
+      .eq('review_check_id', id)
   ])
 
   if (error || !reviewCheck) {
@@ -43,6 +48,7 @@ export default async function EditReviewPage({ params }: EditReviewPageProps) {
         services={services || []}
         facilities={facilities || []}
         initialData={reviewCheck}
+        tasks={tasks || []}
       />
     </div>
   )
