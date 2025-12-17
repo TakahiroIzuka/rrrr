@@ -179,8 +179,8 @@ export default function ReviewChecksList({ services, reviewChecks, showNewButton
                   <th className="px-4 py-3 text-left font-medium text-gray-700">メール</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">評価</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">投稿確認</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700">承認済</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700">ギフト送付</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">施設承認</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">コード送信</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">登録日</th>
                   <th className="px-4 py-3 text-right font-medium text-gray-700">削除</th>
                 </tr>
@@ -220,14 +220,14 @@ export default function ReviewChecksList({ services, reviewChecks, showNewButton
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                         review.is_approved ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                       }`}>
-                        {review.is_approved ? 'Yes' : 'No'}
+                        {review.is_approved ? '承認済み' : '未承認'}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                         review.is_giftcode_sent ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                       }`}>
-                        {review.is_giftcode_sent ? 'Yes' : 'No'}
+                        {review.is_giftcode_sent ? '送信済' : '未送信'}
                       </span>
                     </td>
                     <td className="px-4 py-3">
