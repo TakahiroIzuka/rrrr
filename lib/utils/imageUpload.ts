@@ -278,8 +278,8 @@ async function resizeImages(
       thumbnailPath,
       originalWidth: 600,
       originalHeight: 400,
-      thumbnailWidth: 225,
-      thumbnailHeight: 150,
+      thumbnailWidth: 350,
+      thumbnailHeight: 234,
     },
   });
 

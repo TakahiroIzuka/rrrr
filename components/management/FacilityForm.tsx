@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { uploadFacilityImageComplete } from '@/lib/utils/imageUpload'
-import Image from 'next/image'
 
 interface MasterData {
   id: number
