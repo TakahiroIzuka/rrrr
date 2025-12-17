@@ -186,6 +186,13 @@ export default function FacilityForm({
       return
     }
 
+    // Validate supported image formats (JPEG, PNG, GIF, TIFF only)
+    const supportedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/tiff']
+    if (!supportedTypes.includes(file.type)) {
+      alert('サポートされていない画像形式です。JPEG、PNG、GIF、TIFF形式の画像を選択してください。')
+      return
+    }
+
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       alert('ファイルサイズは5MB以下にしてください')
@@ -823,11 +830,10 @@ export default function FacilityForm({
                   {existingImage ? (
                       <div className="space-y-2">
                         <div className="aspect-video bg-gray-100 rounded overflow-hidden relative">
-                          <Image
-                            src={existingImage.publicUrl}
+                          <img
+                            src={existingImage.thumbnailUrl || existingImage.publicUrl}
                             alt={`画像 ${displayOrder}`}
-                            fill
-                            className="object-cover"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                         <div className="flex gap-2">
