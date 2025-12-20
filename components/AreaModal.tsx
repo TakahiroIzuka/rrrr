@@ -69,42 +69,56 @@ export default function AreaModal({ isOpen, onClose, areasGrouped }: AreaModalPr
               {areasGrouped.map((group) => (
                 <div key={group.prefecture.id}>
                   {/* Prefecture Header */}
-                  <Link
-                    href={`/${serviceCode}/prefectures/${group.prefecture.id}`}
-                    className="flex items-center gap-2 mb-3 group"
-                    onClick={onClose}
-                  >
-                    <h3
-                      className="text-lg font-bold group-hover:opacity-70 transition-opacity"
-                      style={{ color: 'rgb(165, 153, 126)' }}
+                  <div className="relative mb-5">
+                    <Link
+                      href={`/${serviceCode}/prefectures/${group.prefecture.id}`}
+                      className="w-full px-4 py-2 md:py-2.5 bg-white rounded-lg font-medium transition-colors hover:bg-gray-50 text-sm md:text-base flex items-center justify-center gap-2"
+                      style={{
+                        border: '2.5px solid rgb(165, 153, 126)',
+                        color: 'rgb(165, 153, 126)'
+                      }}
+                      onClick={onClose}
                     >
                       {group.prefecture.name}
-                    </h3>
-                    <span
-                      className="flex items-center justify-center w-5 h-5 rounded-full flex-shrink-0 relative group-hover:opacity-70 transition-opacity"
-                      style={{ backgroundColor: 'rgb(165, 153, 126)' }}
-                    >
-                      <span className="text-white font-bold absolute" style={{ fontSize: '18px', top: '50%', left: '50%', transform: 'translate(-50%, -54%)' }}>›</span>
-                    </span>
-                  </Link>
+                      <span
+                        className="flex items-center justify-center w-5 h-5 rounded-full"
+                        style={{ backgroundColor: 'rgb(165, 153, 126)' }}
+                      >
+                        <span className="font-bold text-xl leading-none text-white" style={{ transform: 'translate(0.5px, -2px)' }}>›</span>
+                      </span>
+                    </Link>
+                    {/* 下向き三角形 */}
+                    <div
+                      className="absolute left-1/2 -translate-x-1/2 -bottom-3 w-0 h-0 border-l-[14px] border-r-[14px] border-t-[14px] border-l-transparent border-r-transparent"
+                      style={{ borderTopColor: 'rgb(165, 153, 126)' }}
+                    ></div>
+                  </div>
 
                   {/* Areas Grid */}
-                  <div className="flex flex-wrap gap-2">
-                    {group.areas.map((area) => (
-                      <Link
-                        key={area.id}
-                        href={`/${serviceCode}/prefectures/${group.prefecture.id}/areas/${area.id}`}
-                        className="px-3 py-2 border rounded-lg transition-colors hover:bg-gray-50"
-                        style={{
-                          borderColor: 'rgb(165, 153, 126)',
-                          color: 'rgb(165, 153, 126)'
-                        }}
-                        onClick={onClose}
-                      >
-                        <span className="font-medium text-sm">{area.name}</span>
-                      </Link>
-                    ))}
-                  </div>
+                  {group.areas.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2 px-4">
+                      {group.areas.map((area) => (
+                        <Link
+                          key={area.id}
+                          href={`/${serviceCode}/prefectures/${group.prefecture.id}/areas/${area.id}`}
+                          className="px-2 py-1.5 border rounded-lg transition-colors hover:bg-gray-50 flex items-center justify-center gap-1"
+                          style={{
+                            borderColor: 'rgb(165, 153, 126)',
+                            color: 'rgb(165, 153, 126)'
+                          }}
+                          onClick={onClose}
+                        >
+                          <span className="font-medium text-sm">{area.name}</span>
+                          <span
+                            className="flex items-center justify-center w-4 h-4 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: 'rgb(165, 153, 126)' }}
+                          >
+                            <span className="font-bold text-base leading-none text-white" style={{ transform: 'translate(0.5px, -1.5px)' }}>›</span>
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

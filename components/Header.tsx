@@ -192,9 +192,9 @@ export default function Header({
 
         const serviceId = serviceData[0].id
 
-        // Get facilities with area_id for this service
+        // Get facilities for this service (with or without area_id)
         const facilitiesRes = await fetch(
-          `${supabaseUrl}/rest/v1/facilities?service_id=eq.${serviceId}&area_id=not.is.null&select=area_id,prefecture_id`,
+          `${supabaseUrl}/rest/v1/facilities?service_id=eq.${serviceId}&select=area_id,prefecture_id`,
           {
             headers: {
               'apikey': supabaseKey,
@@ -209,21 +209,30 @@ export default function Header({
           return
         }
 
-        // Get unique area_ids and prefecture_ids
-        const areaIds = [...new Set(facilities.map((f: { area_id: number }) => f.area_id))]
-        const prefectureIds = [...new Set(facilities.map((f: { prefecture_id: number }) => f.prefecture_id))]
+        // Get unique area_ids and prefecture_ids (filter out nulls)
+        const areaIds = [...new Set(facilities.map((f: { area_id: number | null }) => f.area_id).filter((id): id is number => id !== null))]
+        const prefectureIds = [...new Set(facilities.map((f: { prefecture_id: number | null }) => f.prefecture_id).filter((id): id is number => id !== null))]
 
-        // Fetch areas
-        const areasRes = await fetch(
-          `${supabaseUrl}/rest/v1/areas?id=in.(${areaIds.join(',')})&order=id.asc`,
-          {
-            headers: {
-              'apikey': supabaseKey,
-              'Content-Type': 'application/json'
+        // If no prefectures, return empty
+        if (prefectureIds.length === 0) {
+          setAreasGrouped([])
+          return
+        }
+
+        // Fetch areas (only if there are area_ids)
+        let areas: Area[] = []
+        if (areaIds.length > 0) {
+          const areasRes = await fetch(
+            `${supabaseUrl}/rest/v1/areas?id=in.(${areaIds.join(',')})&order=id.asc`,
+            {
+              headers: {
+                'apikey': supabaseKey,
+                'Content-Type': 'application/json'
+              }
             }
-          }
-        )
-        const areas = await areasRes.json()
+          )
+          areas = await areasRes.json()
+        }
 
         // Fetch prefectures
         const prefecturesRes = await fetch(
@@ -237,11 +246,11 @@ export default function Header({
         )
         const prefectures = await prefecturesRes.json()
 
-        // Group areas by prefecture
+        // Group areas by prefecture (include prefectures without areas)
         const grouped = prefectures.map((prefecture: Prefecture) => ({
           prefecture,
           areas: areas.filter((area: Area) => area.prefecture_id === prefecture.id)
-        })).filter((group: AreasGrouped) => group.areas.length > 0)
+        }))
 
         setAreasGrouped(grouped)
       })
