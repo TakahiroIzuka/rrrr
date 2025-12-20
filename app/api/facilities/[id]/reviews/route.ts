@@ -1,6 +1,17 @@
 import { NextResponse } from 'next/server'
 import { createAnonClient } from '@/utils/supabase/server'
 
+interface FormattedReview {
+  reviewerName: string
+  text: string
+  stars: number
+  publishedAt: string
+  reviewImageUrls: string[]
+  reviewUrl: string | null
+  reviewerPhotoUrl: string | null
+  reviewerUrl: string | null
+}
+
 interface ApifyReview {
   name?: string
   reviewerName?: string
@@ -16,19 +27,82 @@ interface ApifyReview {
   [key: string]: unknown
 }
 
-interface FormattedReview {
-  reviewerName: string
-  text: string
-  stars: number
-  publishedAt: string
-  reviewImageUrls: string[]
-  reviewUrl: string | null
-  reviewerPhotoUrl: string | null
-  reviewerUrl: string | null
+interface GooglePlacesReview {
+  name?: string
+  relativePublishTimeDescription?: string
+  rating?: number
+  text?: {
+    text?: string
+    languageCode?: string
+  }
+  originalText?: {
+    text?: string
+    languageCode?: string
+  }
+  authorAttribution?: {
+    displayName?: string
+    uri?: string
+    photoUri?: string
+  }
+  publishTime?: string
 }
 
-// Google MapクチコミをApifyから取得
-async function fetchGoogleMapReviews(googleMapUrl: string): Promise<ApifyReview[]> {
+interface GooglePlacesResponse {
+  reviews?: GooglePlacesReview[]
+}
+
+// Google Places API (New) からレビューを取得
+async function fetchGooglePlacesReviews(placeId: string): Promise<FormattedReview[]> {
+  const apiKey = process.env.GOOGLE_PLACES_API_KEY
+
+  if (!placeId || !apiKey) {
+    console.log('Missing placeId or GOOGLE_PLACES_API_KEY')
+    return []
+  }
+
+  try {
+    const response = await fetch(
+      `https://places.googleapis.com/v1/places/${placeId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': apiKey,
+          'X-Goog-FieldMask': 'reviews',
+        },
+      }
+    )
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`Google Places API error: ${response.status} - ${errorText}`)
+      return []
+    }
+
+    const data: GooglePlacesResponse = await response.json()
+
+    if (!data.reviews || data.reviews.length === 0) {
+      return []
+    }
+
+    return data.reviews.map(review => ({
+      reviewerName: review.authorAttribution?.displayName || '匿名',
+      text: review.originalText?.text || review.text?.text || '',
+      stars: review.rating || 0,
+      publishedAt: review.publishTime || '',
+      reviewImageUrls: [],
+      reviewUrl: null,
+      reviewerPhotoUrl: review.authorAttribution?.photoUri || null,
+      reviewerUrl: review.authorAttribution?.uri || null,
+    }))
+  } catch (e) {
+    console.error('fetchGooglePlacesReviews raised error:', e)
+    return []
+  }
+}
+
+// Apifyからレビューを取得（最大50件）
+async function fetchApifyReviews(googleMapUrl: string): Promise<FormattedReview[]> {
   const apifyToken = process.env.APIFY_TOKEN
 
   if (!googleMapUrl || !apifyToken) {
@@ -84,11 +158,20 @@ async function fetchGoogleMapReviews(googleMapUrl: string): Promise<ApifyReview[
     const itemsResponse = await fetch(
       `https://api.apify.com/v2/datasets/${datasetId}/items?token=${apifyToken}`
     )
-    const items = await itemsResponse.json()
+    const items: ApifyReview[] = await itemsResponse.json()
 
-    return items as ApifyReview[]
+    return items.map(review => ({
+      reviewerName: review.name || review.reviewerName || '匿名',
+      text: review.text || '',
+      stars: review.stars || 0,
+      publishedAt: review.publishedAtDate || '',
+      reviewImageUrls: review.reviewImageUrls || [],
+      reviewUrl: review.reviewUrl || null,
+      reviewerPhotoUrl: review.reviewerPhotoUrl || null,
+      reviewerUrl: review.reviewerUrl || null,
+    }))
   } catch (e) {
-    console.error('fetchGoogleMapReviews raised error:', e)
+    console.error('fetchApifyReviews raised error:', e)
     return []
   }
 }
@@ -100,39 +183,39 @@ export async function GET(
   try {
     const { id } = await params
     const facilityId = parseInt(id)
+    const { searchParams } = new URL(request.url)
+    const source = searchParams.get('source') || 'places' // 'places' or 'apify'
 
     if (isNaN(facilityId)) {
       return NextResponse.json({ error: 'Invalid facility ID' }, { status: 400 })
     }
 
-    // Get facility's google_map_url
     const supabase = createAnonClient()
     const { data: facilityDetail, error } = await supabase
       .from('facility_details')
-      .select('google_map_url')
+      .select('google_place_id, google_map_url')
       .eq('facility_id', facilityId)
       .single()
 
-    if (error || !facilityDetail?.google_map_url) {
-      return NextResponse.json({ error: 'Facility not found or no Google Map URL' }, { status: 404 })
+    if (error || !facilityDetail) {
+      return NextResponse.json({ error: 'Facility not found' }, { status: 404 })
     }
 
-    // Fetch reviews from Apify
-    const apifyReviews = await fetchGoogleMapReviews(facilityDetail.google_map_url)
+    let reviews: FormattedReview[] = []
 
-    // Format reviews for frontend
-    const reviews: FormattedReview[] = apifyReviews.map(review => ({
-      reviewerName: review.name || review.reviewerName || '匿名',
-      text: review.text || '',
-      stars: review.stars || 0,
-      publishedAt: review.publishedAtDate || '',
-      reviewImageUrls: review.reviewImageUrls || [],
-      reviewUrl: review.reviewUrl || null,
-      reviewerPhotoUrl: review.reviewerPhotoUrl || null,
-      reviewerUrl: review.reviewerUrl || null,
-    }))
+    if (source === 'apify') {
+      // Apifyから取得（時間がかかる）
+      if (facilityDetail.google_map_url) {
+        reviews = await fetchApifyReviews(facilityDetail.google_map_url)
+      }
+    } else {
+      // Google Places APIから取得（高速）
+      if (facilityDetail.google_place_id) {
+        reviews = await fetchGooglePlacesReviews(facilityDetail.google_place_id)
+      }
+    }
 
-    return NextResponse.json({ reviews })
+    return NextResponse.json({ reviews, source })
   } catch (error) {
     console.error('Error fetching reviews:', error)
     return NextResponse.json({ error: 'Failed to fetch reviews' }, { status: 500 })

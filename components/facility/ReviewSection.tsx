@@ -160,6 +160,7 @@ function ReviewCardSkeleton() {
 export default function ReviewSection({ facility, genreColor }: ReviewSectionProps) {
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -167,19 +168,32 @@ export default function ReviewSection({ facility, genreColor }: ReviewSectionPro
       try {
         setLoading(true)
         setError(null)
-        const response = await fetch(`/api/facilities/${facility.id}/reviews`)
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch reviews')
+        // Phase 1: Google Places APIから高速に5件取得
+        const placesResponse = await fetch(`/api/facilities/${facility.id}/reviews?source=places`)
+        if (placesResponse.ok) {
+          const placesData = await placesResponse.json()
+          if (placesData.reviews && placesData.reviews.length > 0) {
+            setReviews(placesData.reviews)
+          }
         }
+        setLoading(false)
 
-        const data = await response.json()
-        setReviews(data.reviews || [])
+        // Phase 2: Apifyから追加レビューを取得（バックグラウンド）
+        setLoadingMore(true)
+        const apifyResponse = await fetch(`/api/facilities/${facility.id}/reviews?source=apify`)
+        if (apifyResponse.ok) {
+          const apifyData = await apifyResponse.json()
+          if (apifyData.reviews && apifyData.reviews.length > 0) {
+            setReviews(apifyData.reviews)
+          }
+        }
+        setLoadingMore(false)
       } catch (err) {
         console.error('Error fetching reviews:', err)
         setError('クチコミの取得に失敗しました')
-      } finally {
         setLoading(false)
+        setLoadingMore(false)
       }
     }
 
@@ -225,6 +239,17 @@ export default function ReviewSection({ facility, genreColor }: ReviewSectionPro
           </div>
         )}
       </div>
+
+      {/* Apify読み込み中のスピナー */}
+      {loadingMore && (
+        <div className="flex items-center justify-center gap-2 py-4 text-gray-500">
+          <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span className="text-sm">追加のクチコミを読み込み中...</span>
+        </div>
+      )}
     </div>
   )
 }
