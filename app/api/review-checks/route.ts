@@ -39,10 +39,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // review_check_tasksに2レコード挿入（1分後と3分後）※テスト用
+    // review_check_tasksに2レコード挿入（1分後と10分後）
     const now = new Date()
     const oneMinuteLater = new Date(now.getTime() + 1 * 60 * 1000)
-    const threeMinutesLater = new Date(now.getTime() + 3 * 60 * 1000)
+    const tenMinutesLater = new Date(now.getTime() + 10 * 60 * 1000)
 
     const { error: tasksError } = await supabase
       .from('review_check_tasks')
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         },
         {
           review_check_id: data.id,
-          scheduled_at: threeMinutesLater.toISOString(),
+          scheduled_at: tenMinutesLater.toISOString(),
           status: 'pending',
         },
       ])
