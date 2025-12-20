@@ -22,6 +22,10 @@ interface HomeClientProps {
   genreId?: number
   genreName?: string
   genreCode?: string
+  prefectureId?: number
+  prefectureName?: string
+  areaId?: number
+  areaName?: string
   imagesMap?: Record<number, FacilityImage[]>
 }
 
@@ -29,6 +33,8 @@ export default function HomeClient({
   facilities,
   genreId,
   genreName,
+  prefectureId,
+  areaId,
   imagesMap = {},
 }: HomeClientProps) {
   const [filteredFacilities, setFilteredFacilities] = useState<Facility[]>(facilities)

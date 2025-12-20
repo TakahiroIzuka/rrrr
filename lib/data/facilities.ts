@@ -258,6 +258,188 @@ export async function fetchGenreById(id: string) {
 }
 
 /**
+ * Fetch prefecture by ID
+ */
+export async function fetchPrefectureById(id: string) {
+  const supabase = await createClient()
+
+  const { data: prefecture, error } = await supabase
+    .from('prefectures')
+    .select('id, name')
+    .eq('id', id)
+    .single()
+
+  return { prefecture, error }
+}
+
+/**
+ * Fetch area by ID (includes prefecture info)
+ */
+export async function fetchAreaById(id: string) {
+  const supabase = await createClient()
+
+  const { data: area, error } = await supabase
+    .from('areas')
+    .select('id, name, prefecture:prefectures(id, name)')
+    .eq('id', id)
+    .single()
+
+  return { area, error }
+}
+
+/**
+ * Fetch facilities by prefecture ID and service code
+ */
+export async function fetchFacilitiesByPrefecture(prefectureId: string, serviceCode: string): Promise<{ facilities: Facility[] | null; error: Error | null }> {
+  const serviceId = await getServiceId(serviceCode)
+
+  if (!serviceId) {
+    return { facilities: [], error: null }
+  }
+
+  const supabase = await createClient()
+  const { data: facilitiesData, error } = await supabase
+    .from('facilities')
+    .select(FACILITY_BASE_QUERY)
+    .eq('prefecture_id', prefectureId)
+    .eq('service_id', serviceId)
+    .order('id', { ascending: true })
+
+  if (error) {
+    return { facilities: null, error }
+  }
+
+  const facilities = facilitiesData?.map(transformFacilityDetail) || []
+  return { facilities, error: null }
+}
+
+/**
+ * Fetch facilities by area ID and service code
+ */
+export async function fetchFacilitiesByArea(areaId: string, serviceCode: string): Promise<{ facilities: Facility[] | null; error: Error | null }> {
+  const serviceId = await getServiceId(serviceCode)
+
+  if (!serviceId) {
+    return { facilities: [], error: null }
+  }
+
+  const supabase = await createClient()
+  const { data: facilitiesData, error } = await supabase
+    .from('facilities')
+    .select(FACILITY_BASE_QUERY)
+    .eq('area_id', areaId)
+    .eq('service_id', serviceId)
+    .order('id', { ascending: true })
+
+  if (error) {
+    return { facilities: null, error }
+  }
+
+  const facilities = facilitiesData?.map(transformFacilityDetail) || []
+  return { facilities, error: null }
+}
+
+/**
+ * Fetch prefectures that have facilities for a given service
+ */
+export async function fetchPrefecturesWithFacilities(serviceCode: string) {
+  const serviceId = await getServiceId(serviceCode)
+
+  if (!serviceId) {
+    return { prefectures: [], error: null }
+  }
+
+  const supabase = createAnonClient()
+
+  // Get distinct prefecture_ids from facilities for this service
+  const { data: facilities, error: facilitiesError } = await supabase
+    .from('facilities')
+    .select('prefecture_id')
+    .eq('service_id', serviceId)
+    .not('prefecture_id', 'is', null)
+
+  if (facilitiesError) {
+    return { prefectures: [], error: facilitiesError }
+  }
+
+  const prefectureIds = [...new Set(facilities?.map(f => f.prefecture_id))]
+
+  if (prefectureIds.length === 0) {
+    return { prefectures: [], error: null }
+  }
+
+  // Fetch prefecture details
+  const { data: prefectures, error } = await supabase
+    .from('prefectures')
+    .select('id, name')
+    .in('id', prefectureIds)
+    .order('id', { ascending: true })
+
+  return { prefectures: prefectures || [], error }
+}
+
+/**
+ * Fetch areas grouped by prefecture that have facilities for a given service
+ */
+export async function fetchAreasWithFacilities(serviceCode: string) {
+  const serviceId = await getServiceId(serviceCode)
+
+  if (!serviceId) {
+    return { areasGrouped: [], error: null }
+  }
+
+  const supabase = createAnonClient()
+
+  // Get distinct area_ids from facilities for this service
+  const { data: facilities, error: facilitiesError } = await supabase
+    .from('facilities')
+    .select('area_id, prefecture_id')
+    .eq('service_id', serviceId)
+    .not('area_id', 'is', null)
+
+  if (facilitiesError) {
+    return { areasGrouped: [], error: facilitiesError }
+  }
+
+  const areaIds = [...new Set(facilities?.map(f => f.area_id))]
+  const prefectureIds = [...new Set(facilities?.map(f => f.prefecture_id))]
+
+  if (areaIds.length === 0) {
+    return { areasGrouped: [], error: null }
+  }
+
+  // Fetch area details with prefecture info
+  const { data: areas, error: areasError } = await supabase
+    .from('areas')
+    .select('id, name, prefecture_id')
+    .in('id', areaIds)
+    .order('id', { ascending: true })
+
+  if (areasError) {
+    return { areasGrouped: [], error: areasError }
+  }
+
+  // Fetch prefecture details
+  const { data: prefectures, error: prefecturesError } = await supabase
+    .from('prefectures')
+    .select('id, name')
+    .in('id', prefectureIds)
+    .order('id', { ascending: true })
+
+  if (prefecturesError) {
+    return { areasGrouped: [], error: prefecturesError }
+  }
+
+  // Group areas by prefecture
+  const areasGrouped = prefectures?.map(prefecture => ({
+    prefecture,
+    areas: areas?.filter(area => area.prefecture_id === prefecture.id) || []
+  })).filter(group => group.areas.length > 0) || []
+
+  return { areasGrouped, error: null }
+}
+
+/**
  * Fetch facility images by facility ID
  * Returns images sorted by display_order (1-5)
  */

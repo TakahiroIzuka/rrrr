@@ -15,6 +15,22 @@ interface Genre {
   code: string
 }
 
+interface Prefecture {
+  id: number
+  name: string
+}
+
+interface Area {
+  id: number
+  name: string
+  prefecture_id: number
+}
+
+interface AreasGrouped {
+  prefecture: Prefecture
+  areas: Area[]
+}
+
 interface GenreConfig {
   lineColor?: string
   color?: string
@@ -24,7 +40,7 @@ interface HeaderProps {
   lineColor?: string
   color?: string
   pageType?: 'top' | 'list' | 'detail' | 'genre-top'
-  labelText?: string
+  labelText?: string | string[]
   genreCode?: string
 }
 
@@ -83,6 +99,7 @@ export default function Header({
   const [isGenreModalOpen, setIsGenreModalOpen] = useState(false)
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false)
   const [genres, setGenres] = useState<Genre[]>([])
+  const [areasGrouped, setAreasGrouped] = useState<AreasGrouped[]>([])
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -151,6 +168,89 @@ export default function Header({
       })
   }, [serviceCode])
 
+  // Fetch areas grouped by prefecture on mount and when serviceCode changes
+  useEffect(() => {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl || !supabaseKey) {
+      return
+    }
+
+    // First, get the service ID for the current service code
+    fetch(`${supabaseUrl}/rest/v1/services?code=eq.${serviceCode}`, {
+      headers: {
+        'apikey': supabaseKey,
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(res => res.json())
+      .then(async (serviceData) => {
+        if (!serviceData || !Array.isArray(serviceData) || serviceData.length === 0) {
+          throw new Error('Service not found')
+        }
+
+        const serviceId = serviceData[0].id
+
+        // Get facilities with area_id for this service
+        const facilitiesRes = await fetch(
+          `${supabaseUrl}/rest/v1/facilities?service_id=eq.${serviceId}&area_id=not.is.null&select=area_id,prefecture_id`,
+          {
+            headers: {
+              'apikey': supabaseKey,
+              'Content-Type': 'application/json'
+            }
+          }
+        )
+        const facilities = await facilitiesRes.json()
+
+        if (!Array.isArray(facilities) || facilities.length === 0) {
+          setAreasGrouped([])
+          return
+        }
+
+        // Get unique area_ids and prefecture_ids
+        const areaIds = [...new Set(facilities.map((f: { area_id: number }) => f.area_id))]
+        const prefectureIds = [...new Set(facilities.map((f: { prefecture_id: number }) => f.prefecture_id))]
+
+        // Fetch areas
+        const areasRes = await fetch(
+          `${supabaseUrl}/rest/v1/areas?id=in.(${areaIds.join(',')})&order=id.asc`,
+          {
+            headers: {
+              'apikey': supabaseKey,
+              'Content-Type': 'application/json'
+            }
+          }
+        )
+        const areas = await areasRes.json()
+
+        // Fetch prefectures
+        const prefecturesRes = await fetch(
+          `${supabaseUrl}/rest/v1/prefectures?id=in.(${prefectureIds.join(',')})&order=id.asc`,
+          {
+            headers: {
+              'apikey': supabaseKey,
+              'Content-Type': 'application/json'
+            }
+          }
+        )
+        const prefectures = await prefecturesRes.json()
+
+        // Group areas by prefecture
+        const grouped = prefectures.map((prefecture: Prefecture) => ({
+          prefecture,
+          areas: areas.filter((area: Area) => area.prefecture_id === prefecture.id)
+        })).filter((group: AreasGrouped) => group.areas.length > 0)
+
+        setAreasGrouped(grouped)
+      })
+      .catch(err => {
+        console.error('Failed to fetch areas:', err)
+        setAreasGrouped([])
+      })
+  }, [serviceCode])
+
   // ロゴのリンク先をserviceCodeから判定
   const logoLink = `/${serviceCode}`
 
@@ -215,17 +315,25 @@ export default function Header({
           </Link>
           {/* ラベル（PC表示） */}
           {labelText && (
-            <div className="hidden md:flex items-center bg-[rgb(163,151,125)] text-white px-3 py-2 rounded-lg font-semibold text-sm mb-2">
-              {labelText}
+            <div className="hidden md:flex items-center gap-2 mb-2">
+              {(Array.isArray(labelText) ? labelText : [labelText]).map((label, index) => (
+                <div key={index} className="bg-[rgb(163,151,125)] text-white px-3 py-2 rounded-lg font-semibold text-sm">
+                  {label}
+                </div>
+              ))}
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-2 pr-14 md:pr-0">
+        <div className="flex items-center gap-1 pr-14 md:pr-0">
           {/* ラベル（スマホ表示） */}
           {labelText && (
-            <div className="md:hidden flex items-center bg-[rgb(163,151,125)] text-white px-2 py-1.5 rounded-lg font-semibold text-xs whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
-              {labelText}
+            <div className="md:hidden flex items-center gap-1">
+              {(Array.isArray(labelText) ? labelText : [labelText]).map((label, index) => (
+                <div key={index} className="bg-[rgb(163,151,125)] text-white px-2 py-1.5 rounded-lg font-semibold text-xs whitespace-nowrap overflow-hidden text-ellipsis max-w-[80px]">
+                  {label}
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -369,7 +477,7 @@ export default function Header({
       )}
 
       {/* Area Modal */}
-      <AreaModal isOpen={isAreaModalOpen} onClose={() => setIsAreaModalOpen(false)} />
+      <AreaModal isOpen={isAreaModalOpen} onClose={() => setIsAreaModalOpen(false)} areasGrouped={areasGrouped} />
     </>
   )
 }

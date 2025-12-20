@@ -1,13 +1,32 @@
 'use client'
 
-import { useServiceName } from '@/contexts/ServiceContext'
+import Link from 'next/link'
+import { useServiceCode, useServiceName } from '@/contexts/ServiceContext'
+
+interface Prefecture {
+  id: number
+  name: string
+}
+
+interface Area {
+  id: number
+  name: string
+  prefecture_id: number
+}
+
+interface AreasGrouped {
+  prefecture: Prefecture
+  areas: Area[]
+}
 
 interface AreaModalProps {
   isOpen: boolean
   onClose: () => void
+  areasGrouped: AreasGrouped[]
 }
 
-export default function AreaModal({ isOpen, onClose }: AreaModalProps) {
+export default function AreaModal({ isOpen, onClose, areasGrouped }: AreaModalProps) {
+  const serviceCode = useServiceCode()
   const serviceName = useServiceName()
 
   if (!isOpen) return null
@@ -41,9 +60,55 @@ export default function AreaModal({ isOpen, onClose }: AreaModalProps) {
           </h2>
         </div>
 
-        {/* Area List Section - 未実装 */}
+        {/* Area List Section */}
         <div className="px-4 py-3 md:px-6 md:py-4">
-          <p className="text-gray-500 text-center py-8">エリア一覧は準備中です</p>
+          {areasGrouped.length === 0 ? (
+            <p className="text-gray-500 text-center py-8">該当するエリアがありません</p>
+          ) : (
+            <div className="space-y-6">
+              {areasGrouped.map((group) => (
+                <div key={group.prefecture.id}>
+                  {/* Prefecture Header */}
+                  <Link
+                    href={`/${serviceCode}/prefectures/${group.prefecture.id}`}
+                    className="flex items-center gap-2 mb-3 group"
+                    onClick={onClose}
+                  >
+                    <h3
+                      className="text-lg font-bold group-hover:opacity-70 transition-opacity"
+                      style={{ color: 'rgb(165, 153, 126)' }}
+                    >
+                      {group.prefecture.name}
+                    </h3>
+                    <span
+                      className="flex items-center justify-center w-5 h-5 rounded-full flex-shrink-0 relative group-hover:opacity-70 transition-opacity"
+                      style={{ backgroundColor: 'rgb(165, 153, 126)' }}
+                    >
+                      <span className="text-white font-bold absolute" style={{ fontSize: '18px', top: '50%', left: '50%', transform: 'translate(-50%, -54%)' }}>›</span>
+                    </span>
+                  </Link>
+
+                  {/* Areas Grid */}
+                  <div className="flex flex-wrap gap-2">
+                    {group.areas.map((area) => (
+                      <Link
+                        key={area.id}
+                        href={`/${serviceCode}/prefectures/${group.prefecture.id}/areas/${area.id}`}
+                        className="px-3 py-2 border rounded-lg transition-colors hover:bg-gray-50"
+                        style={{
+                          borderColor: 'rgb(165, 153, 126)',
+                          color: 'rgb(165, 153, 126)'
+                        }}
+                        onClick={onClose}
+                      >
+                        <span className="font-medium text-sm">{area.name}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Close Button Section */}
