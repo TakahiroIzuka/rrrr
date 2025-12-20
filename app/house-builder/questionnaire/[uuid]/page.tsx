@@ -39,6 +39,8 @@ export default async function QuestionnairePage({ params }: QuestionnairePagePro
             facilityName={facility.name}
             genreColor={genreColor}
             serviceCode={SERVICE_CODE}
+            googleReviewUrl={facility.google_map_url}
+            genreCode={genreCode}
           />
         </div>
       </main>

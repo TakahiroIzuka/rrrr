@@ -10,11 +10,14 @@ interface QuestionnaireFormProps {
   facilityName: string
   genreColor: string
   serviceCode: string
+  googleReviewUrl?: string
+  genreCode?: string
 }
 
-export default function QuestionnaireForm({ facilityId, facilityName, genreColor, serviceCode }: QuestionnaireFormProps) {
+export default function QuestionnaireForm({ facilityId, facilityName, genreColor, serviceCode, googleReviewUrl, genreCode }: QuestionnaireFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [useDefaultImage, setUseDefaultImage] = useState(false)
   const [formData, setFormData] = useState({
     satisfaction: '',
     hasGoogleAccount: '',
@@ -223,13 +226,58 @@ export default function QuestionnaireForm({ facilityId, facilityName, genreColor
             </div>
           </div>
 
-          {/* 星1,2選択時: ご意見・ご感想 */}
+          {/* はい選択時: Googleクチコミ投稿 */}
           <div
             className="mb-[10px] flex flex-col md:flex-row md:items-stretch gap-3 transition-all duration-500 ease-in-out overflow-hidden"
             style={{
-              maxHeight: (formData.satisfaction === '1' || formData.satisfaction === '2') ? '500px' : '0',
-              opacity: (formData.satisfaction === '1' || formData.satisfaction === '2') ? 1 : 0,
-              marginBottom: (formData.satisfaction === '1' || formData.satisfaction === '2') ? '10px' : '0'
+              maxHeight: formData.hasGoogleAccount === 'yes' ? '500px' : '0',
+              opacity: formData.hasGoogleAccount === 'yes' ? 1 : 0,
+              marginBottom: formData.hasGoogleAccount === 'yes' ? '10px' : '0'
+            }}
+          >
+            <label className="md:w-1/2 text-black text-xs md:text-sm text-center flex items-center justify-center p-3" style={{ backgroundColor: 'rgb(234, 227, 219)' }}>
+              <span>Googleクチコミ投稿はこちらから</span>
+            </label>
+            <div className="md:w-1/2">
+              <a
+                href={googleReviewUrl || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full px-4 py-2 rounded text-white text-sm font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+                style={{ backgroundColor: 'rgb(10, 108, 255)' }}
+              >
+                Googleクチコミ投稿はこちらから
+                <span className="flex items-center justify-center w-5 h-5 bg-white rounded-full flex-shrink-0">
+                  <span className="font-bold text-base leading-none" style={{ color: 'rgb(10, 108, 255)', transform: 'translate(0.5px, -1px)' }}>›</span>
+                </span>
+              </a>
+              {/* インセンティブ画像 */}
+              <div className="mt-3">
+                <Image
+                  src={useDefaultImage
+                    ? `/${serviceCode}/default/info-incentive.png`
+                    : `/${serviceCode}/${genreCode || 'default'}/info-incentive.png`
+                  }
+                  alt="特典情報"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto"
+                  onError={() => setUseDefaultImage(true)}
+                />
+              </div>
+              <p className="text-sm text-gray-400 mt-2">
+                ※ Googleクチコミ投稿後は、こちらの画面にお戻りいただき、残りの情報を入力、送信を完了させてください。該当するクチコミの本人照合の確認をさせていただいた上で、特典をプレゼント致します。
+              </p>
+            </div>
+          </div>
+
+          {/* 星1,2選択時 または いいえ選択時: ご意見・ご感想 */}
+          <div
+            className="mb-[10px] flex flex-col md:flex-row md:items-stretch gap-3 transition-all duration-500 ease-in-out overflow-hidden"
+            style={{
+              maxHeight: (formData.satisfaction === '1' || formData.satisfaction === '2' || formData.hasGoogleAccount === 'no') ? '500px' : '0',
+              opacity: (formData.satisfaction === '1' || formData.satisfaction === '2' || formData.hasGoogleAccount === 'no') ? 1 : 0,
+              marginBottom: (formData.satisfaction === '1' || formData.satisfaction === '2' || formData.hasGoogleAccount === 'no') ? '10px' : '0'
             }}
           >
             <label className="md:w-1/2 text-black text-xs md:text-sm text-center flex items-center justify-center p-3" style={{ backgroundColor: 'rgb(234, 227, 219)' }}>
