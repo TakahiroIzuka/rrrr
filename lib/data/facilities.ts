@@ -265,7 +265,7 @@ export async function fetchPrefectureById(id: string) {
 
   const { data: prefecture, error } = await supabase
     .from('prefectures')
-    .select('id, name')
+    .select('id, name, lat, lng')
     .eq('id', id)
     .single()
 
@@ -280,7 +280,7 @@ export async function fetchAreaById(id: string) {
 
   const { data: area, error } = await supabase
     .from('areas')
-    .select('id, name, prefecture:prefectures(id, name)')
+    .select('id, name, lat, lng, prefecture:prefectures(id, name)')
     .eq('id', id)
     .single()
 

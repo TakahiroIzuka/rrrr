@@ -27,6 +27,8 @@ interface HomeClientProps {
   areaId?: number
   areaName?: string
   imagesMap?: Record<number, FacilityImage[]>
+  initialCenter?: { lat: number; lng: number }
+  initialZoom?: number
 }
 
 export default function HomeClient({
@@ -36,6 +38,8 @@ export default function HomeClient({
   prefectureId,
   areaId,
   imagesMap = {},
+  initialCenter,
+  initialZoom,
 }: HomeClientProps) {
   const [filteredFacilities, setFilteredFacilities] = useState<Facility[]>(facilities)
   const [selectedFacilityId, setSelectedFacilityId] = useState<number | null>(null)
@@ -76,6 +80,8 @@ export default function HomeClient({
               allFacilities={facilities}
               filteredFacilities={filteredFacilities}
               onFacilitySelect={handleFacilitySelect}
+              initialCenter={initialCenter}
+              initialZoom={initialZoom}
             />
             {/* Filter Button Overlay on Map */}
             <FilterButton

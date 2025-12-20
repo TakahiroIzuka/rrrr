@@ -38,12 +38,17 @@ export default async function AreaPage({ params }: AreaPageProps) {
   const facilityIds = facilities?.map(f => f.id) || []
   const { imagesMap } = await fetchFacilitiesImages(facilityIds)
 
+  // Cast area to include lat/lng (guaranteed by NOT NULL constraint)
+  const areaWithCoords = area as unknown as { id: number; name: string; lat: number; lng: number }
+
   return (
     <HomeClient
       facilities={facilities || []}
       areaId={area.id}
       areaName={area.name}
       imagesMap={imagesMap}
+      initialCenter={{ lat: areaWithCoords.lat, lng: areaWithCoords.lng }}
+      initialZoom={13}
     />
   )
 }

@@ -15,9 +15,11 @@ interface MapPanelProps {
   allFacilities: Facility[]
   filteredFacilities: Facility[]
   onFacilitySelect?: (facilityId: number | null) => void
+  initialCenter?: { lat: number; lng: number }
+  initialZoom?: number
 }
 
-const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilities, onFacilitySelect }: MapPanelProps) {
+const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilities, onFacilitySelect, initialCenter, initialZoom }: MapPanelProps) {
   const serviceCode = useServiceCode()
   const mapRef = useRef<HTMLDivElement>(null)
   const googleMapRef = useRef<google.maps.Map | null>(null)
@@ -32,6 +34,10 @@ const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilitie
   const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAP_ID
 
   const center = useMemo(() => {
+    // Use initialCenter if provided
+    if (initialCenter) {
+      return initialCenter
+    }
     if (allFacilities.length > 0) {
       const validFacilities = allFacilities.filter(facility => facility.lat && facility.lng)
       if (validFacilities.length > 0) {
@@ -41,11 +47,11 @@ const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilitie
       }
     }
     return { lat: 35.6762, lng: 139.6503 } // Tokyo default
-  }, [allFacilities])
+  }, [allFacilities, initialCenter])
 
   const mapOptions = useMemo((): google.maps.MapOptions => ({
     center,
-    zoom: 6,
+    zoom: initialZoom ?? 6,
     streetViewControl: false,
     fullscreenControl: false,
     mapTypeControl: false,
@@ -53,7 +59,7 @@ const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilitie
     gestureHandling: 'greedy',
     clickableIcons: false,
     ...(mapId && { mapId })
-  }), [center, mapId])
+  }), [center, mapId, initialZoom])
 
   // Initialize map once
   useEffect(() => {

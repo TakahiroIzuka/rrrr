@@ -53,6 +53,8 @@ export default async function PrefecturePage({ params }: PrefecturePageProps) {
         prefectureId={prefecture.id}
         prefectureName={prefecture.name}
         imagesMap={imagesMap}
+        initialCenter={{ lat: prefecture.lat, lng: prefecture.lng }}
+        initialZoom={9}
       />
       <Footer pageType="genre-top" />
     </>

@@ -11,6 +11,8 @@ interface MasterData {
   code?: string
   service_id?: number
   prefecture_id?: number
+  lat?: number
+  lng?: number
 }
 
 interface ServiceData {
@@ -21,6 +23,8 @@ interface ServiceData {
 interface UpdateData {
   name: string
   code?: string
+  lat?: number
+  lng?: number
 }
 
 interface InsertData {
@@ -28,6 +32,8 @@ interface InsertData {
   code?: string
   service_id?: number
   prefecture_id?: number
+  lat?: number
+  lng?: number
 }
 
 interface PrefectureData {
@@ -90,6 +96,8 @@ export default function MasterManager({
   const [editingType, setEditingType] = useState<'prefecture' | 'area' | null>(null)
   const [editName, setEditName] = useState('')
   const [editCode, setEditCode] = useState('')
+  const [editLat, setEditLat] = useState('')
+  const [editLng, setEditLng] = useState('')
 
   // Add state
   const [isAdding, setIsAdding] = useState(false)
@@ -97,6 +105,8 @@ export default function MasterManager({
   const [addingPrefectureId, setAddingPrefectureId] = useState<number | null>(null)
   const [newName, setNewName] = useState('')
   const [newCode, setNewCode] = useState('')
+  const [newLat, setNewLat] = useState('')
+  const [newLng, setNewLng] = useState('')
 
   // Prefecture expansion state
   const [expandedPrefectures, setExpandedPrefectures] = useState<Set<number>>(new Set())
@@ -131,6 +141,8 @@ export default function MasterManager({
     setEditingType(type || null)
     setEditName(item.name)
     setEditCode(item.code || '')
+    setEditLat(item.lat !== undefined ? String(item.lat) : '')
+    setEditLng(item.lng !== undefined ? String(item.lng) : '')
   }
 
   const handleCancelEdit = () => {
@@ -138,12 +150,28 @@ export default function MasterManager({
     setEditingType(null)
     setEditName('')
     setEditCode('')
+    setEditLat('')
+    setEditLng('')
   }
 
   const handleSaveEdit = async () => {
     if (!editName.trim()) {
       alert('名前を入力してください')
       return
+    }
+
+    // Validate lat/lng for regions
+    if (activeTab === 'regions') {
+      if (!editLat.trim() || !editLng.trim()) {
+        alert('緯度と経度を入力してください')
+        return
+      }
+      const latNum = parseFloat(editLat)
+      const lngNum = parseFloat(editLng)
+      if (isNaN(latNum) || isNaN(lngNum)) {
+        alert('緯度と経度には数値を入力してください')
+        return
+      }
     }
 
     setIsUpdating(true)
@@ -154,6 +182,12 @@ export default function MasterManager({
       const updateData: UpdateData = { name: editName.trim() }
       if (hasCodeField) {
         updateData.code = editCode.trim()
+      }
+
+      // Add lat/lng for regions
+      if (activeTab === 'regions') {
+        updateData.lat = parseFloat(editLat)
+        updateData.lng = parseFloat(editLng)
       }
 
       let tableName: string = activeTab
@@ -212,6 +246,8 @@ export default function MasterManager({
       setEditingType(null)
       setEditName('')
       setEditCode('')
+      setEditLat('')
+      setEditLng('')
       router.refresh()
     } catch (error) {
       console.error('Error updating:', error)
@@ -271,6 +307,20 @@ export default function MasterManager({
       return
     }
 
+    // Validate lat/lng for regions
+    if (activeTab === 'regions') {
+      if (!newLat.trim() || !newLng.trim()) {
+        alert('緯度と経度を入力してください')
+        return
+      }
+      const latNum = parseFloat(newLat)
+      const lngNum = parseFloat(newLng)
+      if (isNaN(latNum) || isNaN(lngNum)) {
+        alert('緯度と経度には数値を入力してください')
+        return
+      }
+    }
+
     setIsUpdating(true)
 
     try {
@@ -282,6 +332,12 @@ export default function MasterManager({
       }
       if (activeTab === 'genres') {
         insertData.service_id = selectedServiceId
+      }
+
+      // Add lat/lng for regions
+      if (activeTab === 'regions') {
+        insertData.lat = parseFloat(newLat)
+        insertData.lng = parseFloat(newLng)
       }
 
       let tableName: string = activeTab
@@ -333,6 +389,8 @@ export default function MasterManager({
       setAddingPrefectureId(null)
       setNewName('')
       setNewCode('')
+      setNewLat('')
+      setNewLng('')
       router.refresh()
     } catch (error) {
       console.error('Error adding:', error)
@@ -528,7 +586,7 @@ export default function MasterManager({
             <h3 className="text-sm font-semibold text-gray-900 mb-3">
               都道府県を追加
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   名前 <span className="text-red-500">*</span>
@@ -537,6 +595,30 @@ export default function MasterManager({
                   type="text"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  緯度 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newLat}
+                  onChange={(e) => setNewLat(e.target.value)}
+                  placeholder="例: 35.6894"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  経度 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newLng}
+                  onChange={(e) => setNewLng(e.target.value)}
+                  placeholder="例: 139.6917"
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -556,6 +638,8 @@ export default function MasterManager({
                   setAddingPrefectureId(null)
                   setNewName('')
                   setNewCode('')
+                  setNewLat('')
+                  setNewLng('')
                 }}
                 className="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
               >
@@ -653,7 +737,22 @@ export default function MasterManager({
                             type="text"
                             value={editName}
                             onChange={(e) => setEditName(e.target.value)}
-                            className="w-48 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="名前"
+                            className="w-32 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                          <input
+                            type="text"
+                            value={editLat}
+                            onChange={(e) => setEditLat(e.target.value)}
+                            placeholder="緯度"
+                            className="w-24 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                          <input
+                            type="text"
+                            value={editLng}
+                            onChange={(e) => setEditLng(e.target.value)}
+                            placeholder="経度"
+                            className="w-24 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
                           <button
                             onClick={handleCancelEdit}
@@ -678,6 +777,9 @@ export default function MasterManager({
                           </button>
                           <span className="font-medium text-gray-900">{prefecture.name}</span>
                           <span className="text-xs text-gray-500">({prefectureAreas.length}地域)</span>
+                          <span className="text-xs text-gray-400">
+                            緯度: {prefecture.lat ?? '-'}, 経度: {prefecture.lng ?? '-'}
+                          </span>
                           <button
                             onClick={() => {
                               setIsAdding(true)
@@ -717,13 +819,27 @@ export default function MasterManager({
                           <h4 className="text-sm font-semibold text-gray-900 mb-2">
                             地域を追加
                           </h4>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <input
                               type="text"
                               value={newName}
                               onChange={(e) => setNewName(e.target.value)}
-                              placeholder="地域名を入力"
-                              className="w-64 px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                              placeholder="地域名"
+                              className="w-40 px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                            />
+                            <input
+                              type="text"
+                              value={newLat}
+                              onChange={(e) => setNewLat(e.target.value)}
+                              placeholder="緯度"
+                              className="w-28 px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                            />
+                            <input
+                              type="text"
+                              value={newLng}
+                              onChange={(e) => setNewLng(e.target.value)}
+                              placeholder="経度"
+                              className="w-28 px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
                             />
                             <button
                               onClick={handleAdd}
@@ -739,6 +855,8 @@ export default function MasterManager({
                                 setAddingPrefectureId(null)
                                 setNewName('')
                                 setNewCode('')
+                                setNewLat('')
+                                setNewLng('')
                               }}
                               className="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
                             >
@@ -767,7 +885,22 @@ export default function MasterManager({
                                     type="text"
                                     value={editName}
                                     onChange={(e) => setEditName(e.target.value)}
-                                    className="w-48 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="名前"
+                                    className="w-32 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  />
+                                  <input
+                                    type="text"
+                                    value={editLat}
+                                    onChange={(e) => setEditLat(e.target.value)}
+                                    placeholder="緯度"
+                                    className="w-24 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  />
+                                  <input
+                                    type="text"
+                                    value={editLng}
+                                    onChange={(e) => setEditLng(e.target.value)}
+                                    placeholder="経度"
+                                    className="w-24 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                                   />
                                   <button
                                     onClick={handleCancelEdit}
@@ -785,6 +918,9 @@ export default function MasterManager({
                                     編集
                                   </button>
                                   <span className="text-sm text-gray-700">{area.name}</span>
+                                  <span className="text-xs text-gray-400">
+                                    緯度: {area.lat ?? '-'}, 経度: {area.lng ?? '-'}
+                                  </span>
                                 </>
                               )}
                             </div>
