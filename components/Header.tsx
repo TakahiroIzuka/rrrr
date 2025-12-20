@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import GenreModal from './GenreModal'
+import AreaModal from './AreaModal'
 import MobileMenu from './MobileMenu'
 import { useServiceCode, useServiceName } from '@/contexts/ServiceContext'
 import { REVIEW_RANKING_CONFIG } from '@/lib/constants/services'
@@ -80,6 +81,7 @@ export default function Header({
   const [lastScrollY, setLastScrollY] = useState(0)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isGenreModalOpen, setIsGenreModalOpen] = useState(false)
+  const [isAreaModalOpen, setIsAreaModalOpen] = useState(false)
   const [genres, setGenres] = useState<Genre[]>([])
 
   const scrollToSection = (sectionId: string) => {
@@ -272,6 +274,13 @@ export default function Header({
                 <span className="font-bold text-xl leading-none" style={{ transform: 'translate(0.5px, -2px)', color }}>›</span>
               </span>
             </button>
+            <button onClick={() => setIsAreaModalOpen(true)} className="text-white px-4 py-2.5 rounded-md font-medium text-[15px] transition-all duration-200 flex items-center justify-center gap-2 relative overflow-hidden group mb-2" style={{ backgroundColor: color }}>
+              <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-200"></span>
+              <span className="relative z-10">各エリアから探す</span>
+              <span className="flex items-center justify-center w-5 h-5 bg-white rounded-full relative z-10" style={{ transform: 'translateY(0px)' }}>
+                <span className="font-bold text-xl leading-none" style={{ transform: 'translate(0.5px, -2px)', color }}>›</span>
+              </span>
+            </button>
           </nav>
         )}
       </div>
@@ -346,11 +355,21 @@ export default function Header({
                     <span className="font-bold text-xl leading-none" style={{ transform: 'translate(0.5px, -2px)', color }}>›</span>
                   </span>
                 </button>
+                <button onClick={() => setIsAreaModalOpen(true)} className="text-white px-4 py-2.5 rounded-md font-medium text-[15px] transition-all duration-200 flex items-center justify-center gap-2 relative overflow-hidden group mb-2" style={{ backgroundColor: color }}>
+                  <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-200"></span>
+                  <span className="relative z-10">各エリアから探す</span>
+                  <span className="flex items-center justify-center w-5 h-5 bg-white rounded-full relative z-10" style={{ transform: 'translateY(0px)' }}>
+                    <span className="font-bold text-xl leading-none" style={{ transform: 'translate(0.5px, -2px)', color }}>›</span>
+                  </span>
+                </button>
               </nav>
             )}
           </div>
         </header>
       )}
+
+      {/* Area Modal */}
+      <AreaModal isOpen={isAreaModalOpen} onClose={() => setIsAreaModalOpen(false)} />
     </>
   )
 }
