@@ -85,7 +85,12 @@ export default function Header({
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      const headerHeight = window.innerWidth < 768 ? 64 : 112 // モバイル64px、PC固定ヘッダー112px
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY
+      window.scrollTo({
+        top: elementPosition - headerHeight - 16, // 16pxの余白
+        behavior: 'smooth'
+      })
     }
   }
 
@@ -148,7 +153,7 @@ export default function Header({
   const logoLink = `/${serviceCode}`
 
   // ナビゲーションボタンを表示するかどうか
-  const showNavButtons = pageType === 'top'
+  const showNavButtons = pageType === 'top' || pageType === 'genre-top'
 
   useEffect(() => {
     const handleScroll = () => {
@@ -250,7 +255,7 @@ export default function Header({
 
         {showNavButtons && (
           <nav className="hidden md:flex gap-4 items-end">
-            <button onClick={() => scrollToSection('map-section')} className="bg-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-0" style={{ fontSize: '14px', color }}>
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="bg-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-0" style={{ fontSize: '14px', color }}>
               <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
               <span className="pb-1 transition-colors duration-200 relative z-10" style={{ borderBottom: `2.5px solid ${color}` }}>マップで絞り込み検索</span>
               <span className="text-[15px] font-normal relative z-10">Map search</span>
@@ -280,8 +285,8 @@ export default function Header({
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         logoPath={headerImagePath}
-        onMapClick={() => scrollToSection('map-section')}
-        onListClick={() => scrollToSection('list-section')}
+        onMapClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        onListClick={() => setTimeout(() => scrollToSection('list-section'), 150)}
         onGenreClick={() => setIsGenreModalOpen(true)}
       />
 
@@ -324,7 +329,7 @@ export default function Header({
             {/* PC用のナビゲーション */}
             {showNavButtons && (
               <nav className="hidden md:flex gap-4 items-end">
-                <button onClick={() => scrollToSection('map-section')} className="bg-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-0" style={{ fontSize: '14px', color }}>
+                <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="bg-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:bg-white/50 hover:backdrop-blur-sm flex flex-col items-center leading-tight gap-1 relative overflow-hidden group mb-0" style={{ fontSize: '14px', color }}>
                   <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-40 transition-opacity duration-200"></span>
                   <span className="pb-1 transition-colors duration-200 relative z-10" style={{ borderBottom: `2.5px solid ${color}` }}>マップで絞り込み検索</span>
                   <span className="text-[15px] font-normal relative z-10">Map search</span>
