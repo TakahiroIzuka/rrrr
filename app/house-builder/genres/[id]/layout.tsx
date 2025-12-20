@@ -1,8 +1,9 @@
 import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
 import Header from '@/components/Header'
-import MarqueeText from '@/components/MarqueeText'
+import Breadcrumb from '@/components/Breadcrumb'
 import Footer from '@/components/Footer'
+import { SERVICE_CODE } from '../../constants'
 
 interface GenreLayoutProps {
   children: React.ReactNode
@@ -26,6 +27,11 @@ export default async function GenreLayout({
     notFound()
   }
 
+  const breadcrumbItems = [
+    { label: 'トップ', href: `/${SERVICE_CODE}` },
+    { label: genre.name }
+  ]
+
   return (
     <>
       <Header
@@ -34,7 +40,7 @@ export default async function GenreLayout({
         genreCode={genre.code}
       />
       <div className="hidden md:block md:mt-0">
-        <MarqueeText />
+        <Breadcrumb items={breadcrumbItems} />
       </div>
       {children}
       <Footer pageType="genre-top" genreCode={genre.code} />
