@@ -33,10 +33,8 @@ export default async function DetailPage({ params }: DetailPageProps) {
     ? (config.genres as Record<string, { color: string; lineColor: string }>)[genreCode].color
     : config.color
 
-  // Default logo URL based on genre or service
-  const defaultLogoUrl = genreCode
-    ? `/${SERVICE_CODE}/${genreCode}/logo.png`
-    : `/${SERVICE_CODE}/default/logo.png`
+  // Default logo URL for service
+  const defaultLogoUrl = `/${SERVICE_CODE}/icon.png`
 
   return (
     <div className="mx-[10px] mb-[10px] pt-[10px] md:mx-20 md:pt-10 md:pb-24 md:mb-0">
