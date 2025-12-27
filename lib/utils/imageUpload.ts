@@ -1,75 +1,21 @@
 import { createClient } from "@/lib/supabase/client";
 
 /**
- * 指定された施設IDと日付で次の画像インデックスを取得
- * @param facilityId 施設ID
- * @param dateStr 日付文字列（yyyymmdd形式）
- * @returns 次のインデックス番号（0から始まる）
- */
-async function getNextImageIndex(
-  facilityId: number,
-  dateStr: string
-): Promise<number> {
-  const supabase = createClient();
-
-  // 同じfacility_idで、同じ日付のimage_pathを持つレコードを取得
-  const { data, error } = await supabase
-    .from("facility_images")
-    .select("image_path")
-    .eq("facility_id", facilityId)
-    .like("image_path", `${facilityId}/${dateStr}/%`);
-
-  if (error) {
-    console.error("インデックス取得エラー:", error);
-    return 0;
-  }
-
-  // パスから既存のインデックス番号を抽出
-  const existingIndexes = (data || [])
-    .map((record) => {
-      // パス形式: {facilityId}/{dateStr}/{index}/{filename}
-      const pathParts = record.image_path.split("/");
-      if (pathParts.length >= 3) {
-        const indexStr = pathParts[2];
-        const index = parseInt(indexStr, 10);
-        return isNaN(index) ? -1 : index;
-      }
-      return -1;
-    })
-    .filter((index) => index >= 0);
-
-  // 最大値+1を返す（レコードがない場合は0）
-  if (existingIndexes.length === 0) {
-    return 0;
-  }
-
-  return Math.max(...existingIndexes) + 1;
-}
-
-/**
- * 施設画像のパスを生成
+ * 施設画像のパスを生成（オリジナルとサムネイルのペア）
  * @param facilityId 施設ID
  * @param fileName ファイル名
- * @param index インデックス番号
- * @param isThumbnail サムネイルかどうか
- * @returns 画像のパス
+ * @returns オリジナルとサムネイルのパス
  */
-export function generateFacilityImagePath(
+export function generateFacilityImagePaths(
   facilityId: number,
-  fileName: string,
-  index: number,
-  isThumbnail = false
-): string {
-  const now = new Date();
-  const dateStr = now.toISOString().slice(0, 10).replace(/-/g, ""); // yyyymmdd
+  fileName: string
+): { originalPath: string; thumbnailPath: string } {
+  const timestamp = Date.now();
 
-  if (isThumbnail) {
-    const fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf("."));
-    const fileExt = fileName.substring(fileName.lastIndexOf("."));
-    return `${facilityId}/${dateStr}/${index}/thumb_${fileNameWithoutExt}${fileExt}`;
-  }
-
-  return `${facilityId}/${dateStr}/${index}/${fileName}`;
+  return {
+    originalPath: `${facilityId}/images/${timestamp}_${fileName}`,
+    thumbnailPath: `${facilityId}/images/thumb_${timestamp}_${fileName}`,
+  };
 }
 
 /**
@@ -81,14 +27,7 @@ export function generateFacilityImagePath(
 export async function uploadFacilityImage(facilityId: number, file: File) {
   const supabase = createClient();
 
-  // 日付文字列を取得
-  const now = new Date();
-  const dateStr = now.toISOString().slice(0, 10).replace(/-/g, ""); // yyyymmdd
-
-  // 次のインデックス番号を取得
-  const index = await getNextImageIndex(facilityId, dateStr);
-
-  const originalPath = generateFacilityImagePath(facilityId, file.name, index);
+  const { originalPath, thumbnailPath } = generateFacilityImagePaths(facilityId, file.name);
 
   // オリジナル画像をアップロード
   const { data, error } = await supabase.storage
@@ -103,7 +42,7 @@ export async function uploadFacilityImage(facilityId: number, file: File) {
 
   return {
     originalPath,
-    thumbnailPath: generateFacilityImagePath(facilityId, file.name, index, true),
+    thumbnailPath,
     data,
   };
 }

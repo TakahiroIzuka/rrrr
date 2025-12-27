@@ -223,13 +223,8 @@ export default function FacilityForm({
     // Store file for upload on form submit (both new and edit mode)
     setPendingImageFiles(prev => ({ ...prev, [displayOrder]: file }))
 
-    // If replacing an existing image in edit mode, mark it for deletion
+    // Remove from UI display while pending (DB record is kept for UPDATE)
     if (initialData?.id) {
-      const existingImage = facilityImages.find(img => img.display_order === displayOrder)
-      if (existingImage && !pendingImageDeletes.includes(existingImage.id)) {
-        setPendingImageDeletes(prev => [...prev, existingImage.id])
-      }
-      // Remove from display while pending
       setFacilityImages(prev => prev.filter(img => img.display_order !== displayOrder))
     }
   }
@@ -240,6 +235,19 @@ export default function FacilityForm({
       delete newFiles[displayOrder]
       return newFiles
     })
+
+    // Restore original image if it exists and wasn't marked for deletion
+    if (initialData?.id) {
+      const originalImage = images.find(img => img.display_order === displayOrder)
+      if (originalImage && !pendingImageDeletes.includes(originalImage.id)) {
+        setFacilityImages(prev => {
+          if (!prev.find(img => img.id === originalImage.id)) {
+            return [...prev, originalImage].sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
+          }
+          return prev
+        })
+      }
+    }
   }
 
   const handleImageDelete = (imageId: number, imagePath: string, thumbnailPath: string | null, displayOrder: number) => {
@@ -280,9 +288,8 @@ export default function FacilityForm({
     // Store file for upload on form submit (both new and edit mode)
     setPendingLogoFile(file)
 
-    // If replacing an existing logo in edit mode, mark it for deletion
+    // Remove from UI display while pending (DB record is kept for UPDATE)
     if (initialData?.id && logoImage) {
-      setPendingLogoDelete(true)
       setLogoImage(null)
     }
   }
@@ -303,6 +310,11 @@ export default function FacilityForm({
   // Remove pending logo
   const handleRemovePendingLogo = () => {
     setPendingLogoFile(null)
+
+    // Restore original logo if it exists and wasn't marked for deletion
+    if (initialData?.id && logo && !pendingLogoDelete) {
+      setLogoImage(logo)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
