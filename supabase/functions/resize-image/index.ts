@@ -10,7 +10,7 @@ const corsHeaders = {
 interface ResizeRequest {
   bucketName: string;
   imagePath: string;
-  thumbnailPath: string;
+  thumbnailPath?: string | null;
   originalWidth?: number;
   originalHeight?: number;
   thumbnailWidth?: number;
@@ -73,28 +73,30 @@ serve(async (req) => {
       throw new Error(`Failed to upload resized original: ${originalUploadError.message}`);
     }
 
-    // 2. Resize to thumbnail size (225x150)
-    const thumbnail = image.resize(thumbnailWidth, thumbnailHeight);
-    const thumbnailBuffer = await thumbnail.encodeJPEG(85); // 85% quality
+    // 2. Resize to thumbnail size (225x150) - only if thumbnailPath is provided
+    if (thumbnailPath) {
+      const thumbnail = image.resize(thumbnailWidth, thumbnailHeight);
+      const thumbnailBuffer = await thumbnail.encodeJPEG(85); // 85% quality
 
-    // Upload thumbnail to storage
-    const { error: thumbnailUploadError } = await supabase.storage
-      .from(bucketName)
-      .upload(thumbnailPath, thumbnailBuffer, {
-        contentType: "image/jpeg",
-        upsert: true,
-      });
+      // Upload thumbnail to storage
+      const { error: thumbnailUploadError } = await supabase.storage
+        .from(bucketName)
+        .upload(thumbnailPath, thumbnailBuffer, {
+          contentType: "image/jpeg",
+          upsert: true,
+        });
 
-    if (thumbnailUploadError) {
-      throw new Error(`Failed to upload thumbnail: ${thumbnailUploadError.message}`);
+      if (thumbnailUploadError) {
+        throw new Error(`Failed to upload thumbnail: ${thumbnailUploadError.message}`);
+      }
     }
 
     return new Response(
       JSON.stringify({
         success: true,
         imagePath,
-        thumbnailPath,
-        message: "Images resized successfully",
+        thumbnailPath: thumbnailPath || null,
+        message: thumbnailPath ? "Images resized successfully" : "Image resized successfully (no thumbnail)",
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

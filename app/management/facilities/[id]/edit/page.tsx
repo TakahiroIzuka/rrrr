@@ -36,12 +36,21 @@ export default async function EditFacilityPage({ params }: PageProps) {
     notFound()
   }
 
-  // Fetch facility images
+  // Fetch facility images (excluding logo)
   const { data: images } = await supabase
     .from('facility_images')
     .select('*')
     .eq('facility_id', id)
+    .eq('is_logo', false)
     .order('display_order', { ascending: true })
+
+  // Fetch logo image
+  const { data: logoData } = await supabase
+    .from('facility_images')
+    .select('*')
+    .eq('facility_id', id)
+    .eq('is_logo', true)
+    .single()
 
   // Get public URLs for images
   const imagesWithUrls = (images || []).map(img => {
@@ -59,6 +68,14 @@ export default async function EditFacilityPage({ params }: PageProps) {
       thumbnailUrl: thumbnailData?.data.publicUrl || null
     }
   })
+
+  // Get public URL for logo (logo uses thumbnail_path for storage)
+  const logoWithUrl = logoData?.thumbnail_path ? {
+    id: logoData.id,
+    facility_id: logoData.facility_id,
+    image_path: logoData.thumbnail_path,
+    publicUrl: supabase.storage.from('facility-images').getPublicUrl(logoData.thumbnail_path).data.publicUrl
+  } : null
 
   // Fetch master data
   const [
@@ -84,6 +101,7 @@ export default async function EditFacilityPage({ params }: PageProps) {
         initialData={facility}
         currentUserType={currentUser?.type || 'user'}
         images={imagesWithUrls}
+        logo={logoWithUrl}
       />
     </div>
   )

@@ -440,7 +440,7 @@ export async function fetchAreasWithFacilities(serviceCode: string) {
 }
 
 /**
- * Fetch facility images by facility ID
+ * Fetch facility images by facility ID (excluding logo)
  * Returns images sorted by display_order (1-5)
  */
 export async function fetchFacilityImages(facilityId: number) {
@@ -450,6 +450,7 @@ export async function fetchFacilityImages(facilityId: number) {
     .from('facility_images')
     .select('id, image_path, thumbnail_path, display_order')
     .eq('facility_id', facilityId)
+    .eq('is_logo', false)
     .order('display_order', { ascending: true })
     .limit(5)
 
@@ -473,7 +474,30 @@ export async function fetchFacilityImages(facilityId: number) {
 }
 
 /**
- * Fetch images for multiple facilities
+ * Fetch facility logo by facility ID
+ * Returns the logo image URL or null if not found
+ */
+export async function fetchFacilityLogo(facilityId: number) {
+  const supabase = await createClient()
+
+  const { data: logo, error } = await supabase
+    .from('facility_images')
+    .select('id, thumbnail_path')
+    .eq('facility_id', facilityId)
+    .eq('is_logo', true)
+    .single()
+
+  if (error || !logo || !logo.thumbnail_path) {
+    return { logoUrl: null, error: error?.code === 'PGRST116' ? null : error }
+  }
+
+  const logoUrl = supabase.storage.from('facility-images').getPublicUrl(logo.thumbnail_path).data.publicUrl
+
+  return { logoUrl, error: null }
+}
+
+/**
+ * Fetch images for multiple facilities (excluding logos)
  * Returns a map of facility_id to images array
  */
 export async function fetchFacilitiesImages(facilityIds: number[]) {
@@ -487,6 +511,7 @@ export async function fetchFacilitiesImages(facilityIds: number[]) {
     .from('facility_images')
     .select('id, facility_id, image_path, thumbnail_path, display_order')
     .in('facility_id', facilityIds)
+    .eq('is_logo', false)
     .order('facility_id', { ascending: true })
     .order('display_order', { ascending: true })
     .lte('display_order', 3) // Only get display_order 1-3 for cards

@@ -18,16 +18,21 @@ interface Review {
 interface ReviewSectionProps {
   facility: Facility
   genreColor: string
+  logoUrl?: string | null
+  defaultLogoUrl?: string
 }
 
 // ReviewCard for facility summary (first card)
-function FacilitySummaryCard({ facility }: { facility: Facility }) {
+function FacilitySummaryCard({ facility, logoUrl, defaultLogoUrl }: { facility: Facility, logoUrl?: string | null, defaultLogoUrl?: string }) {
+  // Use logo if available, otherwise use default
+  const displayLogoUrl = logoUrl || defaultLogoUrl || 'https://placehold.co/100x100/e3d5ca/000000?text=Logo'
+
   return (
     <div className="bg-white rounded p-3 h-52 flex flex-col shadow-md">
       <div className="flex gap-3 mb-3 relative">
         <img
-          src="https://placehold.co/100x100/e3d5ca/000000?text=User"
-          alt="ユーザー画像"
+          src={displayLogoUrl}
+          alt="施設ロゴ"
           className="w-12 h-12 rounded-full object-cover flex-shrink-0"
         />
         <div className="flex-1 min-w-0 self-center">
@@ -157,7 +162,7 @@ function ReviewCardSkeleton() {
   )
 }
 
-export default function ReviewSection({ facility, genreColor }: ReviewSectionProps) {
+export default function ReviewSection({ facility, genreColor, logoUrl, defaultLogoUrl }: ReviewSectionProps) {
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
@@ -214,7 +219,7 @@ export default function ReviewSection({ facility, genreColor }: ReviewSectionPro
       {/* カードグリッド */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5 mt-6 p-0 md:px-[15px]">
         {/* First card: Facility summary */}
-        <FacilitySummaryCard facility={facility} />
+        <FacilitySummaryCard facility={facility} logoUrl={logoUrl} defaultLogoUrl={defaultLogoUrl} />
 
         {/* Review cards */}
         {loading ? (

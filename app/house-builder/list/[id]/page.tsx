@@ -3,7 +3,7 @@ import { getStarImage } from '@/lib/utils/starRating'
 import Div2 from '@/components/facility/Div2'
 import ReviewSection from '@/components/facility/ReviewSection'
 import ScrollToReviewButton from '@/components/facility/ScrollToReviewButton'
-import { fetchFacilityById, fetchFacilityImages } from '@/lib/data/facilities'
+import { fetchFacilityById, fetchFacilityImages, fetchFacilityLogo } from '@/lib/data/facilities'
 import { SERVICE_CODE } from '../../constants'
 import { REVIEW_RANKING_CONFIG } from '@/lib/constants/services'
 
@@ -22,13 +22,19 @@ export default async function DetailPage({ params }: DetailPageProps) {
     notFound()
   }
 
-  // Fetch facility images
+  // Fetch facility images and logo
   const { images } = await fetchFacilityImages(Number(id))
+  const { logoUrl } = await fetchFacilityLogo(Number(id))
 
   // Get genre color from REVIEW_RANKING_CONFIG
   const config = REVIEW_RANKING_CONFIG[SERVICE_CODE]
   const genreCode = facility.genre?.code
   const genreColor = (genreCode && config.genres?.[genreCode as keyof typeof config.genres]?.color) || config.color
+
+  // Default logo URL based on genre or service
+  const defaultLogoUrl = genreCode
+    ? `/${SERVICE_CODE}/${genreCode}/logo.png`
+    : `/${SERVICE_CODE}/default/logo.png`
 
   return (
     <div className="mx-[10px] mb-[10px] pt-[10px] md:mx-20 md:pt-10 md:pb-24 md:mb-0">
@@ -95,7 +101,7 @@ export default async function DetailPage({ params }: DetailPageProps) {
         <Div2 facility={facility} images={images || []} />
 
         {/* div3 */}
-        <ReviewSection facility={facility} genreColor={genreColor} />
+        <ReviewSection facility={facility} genreColor={genreColor} logoUrl={logoUrl} defaultLogoUrl={defaultLogoUrl} />
 
         {/* div4 */}
         <div className="p-4 flex justify-center">

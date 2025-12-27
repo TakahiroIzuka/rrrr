@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { uploadFacilityImageComplete } from '@/lib/utils/imageUpload'
+import { uploadFacilityImageComplete, uploadFacilityLogoComplete, deleteFacilityLogo, getFacilityImageUrl } from '@/lib/utils/imageUpload'
 
 interface MasterData {
   id: number
@@ -65,9 +65,17 @@ interface FacilityImage {
   facility_id: number
   image_path: string
   thumbnail_path: string | null
-  display_order: number
+  display_order: number | null
   publicUrl: string
   thumbnailUrl: string | null
+  is_logo?: boolean
+}
+
+interface LogoImage {
+  id: number
+  facility_id: number
+  image_path: string
+  publicUrl: string
 }
 
 interface FacilityFormProps {
@@ -78,6 +86,7 @@ interface FacilityFormProps {
   initialData?: InitialFacilityData
   currentUserType?: 'admin' | 'user'
   images?: FacilityImage[]
+  logo?: LogoImage | null
   defaultServiceId?: number
 }
 
@@ -89,6 +98,7 @@ export default function FacilityForm({
   initialData,
   currentUserType = 'admin',
   images = [],
+  logo = null,
   defaultServiceId
 }: FacilityFormProps) {
   const router = useRouter()
@@ -96,6 +106,15 @@ export default function FacilityForm({
   const [uploadingImages, setUploadingImages] = useState<Record<number, boolean>>({})
   const [facilityImages, setFacilityImages] = useState<FacilityImage[]>(images)
   const [pendingImageFiles, setPendingImageFiles] = useState<Record<number, File>>({})
+
+  // Logo state
+  const [logoImage, setLogoImage] = useState<LogoImage | null>(logo)
+  const [pendingLogoFile, setPendingLogoFile] = useState<File | null>(null)
+  const [uploadingLogo, setUploadingLogo] = useState(false)
+  const [pendingLogoDelete, setPendingLogoDelete] = useState(false)
+
+  // Track images to delete on submit
+  const [pendingImageDeletes, setPendingImageDeletes] = useState<number[]>([])
 
   // Facility fields
   const [serviceId] = useState(initialData?.service_id || defaultServiceId || '')
@@ -201,34 +220,17 @@ export default function FacilityForm({
       return
     }
 
-    // If editing existing facility, upload immediately
+    // Store file for upload on form submit (both new and edit mode)
+    setPendingImageFiles(prev => ({ ...prev, [displayOrder]: file }))
+
+    // If replacing an existing image in edit mode, mark it for deletion
     if (initialData?.id) {
-      setUploadingImages(prev => ({ ...prev, [displayOrder]: true }))
-
-      try {
-        const uploadedImage = await uploadFacilityImageComplete(
-          initialData.id,
-          file,
-          displayOrder
-        )
-
-        // Update local state
-        setFacilityImages(prev => {
-          const filtered = prev.filter(img => img.display_order !== displayOrder)
-          return [...filtered, uploadedImage as FacilityImage].sort((a, b) => a.display_order - b.display_order)
-        })
-
-        alert('画像をアップロードしました')
-        router.refresh()
-      } catch (error) {
-        console.error('Error uploading image:', error)
-        alert('画像のアップロードに失敗しました')
-      } finally {
-        setUploadingImages(prev => ({ ...prev, [displayOrder]: false }))
+      const existingImage = facilityImages.find(img => img.display_order === displayOrder)
+      if (existingImage && !pendingImageDeletes.includes(existingImage.id)) {
+        setPendingImageDeletes(prev => [...prev, existingImage.id])
       }
-    } else {
-      // If creating new facility, store file for later upload
-      setPendingImageFiles(prev => ({ ...prev, [displayOrder]: file }))
+      // Remove from display while pending
+      setFacilityImages(prev => prev.filter(img => img.display_order !== displayOrder))
     }
   }
 
@@ -240,49 +242,67 @@ export default function FacilityForm({
     })
   }
 
-  const handleImageDelete = async (imageId: number, imagePath: string, thumbnailPath: string | null, displayOrder: number) => {
-    if (!confirm('この画像を削除してもよろしいですか？')) {
+  const handleImageDelete = (imageId: number, imagePath: string, thumbnailPath: string | null, displayOrder: number) => {
+    if (!confirm('この画像を削除してもよろしいですか？（更新ボタンを押すと確定されます）')) {
       return
     }
 
-    setUploadingImages(prev => ({ ...prev, [displayOrder]: true }))
-
-    try {
-      const supabase = createClient()
-
-      // Delete from storage
-      const pathsToDelete = [imagePath]
-      if (thumbnailPath) {
-        pathsToDelete.push(thumbnailPath)
-      }
-
-      const { error: storageError } = await supabase.storage
-        .from('facility-images')
-        .remove(pathsToDelete)
-
-      if (storageError) {
-        console.error('Storage error:', storageError)
-      }
-
-      // Delete from database
-      const { error: dbError } = await supabase
-        .from('facility_images')
-        .delete()
-        .eq('id', imageId)
-
-      if (dbError) throw dbError
-
-      // Update local state
-      setFacilityImages(prev => prev.filter(img => img.id !== imageId))
-
-      alert('画像を削除しました')
-      router.refresh()
-    } catch (error) {
-      console.error('Error deleting image:', error)
-      alert('画像の削除に失敗しました')
-    } finally {
-      setUploadingImages(prev => ({ ...prev, [displayOrder]: false }))
+    // Mark for deletion on submit
+    if (!pendingImageDeletes.includes(imageId)) {
+      setPendingImageDeletes(prev => [...prev, imageId])
     }
+
+    // Remove from display
+    setFacilityImages(prev => prev.filter(img => img.id !== imageId))
+  }
+
+  // Logo upload handler
+  const handleLogoUpload = (file: File) => {
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('画像ファイルを選択してください')
+      return
+    }
+
+    // Validate supported image formats
+    const supportedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/tiff']
+    if (!supportedTypes.includes(file.type)) {
+      alert('サポートされていない画像形式です。JPEG、PNG、GIF、TIFF形式の画像を選択してください。')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('ファイルサイズは5MB以下にしてください')
+      return
+    }
+
+    // Store file for upload on form submit (both new and edit mode)
+    setPendingLogoFile(file)
+
+    // If replacing an existing logo in edit mode, mark it for deletion
+    if (initialData?.id && logoImage) {
+      setPendingLogoDelete(true)
+      setLogoImage(null)
+    }
+  }
+
+  // Logo delete handler
+  const handleLogoDelete = () => {
+    if (!confirm('ロゴ画像を削除してもよろしいですか？（更新ボタンを押すと確定されます）')) {
+      return
+    }
+
+    // Mark for deletion on submit
+    if (logoImage) {
+      setPendingLogoDelete(true)
+      setLogoImage(null)
+    }
+  }
+
+  // Remove pending logo
+  const handleRemovePendingLogo = () => {
+    setPendingLogoFile(null)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -347,6 +367,64 @@ export default function FacilityForm({
 
         if (detailError) throw detailError
 
+        // Process pending image deletions
+        if (pendingImageDeletes.length > 0) {
+          // Get image paths to delete from storage
+          const { data: imagesToDelete } = await supabase
+            .from('facility_images')
+            .select('id, image_path, thumbnail_path')
+            .in('id', pendingImageDeletes)
+
+          if (imagesToDelete) {
+            // Delete from storage
+            const pathsToDelete = imagesToDelete.flatMap(img => {
+              const paths = []
+              if (img.image_path) paths.push(img.image_path)
+              if (img.thumbnail_path) paths.push(img.thumbnail_path)
+              return paths
+            })
+
+            if (pathsToDelete.length > 0) {
+              await supabase.storage.from('facility-images').remove(pathsToDelete)
+            }
+
+            // Delete from database
+            await supabase
+              .from('facility_images')
+              .delete()
+              .in('id', pendingImageDeletes)
+          }
+        }
+
+        // Process pending logo deletion
+        if (pendingLogoDelete) {
+          try {
+            await deleteFacilityLogo(initialData.id!)
+          } catch (error) {
+            console.error('ロゴ削除エラー:', error)
+          }
+        }
+
+        // Upload pending logo
+        if (pendingLogoFile) {
+          try {
+            await uploadFacilityLogoComplete(initialData.id!, pendingLogoFile)
+          } catch (error) {
+            console.error('ロゴアップロードエラー:', error)
+          }
+        }
+
+        // Upload pending images
+        const pendingImageEntries = Object.entries(pendingImageFiles)
+        for (const [displayOrderStr, file] of pendingImageEntries) {
+          const displayOrder = parseInt(displayOrderStr)
+          try {
+            await uploadFacilityImageComplete(initialData.id!, file, displayOrder)
+          } catch (error) {
+            console.error(`画像 ${displayOrder} のアップロードエラー:`, error)
+          }
+        }
+
         alert('施設を更新しました')
         router.push(`/management/facilities?service=${serviceId}`)
         router.refresh()
@@ -391,12 +469,25 @@ export default function FacilityForm({
 
         if (detailError) throw detailError
 
+        // Upload pending logo if any
+        let logoUploaded = false
+        let logoFailed = false
+        if (pendingLogoFile) {
+          try {
+            await uploadFacilityLogoComplete(facility.id, pendingLogoFile)
+            logoUploaded = true
+          } catch (error) {
+            console.error('ロゴ画像のアップロードに失敗:', error)
+            logoFailed = true
+          }
+        }
+
         // Upload pending images if any
         const pendingImageEntries = Object.entries(pendingImageFiles)
-        if (pendingImageEntries.length > 0) {
-          let uploadedCount = 0
-          let failedCount = 0
+        let uploadedCount = 0
+        let failedCount = 0
 
+        if (pendingImageEntries.length > 0) {
           for (const [displayOrderStr, file] of pendingImageEntries) {
             const displayOrder = parseInt(displayOrderStr)
             try {
@@ -407,15 +498,16 @@ export default function FacilityForm({
               failedCount++
             }
           }
-
-          if (failedCount > 0) {
-            alert(`施設を追加しました。画像: ${uploadedCount}枚成功、${failedCount}枚失敗`)
-          } else {
-            alert(`施設を追加しました。画像${uploadedCount}枚もアップロードしました。`)
-          }
-        } else {
-          alert('施設を追加しました。')
         }
+
+        // Build success message
+        const messages: string[] = ['施設を追加しました。']
+        if (logoUploaded) messages.push('ロゴ画像をアップロードしました。')
+        if (logoFailed) messages.push('ロゴ画像のアップロードに失敗しました。')
+        if (uploadedCount > 0) messages.push(`施設画像${uploadedCount}枚をアップロードしました。`)
+        if (failedCount > 0) messages.push(`施設画像${failedCount}枚のアップロードに失敗しました。`)
+
+        alert(messages.join('\n'))
 
         router.push(`/management/facilities?service=${serviceId}`)
         router.refresh()
@@ -829,6 +921,120 @@ export default function FacilityForm({
               </>
             )}
           </div>
+        </div>
+
+        {/* Logo Upload Section */}
+        <div>
+          <h2 className="text-base font-semibold text-gray-900 mb-4">ロゴ画像</h2>
+
+          <div className="border border-gray-300 rounded-lg p-4 max-w-xs">
+            {logoImage ? (
+              <div className="space-y-3">
+                <div className="flex justify-center">
+                  <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100">
+                    <img
+                      src={logoImage.publicUrl}
+                      alt="ロゴ画像"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <label className="flex-1 px-3 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 cursor-pointer text-center">
+                    {uploadingLogo ? '処理中...' : '差し替え'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={uploadingLogo}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          handleLogoUpload(file)
+                        }
+                        e.target.value = ''
+                      }}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleLogoDelete}
+                    disabled={uploadingLogo}
+                    className="px-3 py-2 bg-red-500 text-white text-sm rounded hover:bg-red-600 disabled:opacity-50"
+                  >
+                    削除
+                  </button>
+                </div>
+              </div>
+            ) : pendingLogoFile ? (
+              <div className="space-y-3">
+                <div className="flex justify-center">
+                  <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100">
+                    <img
+                      src={URL.createObjectURL(pendingLogoFile)}
+                      alt="選択されたロゴ画像"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <label className="flex-1 px-3 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 cursor-pointer text-center">
+                    差し替え
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          handleLogoUpload(file)
+                        }
+                        e.target.value = ''
+                      }}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleRemovePendingLogo}
+                    className="px-3 py-2 bg-red-500 text-white text-sm rounded hover:bg-red-600"
+                  >
+                    削除
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 text-center truncate">
+                  選択済み: {pendingLogoFile.name}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex justify-center">
+                  <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center">
+                    <span className="text-gray-400 text-xs">ロゴなし</span>
+                  </div>
+                </div>
+                <label className="block w-full px-3 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 cursor-pointer text-center">
+                  {uploadingLogo ? '処理中...' : 'アップロード'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    disabled={uploadingLogo}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) {
+                        handleLogoUpload(file)
+                      }
+                      e.target.value = ''
+                    }}
+                  />
+                </label>
+              </div>
+            )}
+          </div>
+
+          <p className="mt-2 text-sm text-gray-600">
+            ※ 150x150ピクセルに自動リサイズされます。丸形で表示されます。
+          </p>
         </div>
 
         {/* Image Upload Section */}
