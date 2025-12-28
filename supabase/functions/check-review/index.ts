@@ -171,7 +171,8 @@ ${approvalUrl}
 async function sendErrorNotificationEmail(
   toEmail: string,
   reviewerName: string,
-  facilityName: string
+  facilityName: string,
+  googleMapUrl: string | null
 ): Promise<boolean> {
   const body = `${reviewerName} 様
 
@@ -183,6 +184,7 @@ ${facilityName} のクチコミ投稿確認ができませんでした。
 - クチコミが削除された
 
 お手数ですが、クチコミ投稿状況をご確認ください。
+${googleMapUrl || ''}
 
 ※このメールは自動送信されています。
 `
@@ -474,7 +476,8 @@ serve(async (req) => {
       await sendErrorNotificationEmail(
         typedReviewCheck.email,
         typedReviewCheck.reviewer_name,
-        facilityDetail.name
+        facilityDetail.name,
+        googleMapUrl
       )
 
       // 両方のタスクがfailedかチェック
