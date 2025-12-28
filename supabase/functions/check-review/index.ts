@@ -334,6 +334,32 @@ serve(async (req) => {
 
     const typedReviewCheck = reviewCheck as ReviewCheck
 
+    // 同じreview_check_idの他のタスクが既にalready_confirmedかチェック
+    // → 既にalready_confirmedなら、このタスクもalready_confirmedにして終了（Apify呼び出しスキップ）
+    const { data: siblingAlreadyConfirmed } = await supabase
+      .from('review_check_tasks')
+      .select('id')
+      .eq('review_check_id', typedTask.review_check_id)
+      .eq('status', 'already_confirmed')
+      .neq('id', review_check_task_id)
+      .limit(1)
+      .single()
+
+    if (siblingAlreadyConfirmed) {
+      // このタスクもalready_confirmedに更新
+      await supabase
+        .from('review_check_tasks')
+        .update({ status: 'already_confirmed', executed_at: new Date().toISOString() })
+        .eq('id', review_check_task_id)
+
+      console.log(`Sibling task already_confirmed, skipping check for task: ${review_check_task_id}`)
+
+      return new Response(
+        JSON.stringify({ success: true, status: 'already_confirmed', message: 'Sibling task already confirmed by another submission' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     // 施設詳細からname, google_map_url, review_approval_emailを取得
     const { data: facilityDetail, error: facilityDetailError } = await supabase
       .from('facility_details')
@@ -388,11 +414,18 @@ serve(async (req) => {
         .single()
 
       if (existingConfirmed) {
-        // already_confirmedに更新
+        // このタスクをalready_confirmedに更新
         await supabase
           .from('review_check_tasks')
           .update({ status: 'already_confirmed', executed_at: new Date().toISOString() })
           .eq('id', review_check_task_id)
+
+        // 同じreview_check_idの他のpendingタスクも全てalready_confirmedに更新
+        await supabase
+          .from('review_check_tasks')
+          .update({ status: 'already_confirmed', executed_at: new Date().toISOString() })
+          .eq('review_check_id', typedTask.review_check_id)
+          .eq('status', 'pending')
 
         // review_checksのstatusもalready_confirmedに更新
         await supabase
