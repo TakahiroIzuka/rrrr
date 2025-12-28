@@ -112,6 +112,16 @@ export default function ReviewChecksList({ services, reviewChecks, showNewButton
     setDeletingId(id)
     try {
       const supabase = createClient()
+
+      // 先に review_check_tasks から関連レコードを削除
+      const { error: tasksError } = await supabase
+        .from('review_check_tasks')
+        .delete()
+        .eq('review_check_id', id)
+
+      if (tasksError) throw tasksError
+
+      // その後 review_checks を削除
       const { error } = await supabase
         .from('review_checks')
         .delete()
