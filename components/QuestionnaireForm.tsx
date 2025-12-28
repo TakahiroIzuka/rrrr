@@ -226,13 +226,13 @@ export default function QuestionnaireForm({ facilityId, facilityName, genreColor
             </div>
           </div>
 
-          {/* はい選択時: Googleクチコミ投稿 */}
+          {/* はい選択時: Googleクチコミ投稿（星1,2の場合は表示しない） */}
           <div
             className="mb-[10px] flex flex-col md:flex-row md:items-stretch gap-3 transition-all duration-500 ease-in-out overflow-hidden"
             style={{
-              maxHeight: formData.hasGoogleAccount === 'yes' ? '500px' : '0',
-              opacity: formData.hasGoogleAccount === 'yes' ? 1 : 0,
-              marginBottom: formData.hasGoogleAccount === 'yes' ? '10px' : '0'
+              maxHeight: (formData.hasGoogleAccount === 'yes' && formData.satisfaction !== '1' && formData.satisfaction !== '2') ? '500px' : '0',
+              opacity: (formData.hasGoogleAccount === 'yes' && formData.satisfaction !== '1' && formData.satisfaction !== '2') ? 1 : 0,
+              marginBottom: (formData.hasGoogleAccount === 'yes' && formData.satisfaction !== '1' && formData.satisfaction !== '2') ? '10px' : '0'
             }}
           >
             <label className="md:w-1/2 text-black text-xs md:text-sm text-center flex items-center justify-center p-3" style={{ backgroundColor: 'rgb(234, 227, 219)' }}>
