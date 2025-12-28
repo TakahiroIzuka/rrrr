@@ -12,6 +12,7 @@ interface ApifyReview {
   reviewUrl?: string
   reviewId?: string
   url?: string
+  stars?: number
   [key: string]: unknown
 }
 
@@ -179,8 +180,9 @@ async function sendErrorNotificationEmail(
 ${facilityName} のクチコミ投稿確認ができませんでした。
 
 以下の理由が考えられます：
-- クチコミがまだ公開されていない
 - Googleアカウント名が一致しない
+- クチコミ評価が1または2で投稿されている
+- クチコミがまだ公開されていない
 - クチコミが削除された
 
 お手数ですが、クチコミ投稿状況をご確認ください。
@@ -258,17 +260,18 @@ async function fetchGoogleMapReviews(googleMapUrl: string): Promise<ApifyReview[
   }
 }
 
-// レビューの名前をチェックし、一致したレビューのURLとIDを返す
-function findMatchingReview(reviews: ApifyReview[], googleAccountName: string): { matched: boolean; reviewUrl: string | null; reviewId: string | null } {
+// レビューの名前をチェックし、一致したレビューのURLとIDと星を返す
+function findMatchingReview(reviews: ApifyReview[], googleAccountName: string): { matched: boolean; reviewUrl: string | null; reviewId: string | null; stars: number | null } {
   for (const review of reviews) {
     const reviewerName = review.name || review.reviewerName || ''
     if (reviewerName && reviewerName === googleAccountName) {
       const reviewUrl = review.reviewUrl || review.url || null
       const reviewId = review.reviewId || null
-      return { matched: true, reviewUrl, reviewId }
+      const stars = review.stars ?? null
+      return { matched: true, reviewUrl, reviewId, stars }
     }
   }
-  return { matched: false, reviewUrl: null, reviewId: null }
+  return { matched: false, reviewUrl: null, reviewId: null, stars: null }
 }
 
 serve(async (req) => {
@@ -370,9 +373,10 @@ serve(async (req) => {
     const reviews = await fetchGoogleMapReviews(googleMapUrl)
 
     // google_account_nameと一致するレビューがあるかチェック
-    const { matched, reviewUrl, reviewId } = findMatchingReview(reviews, typedReviewCheck.google_account_name)
+    const { matched, reviewUrl, reviewId, stars } = findMatchingReview(reviews, typedReviewCheck.google_account_name)
 
-    if (matched) {
+    // 名前が一致 かつ 星が3以上のみconfirmed処理
+    if (matched && stars !== null && stars >= 3) {
       // 既に同じreviewIdで確認済みのタスクがあるかチェック（全てのreview_check_tasks対象）
       const { data: existingConfirmed } = await supabase
         .from('review_check_tasks')
@@ -466,10 +470,18 @@ serve(async (req) => {
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     } else {
+      // エラーメッセージを決定
+      let errorMessage = 'Review not found'
+      if (matched && stars === null) {
+        errorMessage = 'Star not found'
+      } else if (matched && stars !== null && stars <= 2) {
+        errorMessage = 'Rating 1 or 2 star'
+      }
+
       // failedに更新
       await supabase
         .from('review_check_tasks')
-        .update({ status: 'failed', executed_at: new Date().toISOString(), error_message: 'Review not found' })
+        .update({ status: 'failed', executed_at: new Date().toISOString(), error_message: errorMessage })
         .eq('id', review_check_task_id)
 
       // エラーメール送信（アンケート送信者へ）
