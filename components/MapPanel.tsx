@@ -139,6 +139,7 @@ const MapPanel = React.memo(function MapPanel({ allFacilities, filteredFacilitie
           markerDiv.style.cssText = `
             position: relative;
             display: inline-block;
+            cursor: pointer;
           `
 
           // Create marker elements once

@@ -90,12 +90,12 @@ export default function FilterButton({
   }
 
   return (
-    <div className={`absolute ${isGenrePage ? 'top-12' : 'top-12'} md:top-4 left-4 right-4 z-[999]`} style={{ pointerEvents: 'auto' }}>
+    <div className={`absolute ${isGenrePage ? 'top-12' : 'top-12'} md:top-4 left-4 right-4 z-[999]`} style={{ pointerEvents: 'none' }}>
       {/* Filter Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-4 py-3 rounded-lg shadow-lg border-0 font-bold text-base transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2 text-white relative"
-        style={{ backgroundColor: '#a3977d' }}
+        style={{ backgroundColor: '#a3977d', pointerEvents: 'auto' }}
       >
         マップで絞り込み検索
         {!isOpen && (
@@ -110,8 +110,9 @@ export default function FilterButton({
       {/* Filter Modal */}
       <div
         className={`mt-2 bg-white/70 rounded-lg shadow-xl border border-gray-200 w-full origin-top transition-all duration-300 ease-in-out ${
-          isOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0 pointer-events-none'
+          isOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'
         }`}
+        style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
       >
         <div className="p-4">
           <FilterControls
