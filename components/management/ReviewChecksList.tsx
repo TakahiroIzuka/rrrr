@@ -186,7 +186,7 @@ export default function ReviewChecksList({ services, reviewChecks, showNewButton
                   <th className="px-4 py-3 text-left font-medium text-gray-700">施設名</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">投稿者名</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">Googleアカウント</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-700">メール</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">メールアドレス</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">評価</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">投稿確認</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">施設承認</th>
