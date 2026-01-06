@@ -111,7 +111,7 @@ export async function POST(
             facilityName,
             facilityId,
             giftAmount,
-            reviewerName: reviewCheck.name,
+            reviewerName: reviewCheck.reviewer_name,
             reviewerEmail: reviewCheck.email,
             reason,
             reviewCheckId: reviewCheck.id,
@@ -178,7 +178,7 @@ export async function POST(
         },
         body: JSON.stringify({
           email: reviewCheck.email,
-          reviewerName: reviewCheck.name,
+          reviewerName: reviewCheck.reviewer_name,
           facilityName,
           giftCode: claimedCode.code,
           giftAmount,
