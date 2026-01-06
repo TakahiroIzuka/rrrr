@@ -13,6 +13,11 @@ interface MasterData {
   service_id?: number
 }
 
+interface GiftCodeAmountData {
+  id: number
+  amount: number
+}
+
 interface FacilityDetail {
   name?: string
   star?: number | null
@@ -38,6 +43,7 @@ interface InitialFacilityData {
   prefecture_id?: number
   area_id?: number
   company_id?: number
+  gift_code_amount_id?: number
   uuid?: string
   detail?: FacilityDetail | FacilityDetail[]
 }
@@ -83,6 +89,7 @@ interface FacilityFormProps {
   prefectures: MasterData[]
   areas: MasterData[]
   companies: MasterData[]
+  giftCodeAmounts?: GiftCodeAmountData[]
   initialData?: InitialFacilityData
   currentUserType?: 'admin' | 'user'
   images?: FacilityImage[]
@@ -95,6 +102,7 @@ export default function FacilityForm({
   prefectures,
   areas,
   companies,
+  giftCodeAmounts = [],
   initialData,
   currentUserType = 'admin',
   images = [],
@@ -124,6 +132,7 @@ export default function FacilityForm({
   const [companyId, setCompanyId] = useState(initialData?.company_id || '')
   const [companyCodeInput, setCompanyCodeInput] = useState('')
   const [companyCodeFocused, setCompanyCodeFocused] = useState(false)
+  const [giftCodeAmountId, setGiftCodeAmountId] = useState(initialData?.gift_code_amount_id || '')
 
   // Ref for dropdown click outside detection
   const companyDropdownRef = useRef<HTMLDivElement>(null)
@@ -342,7 +351,8 @@ export default function FacilityForm({
               genre_id: parseInt(String(genreId)),
               prefecture_id: parseInt(String(prefectureId)),
               area_id: areaId ? parseInt(String(areaId)) : null,
-              company_id: companyId ? parseInt(String(companyId)) : null
+              company_id: companyId ? parseInt(String(companyId)) : null,
+              gift_code_amount_id: giftCodeAmountId ? parseInt(String(giftCodeAmountId)) : null
             })
             .eq('id', initialData.id)
 
@@ -450,7 +460,8 @@ export default function FacilityForm({
             genre_id: parseInt(String(genreId)),
             prefecture_id: parseInt(String(prefectureId)),
             area_id: areaId ? parseInt(String(areaId)) : null,
-            company_id: companyId ? parseInt(String(companyId)) : null
+            company_id: companyId ? parseInt(String(companyId)) : null,
+            gift_code_amount_id: giftCodeAmountId ? parseInt(String(giftCodeAmountId)) : null
           })
           .select()
           .single()
@@ -686,6 +697,28 @@ export default function FacilityForm({
                   </p>
                 </div>
               )}
+
+              {/* ギフトコード金額 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ギフトコード金額
+                </label>
+                <select
+                  value={giftCodeAmountId}
+                  onChange={(e) => setGiftCodeAmountId(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">選択なし</option>
+                  {giftCodeAmounts.map((amount) => (
+                    <option key={amount.id} value={amount.id}>
+                      ¥{amount.amount.toLocaleString()}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-gray-500">
+                  クチコミ承認時に送信するギフトコードの金額を選択してください
+                </p>
+              </div>
             </div>
           </div>
         )}

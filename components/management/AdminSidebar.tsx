@@ -8,24 +8,36 @@ interface AdminSidebarProps {
   currentUserType: 'admin' | 'user'
 }
 
-const getMenuItems = (userType: 'admin' | 'user') => [
-  {
-    label: userType === 'user' ? '会社管理' : '会社一覧',
-    href: '/management/companies',
-  },
-  {
-    label: 'ユーザー一覧',
-    href: '/management/users',
-  },
-  {
-    label: '施設一覧',
-    href: '/management/facilities',
-  },
-  {
-    label: 'クチコミ一覧',
-    href: '/management/reviews',
-  },
-]
+const getMenuItems = (userType: 'admin' | 'user') => {
+  const items = [
+    {
+      label: userType === 'user' ? '会社管理' : '会社一覧',
+      href: '/management/companies',
+    },
+    {
+      label: 'ユーザー一覧',
+      href: '/management/users',
+    },
+    {
+      label: '施設一覧',
+      href: '/management/facilities',
+    },
+    {
+      label: 'クチコミ一覧',
+      href: '/management/reviews',
+    },
+  ]
+
+  // 管理者のみギフトコード一覧を表示
+  if (userType === 'admin') {
+    items.push({
+      label: 'ギフトコード一覧',
+      href: '/management',
+    })
+  }
+
+  return items
+}
 
 const masterItems = [
   {
@@ -40,6 +52,10 @@ const masterItems = [
     label: '都道府県・地域',
     href: '/management/masters/regions',
   },
+  {
+    label: 'ギフトコード額',
+    href: '/management/masters/gift-code-amounts',
+  },
 ]
 
 export default function AdminSidebar({ currentUserType }: AdminSidebarProps) {
@@ -48,6 +64,10 @@ export default function AdminSidebar({ currentUserType }: AdminSidebarProps) {
   const menuItems = getMenuItems(currentUserType)
 
   const isActive = (href: string) => {
+    // /management は完全一致でチェック（他のサブパスと区別するため）
+    if (href === '/management') {
+      return pathname === '/management'
+    }
     return pathname.startsWith(href)
   }
 

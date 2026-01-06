@@ -14,12 +14,14 @@ export default async function NewFacilityPage({ searchParams }: NewFacilityPageP
     { data: genres },
     { data: prefectures },
     { data: areas },
-    { data: companies }
+    { data: companies },
+    { data: giftCodeAmounts }
   ] = await Promise.all([
     supabase.from('genres').select('*, service_id').order('id'),
     supabase.from('prefectures').select('*').order('id'),
     supabase.from('areas').select('*, prefecture_id').order('id'),
-    supabase.from('companies').select('*').order('id')
+    supabase.from('companies').select('*').order('id'),
+    supabase.from('gift_code_amounts').select('id, amount').order('amount', { ascending: true })
   ])
 
   return (
@@ -30,6 +32,7 @@ export default async function NewFacilityPage({ searchParams }: NewFacilityPageP
         prefectures={prefectures || []}
         areas={areas || []}
         companies={companies || []}
+        giftCodeAmounts={giftCodeAmounts || []}
         defaultServiceId={service ? parseInt(service) : undefined}
       />
     </div>

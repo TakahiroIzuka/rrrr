@@ -25,6 +25,7 @@ interface ReviewCheckData {
   review_star: number | null
   is_approved: boolean
   is_giftcode_sent: boolean
+  gift_code_status?: string | null
   created_at: string
   facility?: {
     id: number
@@ -32,6 +33,28 @@ interface ReviewCheckData {
     detail?: { name: string }[]
   }
   tasks?: ReviewCheckTaskData[]
+}
+
+// ギフトコードステータスを表示用に変換する関数
+function getGiftCodeStatusDisplay(status: string | null | undefined, isGiftcodeSent: boolean): { label: string; color: string } {
+  // 後方互換性: gift_code_statusがない場合はis_giftcode_sentを使用
+  if (!status) {
+    return isGiftcodeSent
+      ? { label: '送信済', color: 'bg-green-100 text-green-800' }
+      : { label: '未送信', color: 'bg-gray-100 text-gray-800' }
+  }
+
+  switch (status) {
+    case 'sent':
+      return { label: '送信済', color: 'bg-green-100 text-green-800' }
+    case 'out_of_stock':
+      return { label: '在庫無', color: 'bg-red-100 text-red-800' }
+    case 'not_configured':
+      return { label: '未設定', color: 'bg-orange-100 text-orange-800' }
+    case 'unsent':
+    default:
+      return { label: '未送信', color: 'bg-gray-100 text-gray-800' }
+  }
 }
 
 interface ReviewChecksListProps {
@@ -234,11 +257,14 @@ export default function ReviewChecksList({ services, reviewChecks, showNewButton
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                        review.is_giftcode_sent ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {review.is_giftcode_sent ? '送信済' : '未送信'}
-                      </span>
+                      {(() => {
+                        const status = getGiftCodeStatusDisplay(review.gift_code_status, review.is_giftcode_sent)
+                        return (
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${status.color}`}>
+                            {status.label}
+                          </span>
+                        )
+                      })()}
                     </td>
                     <td className="px-4 py-3">
                       {new Date(review.created_at).toLocaleDateString('ja-JP')}
